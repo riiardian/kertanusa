@@ -54,71 +54,68 @@ export default function HomePage() {
   return (
     <div className="space-y-8 pb-14 text-slate-800">
       
-      {/* 1. HERO SECTION DENGAN GAMBAR PERTANIAN.WEBP */}
-      <section className="rounded-2xl bg-white border border-emerald-100 shadow-sm overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
-          
-          {/* Kolom Teks Sambutan Ramah Petani */}
-          <div className="lg:col-span-7 p-6 sm:p-10 space-y-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Panduan Praktis Petani Sawah Indonesia</span>
-            </div>
+      {/* 1. HERO BANNER PANORAMIK LEBAR DENGAN GAMBAR PERTANIAN.WEBP (BRIN STYLE) */}
+      <section className="relative overflow-hidden rounded-3xl w-full min-h-[380px] sm:min-h-[440px] md:min-h-[480px] flex items-center shadow-lg border border-slate-200">
+        
+        {/* Background Image Pertanian.webp Full Width */}
+        <Image
+          src="/pertanian.webp"
+          alt="Lahan Pertanian Hijau Subur Nusantara"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
 
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
-              Pantau Kondisi Sawah & Pertumbuhan Tanaman Anda
-            </h1>
+        {/* Gradient Overlay: Hitam/Emerald Gelap di sisi kiri agar teks terbaca tajam, dan transparan di sisi kanan agar hamparan sawah dan petani terlihat luas */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 sm:via-slate-950/60 to-slate-950/20 md:to-transparent"></div>
 
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Lihat cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen dengan mudah tanpa istilah yang membingungkan.
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link
-                href="/input-lahan"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm transition-all"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>Mulai Catat Tanaman Baru</span>
-              </Link>
-              <Link
-                href="/monitoring"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold transition-all"
-              >
-                <CloudSun className="w-4 h-4 text-emerald-600" />
-                <span>Lihat Cuaca Lengkap</span>
-              </Link>
-            </div>
-
-            {/* Catatan Ringkas Bahasa Petani */}
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-500">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Data cuaca disesuaikan otomatis dengan titik GPS lokasi sawah Anda.</span>
-            </div>
+        {/* Teks Sambutan Ramah Petani di Sisi Kiri */}
+        <div className="relative z-10 p-6 sm:p-10 md:p-14 max-w-2xl text-white space-y-4 sm:space-y-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 text-xs font-semibold backdrop-blur-sm">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+            <span>Panduan Praktis Petani Sawah Indonesia</span>
           </div>
 
-          {/* Kolom Gambar Pertanian */}
-          <div className="lg:col-span-5 relative h-64 sm:h-80 lg:h-full min-h-[300px] w-full bg-emerald-50 border-t lg:border-t-0 lg:border-l border-emerald-100 flex items-center justify-center p-3 sm:p-5">
-            <div className="relative w-full h-full min-h-[260px] rounded-xl overflow-hidden shadow-sm">
-              <Image
-                src="/pertanian.webp"
-                alt="Lahan Pertanian Hijau Subur Nusantara"
-                fill
-                priority
-                className="object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/80 backdrop-blur-sm rounded-lg p-2.5 text-white text-xs flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span className="font-medium">Sawah Subur Indonesia</span>
-                </div>
-                <span className="text-[11px] text-emerald-200">Hijau & Alami</span>
-              </div>
-            </div>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight sm:leading-snug text-white drop-shadow-md">
+            Pantau Kondisi Sawah & Pertumbuhan Tanaman Anda
+          </h1>
+
+          <p className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl">
+            Lihat cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen dengan mudah tanpa istilah yang membingungkan.
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <Link
+              href="/input-lahan"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-md transition-all hover:scale-[1.02]"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Mulai Catat Tanaman Baru</span>
+            </Link>
+            <Link
+              href="/monitoring"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm text-sm font-semibold transition-all"
+            >
+              <CloudSun className="w-4 h-4 text-emerald-300" />
+              <span>Lihat Cuaca Lengkap</span>
+            </Link>
           </div>
 
+          {/* Catatan Ringkas Bahasa Petani */}
+          <div className="pt-3 border-t border-white/20 flex items-center gap-2 text-xs text-slate-300">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Data cuaca disesuaikan otomatis dengan titik GPS lokasi sawah Anda.</span>
+          </div>
         </div>
+
+        {/* Badge status di pojok kanan bawah banner */}
+        <div className="absolute bottom-4 right-4 hidden sm:flex items-center gap-2 bg-slate-950/70 border border-white/20 backdrop-blur-md rounded-lg px-3 py-1.5 text-white text-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="font-medium">Sawah Subur Indonesia</span>
+          <span className="text-[11px] text-emerald-300 pl-1 border-l border-white/20">Alami & Lestari</span>
+        </div>
+
       </section>
 
       {/* 2. KONDISI CUACA & KESEHATAN TANAH HARI INI (BAHASA SEDERHANA PETANI) */}
