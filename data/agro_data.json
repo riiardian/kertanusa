@@ -1,0 +1,210 @@
+{
+  "petani": [
+    {
+      "id": "ptn-mu7ohsnm",
+      "nama_petani": "Pak Budi Hartono",
+      "kontak": "",
+      "luas_tanah": 2000,
+      "satuan_luas": "m²",
+      "daerah": "Brebes, Jawa Tengah",
+      "jenis_tanaman": "Bawang Merah",
+      "waktu_tanam": "2026-08-01",
+      "estimasi_panen": "2026-09-30",
+      "umur_hari": 49,
+      "kelembapan_tanah": 58,
+      "suhu_lingkungan": 30.2,
+      "ph_tanah": 6.5,
+      "status_tanaman": "Pematangan Buah",
+      "catatan": "",
+      "created_at": "2026-09-19T00:58:04.498Z"
+    },
+    {
+      "id": "ptn-001",
+      "nama_petani": "H. Subandi",
+      "kontak": "0812-3456-7890",
+      "luas_tanah": 1500,
+      "satuan_luas": "m²",
+      "daerah": "Brebes, Jawa Tengah",
+      "jenis_tanaman": "Bawang Merah",
+      "waktu_tanam": "2026-08-10",
+      "estimasi_panen": "2026-10-09",
+      "umur_hari": 40,
+      "kelembapan_tanah": 58,
+      "suhu_lingkungan": 29.5,
+      "ph_tanah": 6.5,
+      "status_tanaman": "Generatif/Berbunga",
+      "catatan": "Varietas Bima Brebes, menggunakan mulsa perak dan irigasi pompa surya efisiensi tinggi.",
+      "created_at": "2026-08-10T08:00:00.000Z"
+    },
+    {
+      "id": "ptn-002",
+      "nama_petani": "Ibu Rahmawati",
+      "kontak": "0857-9876-5432",
+      "luas_tanah": 2500,
+      "satuan_luas": "m²",
+      "daerah": "Malang / Batu, Jawa Timur",
+      "jenis_tanaman": "Cabai Rawit Merah",
+      "waktu_tanam": "2026-07-20",
+      "estimasi_panen": "2026-10-08",
+      "umur_hari": 61,
+      "kelembapan_tanah": 68,
+      "suhu_lingkungan": 22.8,
+      "ph_tanah": 6.2,
+      "status_tanaman": "Pematangan Buah",
+      "catatan": "Persiapan panen petik merah menyambut puncak permintaan pasar bulan depan.",
+      "created_at": "2026-07-20T09:30:00.000Z"
+    },
+    {
+      "id": "ptn-003",
+      "nama_petani": "I Wayan Sudarma",
+      "kontak": "0878-1122-3344",
+      "luas_tanah": 1,
+      "satuan_luas": "hektar",
+      "daerah": "Tabanan, Bali",
+      "jenis_tanaman": "Padi Sawah (Ciherang/Inpari)",
+      "waktu_tanam": "2026-06-15",
+      "estimasi_panen": "2026-10-10",
+      "umur_hari": 96,
+      "kelembapan_tanah": 85,
+      "suhu_lingkungan": 25.4,
+      "ph_tanah": 6.4,
+      "status_tanaman": "Pematangan Buah",
+      "catatan": "Sistem irigasi Subak tradisional terintegrasi penampungan air gravitasi tenaga surya.",
+      "created_at": "2026-06-15T07:15:00.000Z"
+    },
+    {
+      "id": "ptn-004",
+      "nama_petani": "Kang Ahmad Mulyana",
+      "kontak": "0821-4455-6677",
+      "luas_tanah": 800,
+      "satuan_luas": "m²",
+      "daerah": "Cianjur, Jawa Barat",
+      "jenis_tanaman": "Tomat",
+      "waktu_tanam": "2026-08-25",
+      "estimasi_panen": "2026-11-03",
+      "umur_hari": 25,
+      "kelembapan_tanah": 72,
+      "suhu_lingkungan": 24.1,
+      "ph_tanah": 5.9,
+      "status_tanaman": "Vegetatif Aktif",
+      "catatan": "Budidaya naungan agrivoltaik bebas pestisida kimia sintetis.",
+      "created_at": "2026-08-25T10:00:00.000Z"
+    }
+  ],
+  "scans": [
+    {
+      "id": "scan-1789779827283",
+      "nama_tanaman": "Cabai / Tomat",
+      "kategori_diagnosa": "Penyakit",
+      "nama_masalah": "Penyakit Antraknosa (Patek / Colletotrichum)",
+      "tingkat_keparahan": "Sedang",
+      "akurasi": 94.8,
+      "status_kematangan": "Mendekati Panen",
+      "estimasi_hari_panen": 14,
+      "ciri_visual": [
+        "Bercak cekung melingkar berwarna cokelat kehitaman pada permukaan buah",
+        "Lingkaran konsentris berspora jingga/merah muda saat kondisi lembap",
+        "Ujung cabai mengerut dan membusuk sebelum memerah sempurna"
+      ],
+      "rekomendasi_pupuk": [
+        {
+          "jenis": "Pupuk Kalsium Boron",
+          "formula": "CaO 26% + B 2%",
+          "dosis": "2-3 gram/liter air",
+          "cara_aplikasi": "Semprot kabut ke seluruh tanaman pagi hari untuk mempertebal dinding sel buah."
+        },
+        {
+          "jenis": "Kalium Sulfat (ZK)",
+          "formula": "K2O 50% + S 17%",
+          "dosis": "5 gram/tanaman",
+          "cara_aplikasi": "Kocor di pangkal akar, hindari pupuk urea/nitrogen berlebih saat musim hujan."
+        }
+      ],
+      "solusi_perawatan": [
+        "Petik segera buah yang terkena patek dan musnahkan (kubur/bakar jauh dari lahan) agar spora tidak menyebar.",
+        "Perlebar jarak tanam dan pangkas daun bagian bawah (*wiwil*) agar sirkulasi udara lancar.",
+        "Perbaiki drainase parit bedengan; jangan biarkan air menggenang lebih dari 2 jam setelah hujan."
+      ],
+      "pestisida_nabati_organik": [
+        "Ekstrak Bawang Putih + Kunyit (mengandung allicin & curcumin sebagai fungisida alami)",
+        "Bio-fungisida agens hayati Trichoderma harzianum (kocor pada lubang tanam seminggu sekali)"
+      ]
+    },
+    {
+      "id": "scan-1789779800110",
+      "nama_tanaman": "Padi / Jagung",
+      "kategori_diagnosa": "Penyakit",
+      "nama_masalah": "Hawar Daun Bakteri (Kresek / Xanthomonas oryzae)",
+      "tingkat_keparahan": "Sedang",
+      "akurasi": 93.5,
+      "status_kematangan": "Belum Cukup Panen",
+      "estimasi_hari_panen": 45,
+      "ciri_visual": [
+        "Garis basah kehijauan di tepi helaian daun yang cepat berubah menjadi kuning pucat keputihan",
+        "Daun menggulung layu dan mengering menyerupai terbakar terik matahari",
+        "Keluarnya eksudat cairan bakteri seperti tetesan embun keruh di pagi hari"
+      ],
+      "rekomendasi_pupuk": [
+        {
+          "jenis": "Pupuk MOP / KCl",
+          "formula": "K2O 60%",
+          "dosis": "75 kg/hektar",
+          "cara_aplikasi": "Tingkatkan dosis kalium untuk memperkuat imunitas jaringan batang dan daun."
+        },
+        {
+          "jenis": "Pupuk Mikro Silika",
+          "formula": "Silikat Aktif",
+          "dosis": "2 kg/hektar",
+          "cara_aplikasi": "Tabur bersamaan pemupukan susulan kedua."
+        }
+      ],
+      "solusi_perawatan": [
+        "Keringkan sawah secara berkala (*pengairan berselang / intermitten*), jangan biarkan air tergenang terus menerus.",
+        "Kurangi pupuk nitrogen (Urea) hingga 30% saat gejala kresek mulai muncul.",
+        "Gunakan benih bersertifikat tahan kresek pada musim tanam berikutnya."
+      ],
+      "pestisida_nabati_organik": [
+        "Bakterisida hayati Pseudomonas fluorescens atau Bacillus subtilis",
+        "Ekstrak lengkuas dan sirih merah sebagai bakterisida nabati"
+      ]
+    },
+    {
+      "id": "scan-1789779313467",
+      "nama_tanaman": "Cabai / Tomat",
+      "kategori_diagnosa": "Penyakit",
+      "nama_masalah": "Penyakit Antraknosa (Patek / Colletotrichum)",
+      "tingkat_keparahan": "Sedang",
+      "akurasi": 94.8,
+      "status_kematangan": "Mendekati Panen",
+      "estimasi_hari_panen": 14,
+      "ciri_visual": [
+        "Bercak cekung melingkar berwarna cokelat kehitaman pada permukaan buah",
+        "Lingkaran konsentris berspora jingga/merah muda saat kondisi lembap",
+        "Ujung cabai mengerut dan membusuk sebelum memerah sempurna"
+      ],
+      "rekomendasi_pupuk": [
+        {
+          "jenis": "Pupuk Kalsium Boron",
+          "formula": "CaO 26% + B 2%",
+          "dosis": "2-3 gram/liter air",
+          "cara_aplikasi": "Semprot kabut ke seluruh tanaman pagi hari untuk mempertebal dinding sel buah."
+        },
+        {
+          "jenis": "Kalium Sulfat (ZK)",
+          "formula": "K2O 50% + S 17%",
+          "dosis": "5 gram/tanaman",
+          "cara_aplikasi": "Kocor di pangkal akar, hindari pupuk urea/nitrogen berlebih saat musim hujan."
+        }
+      ],
+      "solusi_perawatan": [
+        "Petik segera buah yang terkena patek dan musnahkan (kubur/bakar jauh dari lahan) agar spora tidak menyebar.",
+        "Perlebar jarak tanam dan pangkas daun bagian bawah (*wiwil*) agar sirkulasi udara lancar.",
+        "Perbaiki drainase parit bedengan; jangan biarkan air menggenang lebih dari 2 jam setelah hujan."
+      ],
+      "pestisida_nabati_organik": [
+        "Ekstrak Bawang Putih + Kunyit (mengandung allicin & curcumin sebagai fungisida alami)",
+        "Bio-fungisida agens hayati Trichoderma harzianum (kocor pada lubang tanam seminggu sekali)"
+      ]
+    }
+  ]
+}
