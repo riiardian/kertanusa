@@ -1,3 +1,4 @@
+@import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
 :root {
@@ -26,4 +27,27 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Radar Beacon Animations for Map */
+@keyframes radarPing {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  75% { transform: scale(2.5); opacity: 0; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.radar-ping-farmer {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background-color: rgba(16, 185, 129, 0.6);
+  animation: radarPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.radar-ping-user {
+  position: absolute;
+  inset: -10px;
+  border-radius: 9999px;
+  background-color: rgba(6, 182, 212, 0.7);
+  animation: radarPing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
