@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { 
-  Satellite, Navigation, Layers, RefreshCw, X, 
+  Satellite, Navigation, RefreshCw, X, 
   MapPin, Droplets, Thermometer, ShieldCheck, Sprout,
   ChevronRight, Compass, ZoomIn, ZoomOut
 } from 'lucide-react';
@@ -15,8 +15,6 @@ interface IndonesiaMap3DProps {
   userCoords?: { lat: number; lon: number; label?: string } | null;
 }
 
-type TileLayerType = 'satellite' | 'dark' | 'streets';
-
 export default function IndonesiaMap3D({ 
   interactive = true, 
   highlightFarmerId,
@@ -25,11 +23,9 @@ export default function IndonesiaMap3D({
 }: IndonesiaMap3DProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
-  const currentTileLayerRef = useRef<any>(null);
   const markersGroupRef = useRef<any>(null);
   const userMarkerRef = useRef<any>(null);
 
-  const [activeLayer, setActiveLayer] = useState<TileLayerType>('satellite');
   const [farmers, setFarmers] = useState<PetaniRecord[]>([]);
   const [selectedFarmer, setSelectedFarmer] = useState<PetaniRecord | null>(null);
   const [myGps, setMyGps] = useState<{ lat: number; lon: number; accuracy?: number } | null>(userCoords || null);
@@ -57,7 +53,7 @@ export default function IndonesiaMap3D({
     loadData();
   }, []);
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Map with Natural Esri Satellite Imagery
   useEffect(() => {
     if (!isClient || !mapContainerRef.current || mapInstanceRef.current) return;
 
@@ -79,33 +75,22 @@ export default function IndonesiaMap3D({
 
       mapInstanceRef.current = map;
 
-      // Create Custom High Z-Index Pane for Glowing Radar Markers
-      const radarPane = map.createPane('radarPane');
-      radarPane.style.zIndex = '650';
-
-      const tileUrls = {
-        satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        streets: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      };
-
-      const initialLayer = L.tileLayer(tileUrls.satellite, {
+      // Natural High-Resolution Satellite Layer (Esri World Imagery)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 18,
         subdomains: 'abcd'
       }).addTo(map);
 
-      currentTileLayerRef.current = initialLayer;
-
-      // Create Markers Layer Group inside radarPane
-      const markersGroup = L.layerGroup([], { pane: 'radarPane' }).addTo(map);
+      // Markers Layer Group
+      const markersGroup = L.layerGroup([]).addTo(map);
       markersGroupRef.current = markersGroup;
 
-      // Equator Khatulistiwa line
+      // Clean Equator Khatulistiwa line
       L.polyline([[0, 94], [0, 142]], {
-        color: '#fbbf24',
+        color: '#0284c7',
         weight: 1.5,
         dashArray: '6, 8',
-        opacity: 0.7
+        opacity: 0.6
       }).addTo(map);
     }
 
@@ -119,33 +104,6 @@ export default function IndonesiaMap3D({
       }
     };
   }, [isClient]);
-
-  // Switch Tile Layer
-  function switchLayer(layerType: TileLayerType) {
-    if (!mapInstanceRef.current || !currentTileLayerRef.current) return;
-    setActiveLayer(layerType);
-
-    import('leaflet').then((LModule) => {
-      const L = LModule.default;
-      const map = mapInstanceRef.current;
-
-      map.removeLayer(currentTileLayerRef.current);
-
-      const tileUrls = {
-        satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        streets: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      };
-
-      const newLayer = L.tileLayer(tileUrls[layerType], {
-        maxZoom: 18,
-        subdomains: 'abcd'
-      }).addTo(map);
-
-      newLayer.bringToBack();
-      currentTileLayerRef.current = newLayer;
-    });
-  }
 
   // Render Glowing Radar Markers for Farmers
   useEffect(() => {
@@ -169,22 +127,16 @@ export default function IndonesiaMap3D({
         const isHighlight = highlightFarmerId === f.id || selectedFarmer?.id === f.id;
 
         const iconHtml = `
-          <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <div style="
-              position: absolute; 
-              inset: -8px; 
-              border-radius: 9999px; 
-              background-color: ${isHighlight ? 'rgba(251, 191, 36, 0.6)' : 'rgba(16, 185, 129, 0.6)'}; 
-              animation: radarPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-            "></div>
+          <div style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <div class="radar-ping-farmer"></div>
             <div style="
               position: relative;
-              width: 16px; 
-              height: 16px; 
+              width: 14px; 
+              height: 14px; 
               border-radius: 9999px; 
-              background-color: ${isHighlight ? '#fbbf24' : '#10b981'}; 
-              border: 2.5px solid #ffffff; 
-              box-shadow: 0 0 16px ${isHighlight ? '#fbbf24' : '#10b981'};
+              background-color: ${isHighlight ? '#0284c7' : '#059669'}; 
+              border: 2px solid #ffffff; 
+              box-shadow: 0 1px 6px rgba(0,0,0,0.35);
               display: flex;
               align-items: center;
               justify-content: center;
@@ -199,19 +151,11 @@ export default function IndonesiaMap3D({
         const customIcon = L.divIcon({
           html: iconHtml,
           className: 'farmer-marker-beacon',
-          iconSize: [36, 36],
-          iconAnchor: [18, 18],
-          pane: 'radarPane'
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
         });
 
-        const marker = L.marker([f.lat, f.lon], { icon: customIcon, pane: 'radarPane' });
-
-        // Tooltip
-        marker.bindTooltip(`
-          <div style="font-size: 11px; font-weight: 700; color: #064e3b; padding: 2px 4px;">
-            🌾 ${f.nama_petani} (${f.jenis_tanaman})
-          </div>
-        `, { direction: 'top', offset: [0, -14], className: 'radar-tooltip' });
+        const marker = L.marker([f.lat, f.lon], { icon: customIcon });
 
         marker.on('click', () => {
           setSelectedFarmer(f);
@@ -238,26 +182,20 @@ export default function IndonesiaMap3D({
       }
 
       const userIconHtml = `
-        <div style="position: relative; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+        <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
+          <div class="radar-ping-user"></div>
           <div style="
-            position: absolute; 
-            inset: -12px; 
+            width: 16px; 
+            height: 16px; 
             border-radius: 9999px; 
-            background-color: rgba(6, 182, 212, 0.75); 
-            animation: radarPing 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-          "></div>
-          <div style="
-            width: 20px; 
-            height: 20px; 
-            border-radius: 9999px; 
-            background-color: #06b6d4; 
-            border: 3px solid #ffffff; 
-            box-shadow: 0 0 20px rgba(6, 182, 212, 1);
+            background-color: #0284c7; 
+            border: 2.5px solid #ffffff; 
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
           ">
-            <div style="width: 6px; height: 6px; border-radius: 9999px; background-color: #ffffff;"></div>
+            <div style="width: 5px; height: 5px; border-radius: 9999px; background-color: #ffffff;"></div>
           </div>
         </div>
       `;
@@ -265,15 +203,13 @@ export default function IndonesiaMap3D({
       const userIcon = L.divIcon({
         html: userIconHtml,
         className: 'user-marker-beacon',
-        iconSize: [48, 48],
-        iconAnchor: [24, 24],
-        pane: 'radarPane'
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
       });
 
       const userMarker = L.marker([coords.lat, coords.lon], { 
         icon: userIcon, 
-        zIndexOffset: 1000, 
-        pane: 'radarPane' 
+        zIndexOffset: 1000
       }).addTo(map);
 
       userMarkerRef.current = userMarker;
@@ -325,227 +261,190 @@ export default function IndonesiaMap3D({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-950 border border-slate-800 text-white shadow-xl overflow-hidden relative">
+    <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden text-slate-800">
       
-      {/* Top Map Control Bar */}
-      <div className="p-3.5 sm:p-4 bg-slate-900/95 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+      {/* Top Map Control Bar - Clean Natural White/Green/Blue Style */}
+      <div className="p-4 bg-white border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         
         {/* Left: Map Title & Status */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
-            <Satellite className="w-4 h-4 animate-pulse" />
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0">
+            <Sprout className="w-5 h-5 text-emerald-600" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm text-slate-100">
-                Peta Satelit Geospasial Nusantara (Citra Asli BMKG)
+              <h3 className="font-bold text-sm text-slate-900">
+                Peta Citra Satelit Agrometeorologi Nusantara
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
-                Peta Asli Indonesia
+              <span className="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold border border-sky-200">
+                Satelit Alam BMKG
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">
-              Citra foto satelit resolusi tinggi kepulauan Indonesia dengan suar radar telemetri titik sawah
+            <p className="text-[11px] text-slate-500">
+              Sebaran titik sawah petani dan pemantauan mikroklimat presisi kepulauan Indonesia
             </p>
           </div>
         </div>
 
-        {/* Right: Controls & Layer Switcher */}
+        {/* Right: Clean Natural Controls (No Navy, No Dark Radar) */}
         <div className="flex flex-wrap items-center gap-2">
           
-          {/* Island Filter */}
-          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-[11px]">
+          {/* Island Filter Tabs */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px]">
             <button
               onClick={() => handleFocusRegion('semua')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-bold transition-all ${
                 filterRegion === 'semua'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Semua
             </button>
             <button
               onClick={() => handleFocusRegion('jawa')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-bold transition-all ${
                 filterRegion === 'jawa'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Jawa
             </button>
             <button
               onClick={() => handleFocusRegion('luar-jawa')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1 rounded-lg font-bold transition-all ${
                 filterRegion === 'luar-jawa'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Luar Jawa
             </button>
           </div>
 
-          {/* Map Layer Switcher */}
-          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-[11px]">
-            <button
-              onClick={() => switchLayer('satellite')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                activeLayer === 'satellite'
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Foto Satelit Nyata"
-            >
-              🛰️ Satelit Asli
-            </button>
-            <button
-              onClick={() => switchLayer('dark')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                activeLayer === 'dark'
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Mode Dark Radar"
-            >
-              🌌 Dark Radar
-            </button>
-            <button
-              onClick={() => switchLayer('streets')}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
-                activeLayer === 'streets'
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Peta Topografi & Jalan"
-            >
-              🗺️ Topografi
-            </button>
-          </div>
-
-          {/* Nyalakan GPS Button */}
+          {/* Nyalakan GPS Button - Sky Blue & Natural Emerald Theme */}
           <button
             onClick={handleTriggerGps}
             disabled={gpsLoading}
             className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-sm transition-all text-xs ${
               myGps
-                ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 ring-2 ring-cyan-400/50'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20'
             }`}
           >
             {gpsLoading ? (
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <Navigation className="w-3.5 h-3.5" />
+              <Navigation className="w-3.5 h-3.5 text-white" />
             )}
-            <span>{gpsLoading ? 'Mencari...' : myGps ? 'GPS Aktif' : 'Nyalakan GPS'}</span>
+            <span>{gpsLoading ? 'Mencari...' : myGps ? '📍 GPS Saya Aktif' : 'Nyalakan GPS'}</span>
           </button>
 
         </div>
 
       </div>
 
-      {/* Real Leaflet Map Container */}
+      {/* Real Satellite Map Area */}
       <div className="w-full relative" style={{ height: '460px' }}>
         <div ref={mapContainerRef} className="w-full h-full z-0"></div>
 
-        {/* Floating Zoom Controls & Compass */}
-        <div className="absolute right-4 top-4 z-20 flex flex-col gap-1.5">
+        {/* Clean Natural Zoom & Reset Controls */}
+        <div className="absolute right-3.5 top-3.5 z-20 flex flex-col gap-1.5">
           <button
             onClick={() => mapInstanceRef.current?.zoomIn()}
-            className="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 flex items-center justify-center shadow-lg transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-white/95 hover:bg-white text-slate-700 border border-slate-200 flex items-center justify-center shadow-md transition-colors cursor-pointer"
             title="Perbesar Peta"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <button
             onClick={() => mapInstanceRef.current?.zoomOut()}
-            className="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 flex items-center justify-center shadow-lg transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-white/95 hover:bg-white text-slate-700 border border-slate-200 flex items-center justify-center shadow-md transition-colors cursor-pointer"
             title="Perkecil Peta"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
           <button
             onClick={() => mapInstanceRef.current?.flyTo([-2.2, 118.0], 5)}
-            className="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 flex items-center justify-center shadow-lg transition-colors cursor-pointer"
-            title="Reset ke Seluruh Nusantara"
+            className="w-8 h-8 rounded-xl bg-white/95 hover:bg-white text-emerald-600 border border-slate-200 flex items-center justify-center shadow-md transition-colors cursor-pointer"
+            title="Reset Tampilan Nusantara"
           >
             <Compass className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Live GPS Active Floating Indicator */}
+        {/* Live GPS Active Badge (Natural Clean Style) */}
         {myGps && (
-          <div className="absolute left-4 top-4 z-20 pointer-events-none">
-            <div className="px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-400 text-cyan-300 text-[11px] font-bold shadow-xl flex items-center gap-2 backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <div className="absolute left-3.5 top-3.5 z-20 pointer-events-none">
+            <div className="px-3 py-1.5 rounded-xl bg-white/95 border border-sky-200 text-sky-900 text-[11px] font-bold shadow-lg flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
               <span>GPS Anda Terkunci: {myGps.lat.toFixed(4)}, {myGps.lon.toFixed(4)} (±{myGps.accuracy || 8}m)</span>
             </div>
           </div>
         )}
 
-        {/* Selected Farmer Telemetry Modal / Card */}
+        {/* Selected Farmer Telemetry Modal - Natural White & Green-Blue Accents */}
         {selectedFarmer && (
-          <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:w-84 p-4 rounded-xl bg-slate-900/95 border border-emerald-500/50 text-white shadow-2xl backdrop-blur-md z-30 space-y-2.5 animate-in fade-in slide-in-from-bottom-2">
+          <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:w-84 p-4 rounded-2xl bg-white/95 border border-slate-200 text-slate-900 shadow-xl backdrop-blur-md z-30 space-y-3 animate-in fade-in slide-in-from-bottom-2">
             
-            <div className="flex items-start justify-between border-b border-slate-800 pb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/30">
-                  🌾
+            <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  <Sprout className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-xs text-slate-100">{selectedFarmer.nama_petani}</h4>
-                  <p className="text-[10px] text-emerald-400 font-medium">{selectedFarmer.daerah}</p>
+                  <h4 className="font-bold text-xs text-slate-900">{selectedFarmer.nama_petani}</h4>
+                  <p className="text-[10px] text-emerald-700 font-semibold">{selectedFarmer.daerah}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedFarmer(null)}
-                className="p-1 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div className="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60">
-                <span className="text-slate-400 block text-[9px]">Komoditas & Luas</span>
-                <strong className="text-emerald-300 block truncate">{selectedFarmer.jenis_tanaman}</strong>
-                <span className="text-[10px] text-slate-300">{selectedFarmer.luas_tanah} {selectedFarmer.satuan_luas}</span>
+              <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                <span className="text-emerald-700 block text-[9px] font-bold">Komoditas & Luas</span>
+                <strong className="text-slate-900 block truncate">{selectedFarmer.jenis_tanaman}</strong>
+                <span className="text-[10px] text-slate-600 font-medium">{selectedFarmer.luas_tanah} {selectedFarmer.satuan_luas}</span>
               </div>
-              <div className="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60">
-                <span className="text-slate-400 block text-[9px]">Koordinat Satelit BMKG</span>
-                <span className="font-mono text-[10px] text-slate-200 block truncate">
+              <div className="p-2.5 rounded-xl bg-sky-50/70 border border-sky-100">
+                <span className="text-sky-700 block text-[9px] font-bold">Titik Satelit BMKG</span>
+                <span className="font-mono text-[10px] text-slate-900 block truncate font-bold">
                   {selectedFarmer.lat?.toFixed(4)}, {selectedFarmer.lon?.toFixed(4)}
                 </span>
-                <span className="text-[10px] text-emerald-400 font-semibold">
-                  ±{selectedFarmer.akurasi_gps || 8}m Akurasi
+                <span className="text-[10px] text-sky-700 font-semibold">
+                  Akurasi ±{selectedFarmer.akurasi_gps || 8}m
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-[10px]">
-              <span className="flex items-center gap-1 text-slate-300">
-                <Droplets className="w-3 h-3 text-blue-400" />
-                <span>Lembap: <strong>{selectedFarmer.kelembapan_tanah || 58}%</strong></span>
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-[10px]">
+              <span className="flex items-center gap-1 text-slate-700">
+                <Droplets className="w-3 h-3 text-sky-600" />
+                <span>Tanah: <strong className="text-slate-900">{selectedFarmer.kelembapan_tanah || 58}%</strong></span>
               </span>
-              <span className="flex items-center gap-1 text-slate-300">
-                <ShieldCheck className="w-3 h-3 text-purple-400" />
-                <span>pH: <strong>{selectedFarmer.ph_tanah || 6.5}</strong></span>
+              <span className="flex items-center gap-1 text-slate-700">
+                <ShieldCheck className="w-3 h-3 text-purple-600" />
+                <span>pH: <strong className="text-slate-900">{selectedFarmer.ph_tanah || 6.5}</strong></span>
               </span>
-              <span className="flex items-center gap-1 text-amber-300 font-semibold">
-                <Thermometer className="w-3 h-3" />
-                <span>{selectedFarmer.suhu_lingkungan || 29.5}°C</span>
+              <span className="flex items-center gap-1 text-slate-700">
+                <Thermometer className="w-3 h-3 text-amber-500" />
+                <span><strong className="text-slate-900">{selectedFarmer.suhu_lingkungan || 29.5}°C</strong></span>
               </span>
             </div>
 
-            <div className="pt-1 flex justify-between items-center text-[10px]">
-              <span className="text-slate-400">
-                Fase: <strong className="text-slate-200">{selectedFarmer.status_tanaman || 'Vegetatif'}</strong>
+            <div className="pt-0.5 flex justify-between items-center text-[10px]">
+              <span className="text-slate-500">
+                Status: <strong className="text-slate-800">{selectedFarmer.status_tanaman || 'Vegetatif'}</strong>
               </span>
               <a 
                 href="/monitoring"
-                className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5"
+                className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1 shadow-xs transition-colors"
               >
                 <span>Buka Telemetri</span>
                 <ChevronRight className="w-3 h-3" />
@@ -557,25 +456,25 @@ export default function IndonesiaMap3D({
 
       </div>
 
-      {/* Bottom Telemetry Legend & National Research Summary */}
-      <div className="p-3.5 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+      {/* Bottom Summary Bar - Clean Natural Light Slate */}
+      <div className="p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
         
         {/* Legends */}
-        <div className="flex flex-wrap items-center gap-4 text-[11px] text-slate-400">
+        <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs shadow-emerald-500"></span>
-            <span>Titik Sawah Riset Terdaftar ({farmers.length} Lokasi)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-200"></span>
+            <span className="font-medium text-slate-700">Titik Sawah Riset Petani ({farmers.length} Lokasi)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-xs shadow-cyan-400"></span>
-            <span>{myGps ? 'Titik GPS Sawah Anda Terkunci' : 'Nyalakan GPS untuk Menandai Lokasi'}</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 ring-2 ring-sky-200"></span>
+            <span className="font-medium text-slate-700">{myGps ? 'Titik Sawah Anda Terkunci' : 'Nyalakan GPS untuk Menandai Lokasi Sawah'}</span>
           </div>
         </div>
 
         {/* Realtime Satellites Sync */}
-        <div className="text-[11px] text-slate-400 font-mono flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Satelit Geospasial: <strong>Esri World Imagery & BMKG Model</strong></span>
+        <div className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Citra Satelit Alam: <strong className="text-slate-800 font-bold">Esri High-Resolution & Agrometeorologi BMKG</strong></span>
         </div>
 
       </div>
