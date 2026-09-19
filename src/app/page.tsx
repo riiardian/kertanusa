@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import { useEffect, useState } from 'react';
 import { 
   Sprout, Droplets, Thermometer, Sun, ScanSearch, 
@@ -143,6 +144,11 @@ export default function HomePage() {
           </div>
         </div>
 
+      </section>
+
+      {/* Peta Spasial Riset Nusantara 3D dengan Titik Nyala GPS */}
+      <section className="space-y-3">
+        <IndonesiaMap3D />
       </section>
 
       {/* Main 2-Column Grid */}

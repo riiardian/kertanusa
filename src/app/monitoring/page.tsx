@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { WeatherData, PetaniRecord } from '@/lib/types';
 import { REGIONS } from '@/lib/agro_regions';
+import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 
 export default function MonitoringPage() {
   const [selectedMode, setSelectedMode] = useState<'preset' | 'gps' | 'petani'>('preset');
@@ -260,6 +261,15 @@ export default function MonitoringPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* 3D Spatial Map with Live Beacons */}
+      <div className="space-y-2">
+        <IndonesiaMap3D 
+          userCoords={currentCoords ? { lat: currentCoords.lat, lon: currentCoords.lon, label: currentCoords.label } : null}
+          highlightFarmerId={selectedMode === 'petani' ? selectedPetaniId : undefined}
+          onSelectFarmer={(farmer) => handleSelectPetani(farmer.id)}
+        />
       </div>
 
       {loading ? (
