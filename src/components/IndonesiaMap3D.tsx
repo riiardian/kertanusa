@@ -438,15 +438,21 @@ export default function IndonesiaMap3D({
               </span>
             </div>
 
+            {/* Waktu Tanam & Estimasi Panen Info */}
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-[10px] text-slate-600">
+              <span>Mulai Tanam: <strong className="text-slate-800 font-mono">{selectedFarmer.waktu_tanam}</strong></span>
+              <span>Est. Panen: <strong className="text-emerald-700 font-mono">{selectedFarmer.estimasi_panen || '-'}</strong></span>
+            </div>
+
             <div className="pt-0.5 flex justify-between items-center text-[10px]">
               <span className="text-slate-500">
-                Status: <strong className="text-slate-800">{selectedFarmer.status_tanaman || 'Vegetatif'}</strong>
+                Fase: <strong className="text-emerald-700 font-semibold">{selectedFarmer.status_tanaman || 'Vegetatif'}</strong>
               </span>
               <a 
                 href="/monitoring"
-                className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1 shadow-xs transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1 shadow-xs transition-colors"
               >
-                <span>Buka Telemetri</span>
+                <span>Buka Telemetri Lengkap</span>
                 <ChevronRight className="w-3 h-3" />
               </a>
             </div>

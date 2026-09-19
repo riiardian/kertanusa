@@ -178,13 +178,27 @@ export default function InputLahanPage() {
             <CheckCircle2 className="w-10 h-10" />
           </div>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-900">Lahan Berhasil Didaftarkan!</h2>
+            <h2 className="text-xl font-bold text-slate-900">Lahan & Bibit Berhasil Didaftarkan!</h2>
             <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Data petani <strong>{formData.nama_petani}</strong> di titik koordinat <strong>{formData.lat?.toFixed(5)}, {formData.lon?.toFixed(5)}</strong> ({formData.daerah}) telah tersimpan ke basis data riset dan terhubung ke satelit cuaca BMKG.
+              Bibit <strong>{formData.jenis_tanaman}</strong> milik <strong>{formData.nama_petani}</strong> di <strong>{formData.daerah}</strong> ({formData.lat?.toFixed(4)}, {formData.lon?.toFixed(4)}) telah tersimpan dan <strong>langsung memancar sebagai titik radar aktif di Peta Satelit Nusantara</strong>!
             </p>
           </div>
 
           <div className="pt-4 flex flex-wrap justify-center gap-3">
+            <a
+              href="/"
+              className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-md shadow-sky-600/20 flex items-center gap-1.5 transition-colors"
+            >
+              <span>🗺️ Lihat Sawah Saya di Peta Nusantara</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href="/monitoring"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-colors"
+            >
+              <span>📊 Pantau Telemetri Lahan</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
             <button
               onClick={() => {
                 setSuccess(false);
@@ -204,17 +218,10 @@ export default function InputLahanPage() {
                   catatan: ''
                 });
               }}
-              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
             >
               + Input Lahan Lain
             </button>
-            <a
-              href="/monitoring"
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5"
-            >
-              <span>Pantau Telemetri Lahan</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       ) : (
