@@ -20,6 +20,9 @@ const DEFAULT_DATA: DatabaseSchema = {
       luas_tanah: 1500,
       satuan_luas: 'm²',
       daerah: 'Brebes, Jawa Tengah',
+      lat: -6.8703,
+      lon: 109.0435,
+      akurasi_gps: 8,
       jenis_tanaman: 'Bawang Merah',
       waktu_tanam: '2026-08-10',
       estimasi_panen: '2026-10-09',
@@ -38,6 +41,9 @@ const DEFAULT_DATA: DatabaseSchema = {
       luas_tanah: 2500,
       satuan_luas: 'm²',
       daerah: 'Malang / Batu, Jawa Timur',
+      lat: -7.9826,
+      lon: 112.6308,
+      akurasi_gps: 12,
       jenis_tanaman: 'Cabai Rawit Merah',
       waktu_tanam: '2026-07-20',
       estimasi_panen: '2026-10-08',
@@ -56,6 +62,9 @@ const DEFAULT_DATA: DatabaseSchema = {
       luas_tanah: 1,
       satuan_luas: 'hektar',
       daerah: 'Tabanan, Bali',
+      lat: -8.5411,
+      lon: 115.1252,
+      akurasi_gps: 6,
       jenis_tanaman: 'Padi Sawah (Ciherang/Inpari)',
       waktu_tanam: '2026-06-15',
       estimasi_panen: '2026-10-10',
@@ -74,6 +83,9 @@ const DEFAULT_DATA: DatabaseSchema = {
       luas_tanah: 800,
       satuan_luas: 'm²',
       daerah: 'Cianjur, Jawa Barat',
+      lat: -6.8222,
+      lon: 107.1394,
+      akurasi_gps: 15,
       jenis_tanaman: 'Tomat',
       waktu_tanam: '2026-08-25',
       estimasi_panen: '2026-11-03',
@@ -128,6 +140,9 @@ export function addPetani(data: {
   luas_tanah: number;
   satuan_luas: 'm²' | 'hektar';
   daerah: string;
+  lat?: number;
+  lon?: number;
+  akurasi_gps?: number;
   jenis_tanaman: string;
   waktu_tanam: string;
   catatan?: string;
@@ -158,6 +173,9 @@ export function addPetani(data: {
     luas_tanah: Number(data.luas_tanah),
     satuan_luas: data.satuan_luas,
     daerah: data.daerah,
+    lat: data.lat ?? regionProfile.lat,
+    lon: data.lon ?? regionProfile.lon,
+    akurasi_gps: data.akurasi_gps,
     jenis_tanaman: data.jenis_tanaman,
     waktu_tanam: data.waktu_tanam,
     estimasi_panen: panenDate.toISOString().split('T')[0],

@@ -13,7 +13,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama_petani, luas_tanah, satuan_luas, daerah, jenis_tanaman, waktu_tanam, kontak, catatan } = body;
+    const { nama_petani, luas_tanah, satuan_luas, daerah, lat, lon, akurasi_gps, jenis_tanaman, waktu_tanam, kontak, catatan } = body;
 
     if (!nama_petani || !luas_tanah || !daerah || !jenis_tanaman || !waktu_tanam) {
       return NextResponse.json({ 
@@ -22,11 +22,14 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const newPetani = addPetani({
+        const newPetani = addPetani({
       nama_petani,
       luas_tanah: Number(luas_tanah),
       satuan_luas: satuan_luas || 'm²',
       daerah,
+      lat: lat ? Number(lat) : undefined,
+      lon: lon ? Number(lon) : undefined,
+      akurasi_gps: akurasi_gps ? Number(akurasi_gps) : undefined,
       jenis_tanaman,
       waktu_tanam,
       kontak,

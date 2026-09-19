@@ -101,3 +101,16 @@ export function getRegionProfile(namaDaerah: string): RegionProfile {
   );
   return match || REGIONS[0];
 }
+
+export function getNearestRegionProfile(lat: number, lon: number): RegionProfile {
+  let nearest = REGIONS[0];
+  let minDistance = Infinity;
+  for (const r of REGIONS) {
+    const d = Math.hypot(r.lat - lat, r.lon - lon);
+    if (d < minDistance) {
+      minDistance = d;
+      nearest = r;
+    }
+  }
+  return nearest;
+}

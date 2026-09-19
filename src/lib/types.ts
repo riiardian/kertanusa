@@ -5,6 +5,9 @@ export interface PetaniRecord {
   luas_tanah: number;
   satuan_luas: 'm²' | 'hektar';
   daerah: string;
+  lat?: number;
+  lon?: number;
+  akurasi_gps?: number;
   jenis_tanaman: string;
   waktu_tanam: string;
   estimasi_panen?: string;
@@ -45,6 +48,10 @@ export interface WeatherData {
   ph_tanah: number;
   status_ph: 'Sangat Masam' | 'Masam' | 'Ideal/Netral' | 'Basa';
   rekomendasi_ph: string;
+  kecepatan_angin?: number;
+  sumber_data?: string;
+  lat?: number;
+  lon?: number;
   prakiraan_7hari: Array<{
     hari: string;
     suhu: number;
