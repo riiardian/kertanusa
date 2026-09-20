@@ -88,7 +88,7 @@ export default function WeatherTrendsCharts({ weather }: WeatherTrendsChartsProp
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-sky-500"></span>
-                <span className="font-semibold text-slate-700">Kadar Air Tanah (%)</span>
+                <span className="font-semibold text-slate-700">Kelembapan Tanah (%)</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded-full bg-amber-500"></span>
@@ -131,7 +131,7 @@ export default function WeatherTrendsCharts({ weather }: WeatherTrendsChartsProp
                       <div
                         className="w-3 rounded-t-sm bg-sky-500 transition-all duration-500"
                         style={{ height: `${airHeight}px` }}
-                        title={`Air Tanah: ${item.air}%`}
+                        title={`Kelembapan Tanah: ${item.air}%`}
                       ></div>
                     </div>
 
@@ -166,7 +166,7 @@ export default function WeatherTrendsCharts({ weather }: WeatherTrendsChartsProp
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
               <span>
-                <strong>Panduan Pompa Hari Ini:</strong> Air tanah berada pada titik terendah (38%) pada pukul 12:00 - 14:00. Disarankan menghidupkan pompa pada sore hari pukul 17:00 - 18:30 saat suhu sudah dingin (29°C) agar air meresap sempurna ke akar.
+                <strong>Panduan Pompa Hari Ini:</strong> Kelembapan tanah berada pada titik terendah (38%) pada pukul 12:00 - 14:00. Disarankan menghidupkan pompa pada sore hari pukul 17:00 - 18:30 saat suhu sudah dingin (29°C) agar air meresap sempurna ke akar.
               </span>
             </div>
           </div>

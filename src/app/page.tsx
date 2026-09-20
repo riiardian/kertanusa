@@ -166,13 +166,13 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Air Tanah */}
+              {/* Kelembapan Tanah */}
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 flex items-center justify-center drop-shadow-md">
                   <LottieAnimation src="/drop-water.json" className="w-full h-full" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Air Tanah</span>
+                  <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Kelembapan Tanah</span>
                   <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-1">
                     {weather ? `${weather.kelembapan_tanah}%` : '55%'}
                   </span>
@@ -217,7 +217,7 @@ export default function HomePage() {
       {/* Konten Utama di Bawah Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
-        {/* 2. DIAGRAM MONITORING: TREN 24 JAM SUHU & AIR TANAH + PRAKIRAAN HUJAN 7 HARI */}
+        {/* 2. DIAGRAM MONITORING: TREN 24 JAM SUHU & KELEMBAPAN TANAH + PRAKIRAAN HUJAN 7 HARI */}
         <section>
           <WeatherTrendsCharts weather={weather} />
         </section>
