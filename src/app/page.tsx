@@ -80,8 +80,8 @@ export default function HomePage() {
   return (
     <div className="w-full pb-14 text-slate-800">
       
-      {/* 1. HERO BANNER FULL-WIDTH LEBAR KE BAWAH (PANORAMIK & MEGAH) */}
-      <section className="relative w-full min-h-[720px] sm:min-h-[780px] md:min-h-[840px] lg:min-h-[880px] flex items-center overflow-hidden">
+      {/* 1. HERO BANNER FULL-WIDTH DENGAN TINGGI IDEAL & PROPORSIONAL */}
+      <section className="relative w-full min-h-[580px] sm:min-h-[620px] md:min-h-[660px] lg:min-h-[680px] flex items-center overflow-hidden">
         
         {/* Full-width Image 4K Ultra HD */}
         <Image
@@ -98,25 +98,25 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent"></div>
 
         {/* Container Konten di Sisi Kiri Banner */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 sm:py-24 lg:py-28">
-          <div className="max-w-3xl text-white space-y-7">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 sm:py-16 lg:py-16">
+          <div className="max-w-3xl text-white space-y-5">
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow">
               Pantau Kondisi Sawah & Pertumbuhan Tanaman
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
+            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
               Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
             </p>
 
             {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri Lengkap dengan Info Wilayah */}
-            <div className="pt-8 border-t border-white/20">
+            <div className="pt-6 border-t border-white/20">
               
               {/* Baris Informasi Lokasi Pantauan */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-2 text-sm sm:text-base text-emerald-300 font-semibold drop-shadow">
                   <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Pantauan Sawah: <strong className="text-white font-bold text-base sm:text-lg">{locationName}</strong></span>
+                  <span>Pantauan Sawah: <strong className="text-white font-bold text-base">{locationName}</strong></span>
                 </div>
 
                 {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
@@ -139,11 +139,11 @@ export default function HomePage() {
               </div>
 
               {/* Baris 4 Indikator Lottie (Berukuran Besar, Gagah & Bebas Tabrakan) */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pt-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-6 pt-1">
                 
                 {/* Suhu Sawah */}
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 sm:w-13 sm:h-13 shrink-0 flex items-center justify-center">
                     <LottieAnimation src="/thermometer.json" className="w-full h-full drop-shadow-md" />
                   </div>
                   <div className="min-w-0">
@@ -155,8 +155,8 @@ export default function HomePage() {
                 </div>
 
                 {/* Air Tanah */}
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 sm:w-13 sm:h-13 shrink-0 flex items-center justify-center">
                     <LottieAnimation src="/drop-water.json" className="w-full h-full drop-shadow-md" />
                   </div>
                   <div className="min-w-0">
@@ -168,8 +168,8 @@ export default function HomePage() {
                 </div>
 
                 {/* Sinar Matahari / Kondisi Cuaca */}
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 sm:w-13 sm:h-13 shrink-0 flex items-center justify-center">
                     <LottieAnimation src="/sun-hot.json" className="w-full h-full drop-shadow-md" />
                   </div>
                   <div className="min-w-0">
@@ -181,8 +181,8 @@ export default function HomePage() {
                 </div>
 
                 {/* pH Tanah */}
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 sm:w-13 sm:h-13 shrink-0 flex items-center justify-center">
                     <LottieAnimation src="/plant.json" className="w-full h-full drop-shadow-md" />
                   </div>
                   <div className="min-w-0">
