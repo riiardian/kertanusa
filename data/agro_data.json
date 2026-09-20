@@ -1,5 +1,27 @@
 {
-  "petani": [],
+  "petani": [
+    {
+      "id": "ptn-mu9fn5i2",
+      "nama_petani": "rio",
+      "kontak": "085817145056",
+      "luas_tanah": 1000,
+      "satuan_luas": "m²",
+      "daerah": "Gondrong, Tangerang, Banten",
+      "lat": -6.187787282346733,
+      "lon": 106.69660554393525,
+      "akurasi_gps": 187,
+      "jenis_tanaman": "Jagung Manis",
+      "waktu_tanam": "2026-09-20",
+      "estimasi_panen": "2026-12-01",
+      "umur_hari": 0,
+      "kelembapan_tanah": 58,
+      "suhu_lingkungan": 30.2,
+      "ph_tanah": 6.5,
+      "status_tanaman": "Vegetatif Awal",
+      "catatan": "",
+      "created_at": "2026-09-20T06:25:50.234Z"
+    }
+  ],
   "scans": [
     {
       "id": "scan-1789780390610",

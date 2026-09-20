@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import CropGamificationTracker from '@/components/CropGamificationTracker';
 import { useEffect, useState } from 'react';
 import { 
   Sprout, Droplets, Thermometer, Sun, ShieldCheck, 
-  MapPin, PlusCircle, Clock, CloudSun, ChevronRight
+  MapPin, PlusCircle, Clock, CloudSun, ChevronRight, Navigation
 } from 'lucide-react';
 import { PetaniRecord, WeatherData } from '@/lib/types';
 
@@ -18,17 +18,41 @@ export default function HomePage() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // State Pelacakan Lokasi Sawah
+  const [locationName, setLocationName] = useState<string>('Brebes, Jawa Tengah');
+  const [isGpsActive, setIsGpsActive] = useState<boolean>(false);
+  const [gpsLoading, setGpsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     async function initData() {
       try {
-        const [resPetani, resWeather] = await Promise.all([
-          fetch('/api/petani'),
-          fetch('/api/cuaca?daerah=Brebes,%20Jawa%20Tengah')
-        ]);
+        const resPetani = await fetch('/api/petani');
         const dataP = await resPetani.json();
+        
+        let targetDaerah = 'Brebes, Jawa Tengah';
+        let targetLat: number | undefined;
+        let targetLon: number | undefined;
+
+        if (dataP.success && dataP.data && dataP.data.length > 0) {
+          setPetaniList(dataP.data);
+          // Jika sudah ada lahan petani terdaftar, gunakan lokasi lahan petani pertama
+          const first = dataP.data[0];
+          targetDaerah = first.daerah;
+          targetLat = first.lat;
+          targetLon = first.lon;
+          setLocationName(targetDaerah);
+        }
+
+        const weatherUrl = (targetLat && targetLon) 
+          ? `/api/cuaca?lat=${targetLat}&lon=${targetLon}` 
+          : `/api/cuaca?daerah=${encodeURIComponent(targetDaerah)}`;
+
+        const resWeather = await fetch(weatherUrl);
         const dataW = await resWeather.json();
-        if (dataP.success) setPetaniList(dataP.data);
-        if (dataW.success) setWeather(dataW.data);
+        if (dataW.success) {
+          setWeather(dataW.data);
+          if (dataW.daerah) setLocationName(dataW.daerah);
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -37,6 +61,60 @@ export default function HomePage() {
     }
     initData();
   }, []);
+
+  // Handler deteksi lokasi GPS saat ini secara instan
+  const handleDetectGps = () => {
+    if (!navigator.geolocation) {
+      alert('Perangkat Anda tidak mendukung sensor GPS.');
+      return;
+    }
+
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(`/api/cuaca?lat=${latitude}&lon=${longitude}`);
+          const json = await res.json();
+          if (json.success && json.data) {
+            setWeather(json.data);
+            setLocationName(json.daerah || `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
+            setIsGpsActive(true);
+          }
+        } catch (e) {
+          console.error('Gagal mengambil data cuaca GPS', e);
+        } finally {
+          setGpsLoading(false);
+        }
+      },
+      (err) => {
+        setGpsLoading(false);
+        alert('Gagal membaca GPS. Pastikan izin lokasi pada browser Anda telah diaktifkan.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  // Handler ganti sawah terdaftar
+  const handleSelectPetaniLocation = async (daerah: string, lat?: number, lon?: number) => {
+    try {
+      setLoading(true);
+      const url = (lat && lon) 
+        ? `/api/cuaca?lat=${lat}&lon=${lon}` 
+        : `/api/cuaca?daerah=${encodeURIComponent(daerah)}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      if (json.success && json.data) {
+        setWeather(json.data);
+        setLocationName(daerah);
+        setIsGpsActive(false);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full pb-14 text-slate-800">
@@ -60,7 +138,7 @@ export default function HomePage() {
 
         {/* Container Konten di Sisi Kiri Banner */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
-          <div className="max-w-xl text-white space-y-5">
+          <div className="max-w-3xl text-white space-y-6">
             
             {/* Live Telemetry Status Pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs font-semibold backdrop-blur-sm">
@@ -72,7 +150,7 @@ export default function HomePage() {
               Pantau Kondisi Sawah & Pertumbuhan Tanaman
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl">
               Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
             </p>
 
@@ -93,52 +171,106 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri (Tanpa Box Card) */}
-            <div className="pt-4 border-t border-white/15">
-              <span className="text-[11px] font-semibold text-emerald-300 block mb-3 uppercase tracking-wider">
-                Kondisi Sawah Live Hari Ini
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+            {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri Lengkap dengan Info Wilayah */}
+            <div className="pt-6 border-t border-white/20">
+              
+              {/* Baris Informasi Lokasi & Kontrol GPS / Lahan */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-emerald-300 font-semibold drop-shadow">
+                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Pantauan Sawah: <strong className="text-white font-bold text-base">{locationName}</strong></span>
+                  {isGpsActive ? (
+                    <span className="px-2 py-0.5 rounded bg-sky-500/30 border border-sky-400/50 text-xs text-sky-200 font-bold ml-1">
+                      GPS Terkunci
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/30 border border-emerald-400/40 text-xs text-emerald-200 font-semibold ml-1">
+                      {petaniList.length > 0 ? 'Lahan Terdaftar' : 'Sentra Pangan'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleDetectGps}
+                    disabled={gpsLoading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 border border-white/30 text-white text-xs font-semibold backdrop-blur-xs transition-all cursor-pointer shadow-sm"
+                    title="Gunakan sensor GPS di HP/Komputer Anda"
+                  >
+                    <Navigation className={`w-3.5 h-3.5 text-emerald-300 ${gpsLoading ? 'animate-spin' : ''}`} />
+                    <span>{gpsLoading ? 'Mencari GPS...' : 'Gunakan GPS Saya'}</span>
+                  </button>
+
+                  {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
+                  {petaniList.length > 1 && (
+                    <select
+                      onChange={(e) => {
+                        const p = petaniList.find(item => item.id === e.target.value);
+                        if (p) handleSelectPetaniLocation(p.daerah, p.lat, p.lon);
+                      }}
+                      className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-white/25 text-white focus:outline-none cursor-pointer"
+                      title="Ganti lahan sawah yang dipantau"
+                    >
+                      {petaniList.map((p) => (
+                        <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                          {p.nama_petani} ({p.daerah})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              {/* Baris 4 Indikator Lottie (Berukuran Besar, Gagah & Bebas Tabrakan) */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pt-2">
                 
-                {/* Suhu */}
-                <div className="flex items-center gap-2.5">
-                  <LottieAnimation src="/thermometer.json" className="w-9 h-9 shrink-0 drop-shadow" />
-                  <div>
-                    <span className="text-[11px] text-slate-300 block leading-tight">Suhu Sawah</span>
-                    <span className="text-base sm:text-lg font-extrabold text-white">
+                {/* Suhu Sawah */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                    <LottieAnimation src="/thermometer.json" className="w-full h-full drop-shadow-md" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Suhu Sawah</span>
+                    <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-0.5">
                       {weather ? `${weather.suhu}°C` : '29°C'}
                     </span>
                   </div>
                 </div>
 
                 {/* Air Tanah */}
-                <div className="flex items-center gap-2.5">
-                  <LottieAnimation src="/drop-water.json" className="w-9 h-9 shrink-0 drop-shadow" />
-                  <div>
-                    <span className="text-[11px] text-slate-300 block leading-tight">Air Tanah</span>
-                    <span className="text-base sm:text-lg font-extrabold text-white">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                    <LottieAnimation src="/drop-water.json" className="w-full h-full drop-shadow-md" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Air Tanah</span>
+                    <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-0.5">
                       {weather ? `${weather.kelembapan_tanah}%` : '58%'}
                     </span>
                   </div>
                 </div>
 
-                {/* Sinar Matahari */}
-                <div className="flex items-center gap-2.5">
-                  <LottieAnimation src="/sun-hot.json" className="w-9 h-9 shrink-0 drop-shadow" />
-                  <div>
-                    <span className="text-[11px] text-slate-300 block leading-tight">Matahari</span>
-                    <span className="text-base sm:text-lg font-extrabold text-white truncate max-w-[90px] block">
-                      {weather?.kondisi || 'Cerah'}
+                {/* Sinar Matahari / Kondisi Cuaca */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                    <LottieAnimation src="/sun-hot.json" className="w-full h-full drop-shadow-md" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Matahari</span>
+                    <span className="text-lg sm:text-xl font-black text-white block leading-tight mt-0.5 break-words">
+                      {weather?.kondisi || 'Cerah Terik'}
                     </span>
                   </div>
                 </div>
 
                 {/* pH Tanah */}
-                <div className="flex items-center gap-2.5">
-                  <LottieAnimation src="/plant.json" className="w-9 h-9 shrink-0 drop-shadow" />
-                  <div>
-                    <span className="text-[11px] text-slate-300 block leading-tight">pH Tanah</span>
-                    <span className="text-base sm:text-lg font-extrabold text-white">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                    <LottieAnimation src="/plant.json" className="w-full h-full drop-shadow-md" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">pH Tanah</span>
+                    <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-0.5">
                       {weather ? `pH ${weather.ph_tanah}` : 'pH 6.5'}
                     </span>
                   </div>
