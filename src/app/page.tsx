@@ -7,10 +7,7 @@ import LottieAnimation from '@/components/LottieAnimation';
 import WeatherTrendsCharts from '@/components/WeatherTrendsCharts';
 import CropGamificationTracker from '@/components/CropGamificationTracker';
 import { useEffect, useState } from 'react';
-import { 
-  Sprout, Droplets, Thermometer, Sun, ShieldCheck, 
-  MapPin, PlusCircle, Clock, CloudSun, ChevronRight, Navigation
-} from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { PetaniRecord, WeatherData } from '@/lib/types';
 
 export default function HomePage() {
@@ -20,8 +17,6 @@ export default function HomePage() {
 
   // State Pelacakan Lokasi Sawah
   const [locationName, setLocationName] = useState<string>('Brebes, Jawa Tengah');
-  const [isGpsActive, setIsGpsActive] = useState<boolean>(false);
-  const [gpsLoading, setGpsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function initData() {
@@ -62,39 +57,6 @@ export default function HomePage() {
     initData();
   }, []);
 
-  // Handler deteksi lokasi GPS saat ini secara instan
-  const handleDetectGps = () => {
-    if (!navigator.geolocation) {
-      alert('Perangkat Anda tidak mendukung sensor GPS.');
-      return;
-    }
-
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(`/api/cuaca?lat=${latitude}&lon=${longitude}`);
-          const json = await res.json();
-          if (json.success && json.data) {
-            setWeather(json.data);
-            setLocationName(json.daerah || `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
-            setIsGpsActive(true);
-          }
-        } catch (e) {
-          console.error('Gagal mengambil data cuaca GPS', e);
-        } finally {
-          setGpsLoading(false);
-        }
-      },
-      (err) => {
-        setGpsLoading(false);
-        alert('Gagal membaca GPS. Pastikan izin lokasi pada browser Anda telah diaktifkan.');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
   // Handler ganti sawah terdaftar
   const handleSelectPetaniLocation = async (daerah: string, lat?: number, lon?: number) => {
     try {
@@ -107,7 +69,6 @@ export default function HomePage() {
       if (json.success && json.data) {
         setWeather(json.data);
         setLocationName(daerah);
-        setIsGpsActive(false);
       }
     } catch (e) {
       console.error(e);
@@ -120,7 +81,7 @@ export default function HomePage() {
     <div className="w-full pb-14 text-slate-800">
       
       {/* 1. HERO BANNER FULL-WIDTH DENGAN INDIKATOR LOTTIE DI SISI KIRI (TANPA KOTAK CARD) */}
-      <section className="relative w-full min-h-[580px] sm:min-h-[640px] md:min-h-[680px] flex items-center overflow-hidden">
+      <section className="relative w-full min-h-[540px] sm:min-h-[580px] md:min-h-[620px] flex items-center overflow-hidden">
         
         {/* Full-width Image 4K Ultra HD */}
         <Image
@@ -139,12 +100,6 @@ export default function HomePage() {
         {/* Container Konten di Sisi Kiri Banner */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
           <div className="max-w-3xl text-white space-y-6">
-            
-            {/* Live Telemetry Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs font-semibold backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>Pusat Kendali Pantau Agrometeorologi Sawah</span>
-            </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow">
               Pantau Kondisi Sawah & Pertumbuhan Tanaman
@@ -154,71 +109,33 @@ export default function HomePage() {
               Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
             </p>
 
-            {/* Tombol Aksi */}
-            <div className="pt-1 flex flex-wrap items-center gap-3">
-              <Link
-                href="/input-lahan"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition-colors hover:scale-[1.02]"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>Mulai Catat Tanaman</span>
-              </Link>
-              <Link
-                href="/monitoring"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm text-sm font-semibold transition-colors"
-              >
-                <span>Cek Cuaca Lengkap</span>
-              </Link>
-            </div>
-
             {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri Lengkap dengan Info Wilayah */}
             <div className="pt-6 border-t border-white/20">
               
-              {/* Baris Informasi Lokasi & Kontrol GPS / Lahan */}
+              {/* Baris Informasi Lokasi Pantauan */}
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div className="flex flex-wrap items-center gap-2 text-sm text-emerald-300 font-semibold drop-shadow">
+                <div className="flex items-center gap-2 text-sm text-emerald-300 font-semibold drop-shadow">
                   <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>Pantauan Sawah: <strong className="text-white font-bold text-base">{locationName}</strong></span>
-                  {isGpsActive ? (
-                    <span className="px-2 py-0.5 rounded bg-sky-500/30 border border-sky-400/50 text-xs text-sky-200 font-bold ml-1">
-                      GPS Terkunci
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/30 border border-emerald-400/40 text-xs text-emerald-200 font-semibold ml-1">
-                      {petaniList.length > 0 ? 'Lahan Terdaftar' : 'Sentra Pangan'}
-                    </span>
-                  )}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleDetectGps}
-                    disabled={gpsLoading}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 border border-white/30 text-white text-xs font-semibold backdrop-blur-xs transition-all cursor-pointer shadow-sm"
-                    title="Gunakan sensor GPS di HP/Komputer Anda"
+                {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
+                {petaniList.length > 1 && (
+                  <select
+                    onChange={(e) => {
+                      const p = petaniList.find(item => item.id === e.target.value);
+                      if (p) handleSelectPetaniLocation(p.daerah, p.lat, p.lon);
+                    }}
+                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-white/25 text-white focus:outline-none cursor-pointer"
+                    title="Ganti lahan sawah yang dipantau"
                   >
-                    <Navigation className={`w-3.5 h-3.5 text-emerald-300 ${gpsLoading ? 'animate-spin' : ''}`} />
-                    <span>{gpsLoading ? 'Mencari GPS...' : 'Gunakan GPS Saya'}</span>
-                  </button>
-
-                  {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
-                  {petaniList.length > 1 && (
-                    <select
-                      onChange={(e) => {
-                        const p = petaniList.find(item => item.id === e.target.value);
-                        if (p) handleSelectPetaniLocation(p.daerah, p.lat, p.lon);
-                      }}
-                      className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-white/25 text-white focus:outline-none cursor-pointer"
-                      title="Ganti lahan sawah yang dipantau"
-                    >
-                      {petaniList.map((p) => (
-                        <option key={p.id} value={p.id} className="bg-slate-900 text-white">
-                          {p.nama_petani} ({p.daerah})
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+                    {petaniList.map((p) => (
+                      <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                        {p.nama_petani} ({p.daerah})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Baris 4 Indikator Lottie (Berukuran Besar, Gagah & Bebas Tabrakan) */}
