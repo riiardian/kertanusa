@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,24 +19,21 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-emerald-800 border-b border-emerald-900 shadow-md">
+    <header className="sticky top-0 z-50 bg-emerald-800 border-b border-emerald-700/60 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          {/* Brand Logo */}
+          {/* Brand Logo - Bersih, Elegan, Natural & Tanpa AI Slop */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-emerald-800 shadow-sm group-hover:bg-emerald-50 transition-colors">
-              <Sprout className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-emerald-700 border border-emerald-600/60 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-600 transition-colors">
+              <Sprout className="w-5 h-5 text-emerald-200" />
             </div>
-            <div>
-              <span className="font-bold text-lg text-white tracking-tight flex items-center gap-1.5">
-                AgroNusantara <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-200 border border-emerald-600/50">AI AgroTech</span>
-              </span>
-              <p className="text-[11px] text-emerald-200/90 font-normal leading-none">Keputusan Presisi & Intelijen Pasar Petani Pelosok</p>
-            </div>
+            <span className="font-bold text-lg text-white tracking-tight group-hover:text-emerald-100 transition-colors">
+              AgroNusantara
+            </span>
           </Link>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav - Bersih & Rapi */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -45,13 +42,13 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                     isActive
-                      ? 'bg-emerald-950/70 text-white shadow-inner ring-1 ring-emerald-500/50'
-                      : 'text-emerald-100 hover:text-white hover:bg-emerald-700/80'
+                      ? 'bg-emerald-950/60 text-white shadow-xs'
+                      : 'text-emerald-100 hover:text-white hover:bg-emerald-700/70'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3.5 h-3.5 opacity-90" />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -62,7 +59,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/input-lahan"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-emerald-50 text-emerald-800 text-xs font-bold shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-white hover:bg-emerald-50 text-emerald-900 text-xs font-bold shadow-xs transition-all"
             >
               <PlusCircle className="w-3.5 h-3.5 text-emerald-700" />
               <span>Daftar Lahan Baru</span>
@@ -73,7 +70,7 @@ export default function Navbar() {
           <div className="flex md:hidden">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg text-white hover:bg-emerald-700 focus:outline-none"
+              className="p-2 rounded-md text-emerald-100 hover:text-white hover:bg-emerald-700/70 focus:outline-none"
               aria-label="Toggle Menu"
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -94,7 +91,7 @@ export default function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-md text-sm font-semibold transition-colors ${
                   isActive
                     ? 'bg-emerald-950 text-white font-bold'
                     : 'text-emerald-100 hover:bg-emerald-700 hover:text-white'
@@ -109,7 +106,7 @@ export default function Navbar() {
             <Link
               href="/input-lahan"
               onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-white text-emerald-800 text-sm font-bold shadow-sm"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-white text-emerald-900 text-sm font-bold shadow-xs"
             >
               <PlusCircle className="w-4 h-4 text-emerald-700" />
               <span>Daftar Lahan Baru</span>
