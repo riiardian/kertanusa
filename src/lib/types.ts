@@ -42,6 +42,7 @@ export interface WeatherData {
   kelembapan_tanah: number;
   status_tanah: 'Kering' | 'Optimal' | 'Jenuh Air';
   kondisi: string;
+  is_day?: number;
   deskripsi: string;
   radiasi_surya: number;
   potensi_pompa_surya: 'Rendah' | 'Sedang' | 'Optimal';

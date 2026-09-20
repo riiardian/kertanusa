@@ -1,14 +1,15 @@
 import { WeatherData } from './types';
 import { getRegionProfile } from './agro_regions';
 
-function getWeatherConditionText(code: number): { kondisi: string; icon: string } {
-  if (code === 0) return { kondisi: 'Cerah Terik', icon: 'sun' };
-  if (code === 1 || code === 2) return { kondisi: 'Cerah Berawan', icon: 'cloud-sun' };
-  if (code === 3) return { kondisi: 'Berawan Tebal', icon: 'cloud-sun' };
-  if (code >= 51 && code <= 67) return { kondisi: 'Hujan Ringan-Sedang', icon: 'cloud-rain' };
+function getWeatherConditionText(code: number, isDay: number = 1): { kondisi: string; icon: string } {
+  const isNight = isDay === 0;
+  if (code === 0) return { kondisi: isNight ? 'Malam Cerah' : 'Cerah Terik', icon: isNight ? 'moon' : 'sun' };
+  if (code === 1 || code === 2) return { kondisi: isNight ? 'Malam Berawan' : 'Cerah Berawan', icon: isNight ? 'cloud-moon' : 'cloud-sun' };
+  if (code === 3) return { kondisi: 'Berawan Tebal', icon: 'cloud' };
+  if (code >= 51 && code <= 67) return { kondisi: 'Hujan Ringan', icon: 'cloud-rain' };
   if (code >= 80 && code <= 82) return { kondisi: 'Hujan Deras', icon: 'cloud-rain' };
   if (code >= 95) return { kondisi: 'Hujan Petir', icon: 'cloud-rain' };
-  return { kondisi: 'Berawan', icon: 'cloud-sun' };
+  return { kondisi: isNight ? 'Malam Berawan' : 'Berawan', icon: 'cloud' };
 }
 
 export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: string): Promise<WeatherData> {
@@ -16,7 +17,7 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
   const phTanah = profile.ph_rata_rata;
 
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,direct_radiation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,direct_radiation,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
     const res = await fetch(url, { next: { revalidate: 300 } });
     
     if (res.ok) {
@@ -24,11 +25,12 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
       const current = data.current || {};
       const daily = data.daily || {};
 
+      const isDay = current.is_day ?? 1;
       const suhu = current.temperature_2m ?? profile.suhu_rata_rata;
       const kelembapanUdara = current.relative_humidity_2m ?? 70;
       const kecepatanAngin = current.wind_speed_10m ?? 8.5;
       const radiasiSurya = Math.round(current.direct_radiation ?? 650);
-      const weatherInfo = getWeatherConditionText(current.weather_code ?? 1);
+      const weatherInfo = getWeatherConditionText(current.weather_code ?? 0, isDay);
 
       // Model perhitungan kelembapan tanah berbasis curah hujan harian & kelembapan udara
       const precipHariIni = daily.precipitation_sum?.[0] ?? 0;
@@ -59,7 +61,7 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
       const prakiraan7Hari = (daily.time || []).slice(0, 7).map((tStr: string, idx: number) => {
         const d = new Date(tStr);
         const code = daily.weather_code?.[idx] ?? 1;
-        const w = getWeatherConditionText(code);
+        const w = getWeatherConditionText(code, 1);
         return {
           hari: idx === 0 ? 'Hari Ini' : days[d.getDay()],
           suhu: Math.round(daily.temperature_2m_max?.[idx] ?? suhu),
@@ -77,6 +79,7 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
         kelembapan_tanah: kelembapanTanah,
         status_tanah: statusTanah,
         kondisi: weatherInfo.kondisi,
+        is_day: isDay,
         deskripsi: `Data live satelit cuaca resolusi tinggi BMKG & Open-Meteo terkalibrasi di koordinat GPS (${lat.toFixed(4)}, ${lon.toFixed(4)}).`,
         radiasi_surya: radiasiSurya,
         potensi_pompa_surya: potensiPompaSurya,
@@ -103,6 +106,9 @@ export function getFallbackWeatherData(daerah: string): WeatherData {
   const kelembapanTanah = profile.kelembapan_tanah_default;
   const phTanah = profile.ph_rata_rata;
 
+  const currentHour = new Date().getHours();
+  const isDay = (currentHour >= 6 && currentHour < 18) ? 1 : 0;
+
   let statusTanah: 'Kering' | 'Optimal' | 'Jenuh Air' = 'Optimal';
   if (kelembapanTanah < 50) statusTanah = 'Kering';
   else if (kelembapanTanah > 80) statusTanah = 'Jenuh Air';
@@ -119,7 +125,7 @@ export function getFallbackWeatherData(daerah: string): WeatherData {
     rekomendasiPh = 'Tanah agak basa. Berikan pupuk belerang (ZA) dan pupuk organik matang untuk menurunkan pH ke angka netral.';
   }
 
-  const radiasiSurya = Math.round(650 + Math.random() * 250);
+  const radiasiSurya = isDay ? Math.round(650 + Math.random() * 250) : 0;
   let potensiPompaSurya: 'Rendah' | 'Sedang' | 'Optimal' = 'Optimal';
   if (radiasiSurya < 400) potensiPompaSurya = 'Rendah';
   else if (radiasiSurya < 700) potensiPompaSurya = 'Sedang';
@@ -146,7 +152,8 @@ export function getFallbackWeatherData(daerah: string): WeatherData {
     kelembapan_udara: 75,
     kelembapan_tanah: kelembapanTanah,
     status_tanah: statusTanah,
-    kondisi: 'Cerah Berawan',
+    kondisi: isDay ? 'Cerah Berawan' : 'Malam Cerah',
+    is_day: isDay,
     deskripsi: 'Data benchmark mikroklimat tanah regional (Offline/Pelosok Cache).',
     radiasi_surya: radiasiSurya,
     potensi_pompa_surya: potensiPompaSurya,
