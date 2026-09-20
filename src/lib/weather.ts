@@ -3,13 +3,27 @@ import { getRegionProfile } from './agro_regions';
 
 function getWeatherConditionText(code: number, isDay: number = 1): { kondisi: string; icon: string } {
   const isNight = isDay === 0;
-  if (code === 0) return { kondisi: isNight ? 'Malam Cerah' : 'Cerah Terik', icon: isNight ? 'moon' : 'sun' };
-  if (code === 1 || code === 2) return { kondisi: isNight ? 'Malam Berawan' : 'Cerah Berawan', icon: isNight ? 'cloud-moon' : 'cloud-sun' };
+  const hour = new Date().getHours();
+  const isPagi = isDay === 1 && hour >= 5 && hour < 10;
+  const isSore = isDay === 1 && hour >= 15 && hour < 18;
+
+  if (code === 0) {
+    if (isNight) return { kondisi: 'Malam Cerah', icon: 'moon' };
+    if (isPagi) return { kondisi: 'Pagi Cerah', icon: 'sun' };
+    if (isSore) return { kondisi: 'Sore Cerah', icon: 'sun' };
+    return { kondisi: 'Cerah Terik', icon: 'sun' };
+  }
+  if (code === 1 || code === 2) {
+    if (isNight) return { kondisi: 'Malam Berawan', icon: 'cloud-moon' };
+    if (isPagi) return { kondisi: 'Pagi Cerah Berawan', icon: 'cloud-sun' };
+    if (isSore) return { kondisi: 'Sore Berawan', icon: 'cloud-sun' };
+    return { kondisi: 'Cerah Berawan', icon: 'cloud-sun' };
+  }
   if (code === 3) return { kondisi: 'Berawan Tebal', icon: 'cloud' };
   if (code >= 51 && code <= 67) return { kondisi: 'Hujan Ringan', icon: 'cloud-rain' };
   if (code >= 80 && code <= 82) return { kondisi: 'Hujan Deras', icon: 'cloud-rain' };
   if (code >= 95) return { kondisi: 'Hujan Petir', icon: 'cloud-rain' };
-  return { kondisi: isNight ? 'Malam Berawan' : 'Berawan', icon: 'cloud' };
+  return { kondisi: isNight ? 'Malam Berawan' : (isPagi ? 'Pagi Berawan' : 'Berawan'), icon: 'cloud' };
 }
 
 export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: string): Promise<WeatherData> {
@@ -18,7 +32,7 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
 
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,direct_radiation,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
-    const res = await fetch(url, { next: { revalidate: 300 } });
+    const res = await fetch(url, { cache: 'no-store' });
     
     if (res.ok) {
       const data = await res.json();

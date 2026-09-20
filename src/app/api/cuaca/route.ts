@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { getLiveWeatherData } from '@/lib/weather';
 import { REGIONS, getRegionProfile, getNearestRegionProfile } from '@/lib/agro_regions';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -63,6 +66,10 @@ export async function GET(request: Request) {
       nearest_region: nearestProfile.nama,
       daftar_wilayah: REGIONS.map(r => r.nama),
       data: weather
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+      }
     });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Gagal memuat data cuaca & tanah' }, { status: 500 });

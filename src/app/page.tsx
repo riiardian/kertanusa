@@ -21,7 +21,7 @@ export default function HomePage() {
   useEffect(() => {
     async function initData() {
       try {
-        const resPetani = await fetch('/api/petani');
+        const resPetani = await fetch('/api/petani', { cache: 'no-store' });
         const dataP = await resPetani.json();
         
         let targetDaerah = 'Brebes, Jawa Tengah';
@@ -42,7 +42,7 @@ export default function HomePage() {
           ? `/api/cuaca?lat=${targetLat}&lon=${targetLon}` 
           : `/api/cuaca?daerah=${encodeURIComponent(targetDaerah)}`;
 
-        const resWeather = await fetch(weatherUrl);
+        const resWeather = await fetch(weatherUrl, { cache: 'no-store' });
         const dataW = await resWeather.json();
         if (dataW.success) {
           setWeather(dataW.data);
@@ -64,7 +64,7 @@ export default function HomePage() {
       const url = (lat && lon) 
         ? `/api/cuaca?lat=${lat}&lon=${lon}` 
         : `/api/cuaca?daerah=${encodeURIComponent(daerah)}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { cache: 'no-store' });
       const json = await res.json();
       if (json.success && json.data) {
         setWeather(json.data);
@@ -75,6 +75,16 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Label cerdas waktu & cuaca
+  const getCuacaLabel = () => {
+    if (weather?.is_day === 0) return 'Cuaca Malam';
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 10) return 'Cuaca Pagi';
+    if (hour >= 10 && hour < 15) return 'Cuaca Siang';
+    if (hour >= 15 && hour < 18) return 'Cuaca Sore';
+    return 'Kondisi Cuaca';
   };
 
   return (
@@ -151,7 +161,7 @@ export default function HomePage() {
                 <div className="min-w-0">
                   <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Suhu Sawah</span>
                   <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-1">
-                    {weather ? `${weather.suhu}°C` : '26.5°C'}
+                    {weather ? `${weather.suhu}°C` : '24.0°C'}
                   </span>
                 </div>
               </div>
@@ -176,10 +186,10 @@ export default function HomePage() {
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">
-                    {weather?.is_day === 0 ? 'Cuaca Malam' : 'Kondisi Cuaca'}
+                    {getCuacaLabel()}
                   </span>
                   <span className="text-lg sm:text-xl font-black text-white block leading-tight mt-1 break-words">
-                    {weather?.kondisi || 'Malam Cerah'}
+                    {weather?.kondisi || (new Date().getHours() < 6 || new Date().getHours() >= 18 ? 'Malam Cerah' : 'Pagi Cerah')}
                   </span>
                 </div>
               </div>
