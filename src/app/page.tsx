@@ -106,7 +106,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
-              Integrasi pemantauan iklim sawah, kesehatan tanah, dan jadwal perawatan tanaman dalam satu pusat kendali presisi menuju panen raya.
+              Kelola kesehatan sawah dari bibit hingga panen dengan panduan cuaca harian dan pantauan kesuburan tanah yang saling terhubung.
             </p>
 
             {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri (Ditransisi Turun Sedikit) */}
