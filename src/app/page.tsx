@@ -98,19 +98,19 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent"></div>
 
         {/* Container Konten di Sisi Kiri Banner */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 sm:py-16 lg:py-16">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 sm:py-16">
           <div className="max-w-3xl text-white space-y-5">
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow">
-              Pantau Kondisi Sawah & Pertumbuhan Tanaman
+              Presisi Cuaca & Kesehatan Lahan Pertanian
             </h1>
 
             <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
-              Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
+              Pantau mikroklimat sawah harian, kelembapan air tanah, dan estimasi waktu panen presisi berbasis satelit.
             </p>
 
-            {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri Lengkap dengan Info Wilayah */}
-            <div className="pt-6 border-t border-white/20">
+            {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri (Ditransisi Turun Sedikit) */}
+            <div className="mt-8 sm:mt-12 pt-8 border-t border-white/20">
               
               {/* Baris Informasi Lokasi Pantauan */}
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
