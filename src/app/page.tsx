@@ -41,8 +41,8 @@ export default function HomePage() {
   return (
     <div className="w-full pb-14 text-slate-800">
       
-      {/* 1. HERO BANNER FULL-WIDTH DENGAN KONDISI CUACA & TANAH TERINTEGRASI */}
-      <section className="relative w-full min-h-[640px] sm:min-h-[680px] lg:min-h-[720px] flex flex-col justify-between overflow-hidden">
+      {/* 1. HERO BANNER FULL-WIDTH DENGAN INDIKATOR LOTTIE DI SISI KIRI (TANPA KOTAK CARD) */}
+      <section className="relative w-full min-h-[580px] sm:min-h-[640px] md:min-h-[680px] flex items-center overflow-hidden">
         
         {/* Full-width Image 4K Ultra HD */}
         <Image
@@ -55,13 +55,12 @@ export default function HomePage() {
           sizes="100vw"
         />
 
-        {/* Soft Dark Gradient on Left & Bottom (Clean & Natural) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-transparent"></div>
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-950/75 via-slate-950/25 to-transparent pointer-events-none"></div>
+        {/* Soft Dark Gradient on Left (Clean & Natural) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent"></div>
 
-        {/* Konten Hero Atas (Judul, Deskripsi & Tombol Aksi) */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-10 sm:pt-14 md:pt-16">
-          <div className="max-w-xl text-white space-y-4">
+        {/* Container Konten di Sisi Kiri Banner */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
+          <div className="max-w-xl text-white space-y-5">
             
             {/* Live Telemetry Status Pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs font-semibold backdrop-blur-sm">
@@ -77,6 +76,7 @@ export default function HomePage() {
               Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
             </p>
 
+            {/* Tombol Aksi */}
             <div className="pt-1 flex flex-wrap items-center gap-3">
               <Link
                 href="/input-lahan"
@@ -92,88 +92,58 @@ export default function HomePage() {
                 <span>Cek Cuaca Lengkap</span>
               </Link>
             </div>
-          </div>
-        </div>
 
-        {/* Konten Hero Bawah: 4 Kartu Cuaca & Tanah Sawah Hari Ini (Di dalam Hero) */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8 pt-6">
-          <div className="flex items-center justify-between mb-3 text-white">
-            <div className="flex items-center gap-2">
-              <CloudSun className="w-4 h-4 text-emerald-300" />
-              <span className="text-xs sm:text-sm font-bold drop-shadow">Kondisi Cuaca & Tanah Sawah Hari Ini</span>
-            </div>
-            <Link
-              href="/monitoring"
-              className="text-xs font-semibold text-emerald-300 hover:text-white flex items-center gap-1 drop-shadow transition-colors"
-            >
-              <span>Rincian Lengkap</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+            {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri (Tanpa Box Card) */}
+            <div className="pt-4 border-t border-white/15">
+              <span className="text-[11px] font-semibold text-emerald-300 block mb-3 uppercase tracking-wider">
+                Kondisi Sawah Live Hari Ini
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                
+                {/* Suhu */}
+                <div className="flex items-center gap-2.5">
+                  <LottieAnimation src="/thermometer.json" className="w-9 h-9 shrink-0 drop-shadow" />
+                  <div>
+                    <span className="text-[11px] text-slate-300 block leading-tight">Suhu Sawah</span>
+                    <span className="text-base sm:text-lg font-extrabold text-white">
+                      {weather ? `${weather.suhu}°C` : '29°C'}
+                    </span>
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            
-            {/* Suhu Udara */}
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-start gap-3 transition-all hover:scale-[1.01]">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 p-1">
-                <LottieAnimation src="/thermometer.json" className="w-9 h-9 sm:w-10 sm:h-10" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block truncate">Suhu Udara Sawah</span>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
-                  {weather ? `${weather.suhu}°C` : '29°C'}
-                </p>
-                <span className="text-[10px] sm:text-[11px] font-bold text-amber-700 block truncate">
-                  Hangat Pas untuk Tumbuh
-                </span>
-              </div>
-            </div>
+                {/* Air Tanah */}
+                <div className="flex items-center gap-2.5">
+                  <LottieAnimation src="/drop-water.json" className="w-9 h-9 shrink-0 drop-shadow" />
+                  <div>
+                    <span className="text-[11px] text-slate-300 block leading-tight">Air Tanah</span>
+                    <span className="text-base sm:text-lg font-extrabold text-white">
+                      {weather ? `${weather.kelembapan_tanah}%` : '58%'}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Keadaan Air Tanah */}
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-start gap-3 transition-all hover:scale-[1.01]">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 p-1">
-                <LottieAnimation src="/drop-water.json" className="w-9 h-9 sm:w-10 sm:h-10" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block truncate">Keadaan Air Tanah</span>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
-                  {weather ? `${weather.kelembapan_tanah}%` : '58%'}
-                </p>
-                <span className="text-[10px] sm:text-[11px] font-bold text-sky-700 block truncate">
-                  Tanah Basah Cukup (Aman)
-                </span>
-              </div>
-            </div>
+                {/* Sinar Matahari */}
+                <div className="flex items-center gap-2.5">
+                  <LottieAnimation src="/sun-hot.json" className="w-9 h-9 shrink-0 drop-shadow" />
+                  <div>
+                    <span className="text-[11px] text-slate-300 block leading-tight">Matahari</span>
+                    <span className="text-base sm:text-lg font-extrabold text-white truncate max-w-[90px] block">
+                      {weather?.kondisi || 'Cerah'}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Sinar Matahari */}
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-start gap-3 transition-all hover:scale-[1.01]">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 p-1">
-                <LottieAnimation src="/sun-hot.json" className="w-9 h-9 sm:w-10 sm:h-10" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block truncate">Sinar Matahari Hari Ini</span>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5 truncate">
-                  {weather?.kondisi || 'Cerah Berawan'}
-                </p>
-                <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 block truncate">
-                  Bagus untuk Fotosintesis
-                </span>
-              </div>
-            </div>
+                {/* pH Tanah */}
+                <div className="flex items-center gap-2.5">
+                  <LottieAnimation src="/plant.json" className="w-9 h-9 shrink-0 drop-shadow" />
+                  <div>
+                    <span className="text-[11px] text-slate-300 block leading-tight">pH Tanah</span>
+                    <span className="text-base sm:text-lg font-extrabold text-white">
+                      {weather ? `pH ${weather.ph_tanah}` : 'pH 6.5'}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Kesehatan / Keasaman Tanah */}
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-start gap-3 transition-all hover:scale-[1.01]">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 p-1">
-                <LottieAnimation src="/plant.json" className="w-9 h-9 sm:w-10 sm:h-10" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] font-semibold text-slate-500 block truncate">Kesehatan Tanah</span>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 mt-0.5">
-                  {weather ? `pH ${weather.ph_tanah}` : 'pH 6.5'}
-                </p>
-                <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 block truncate">
-                  Tanah Subur Netral
-                </span>
               </div>
             </div>
 
