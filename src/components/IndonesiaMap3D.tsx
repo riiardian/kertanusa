@@ -32,6 +32,7 @@ export default function IndonesiaMap3D({
   const [gpsLoading, setGpsLoading] = useState(false);
   const [filterRegion, setFilterRegion] = useState<'semua' | 'jawa' | 'luar-jawa'>('semua');
   const [isClient, setIsClient] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -92,12 +93,21 @@ export default function IndonesiaMap3D({
         dashArray: '6, 8',
         opacity: 0.6
       }).addTo(map);
+
+      setTimeout(() => {
+        if (isMounted && mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 150);
+
+      setMapReady(true);
     }
 
     initMap();
 
     return () => {
       isMounted = false;
+      setMapReady(false);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -107,11 +117,12 @@ export default function IndonesiaMap3D({
 
   // Render Glowing Radar Markers for Farmers
   useEffect(() => {
-    if (!mapInstanceRef.current || !markersGroupRef.current || farmers.length === 0) return;
+    if (!mapReady || !mapInstanceRef.current || !markersGroupRef.current || farmers.length === 0) return;
 
     import('leaflet').then((LModule) => {
       const L = LModule.default;
       const markersGroup = markersGroupRef.current;
+      if (!markersGroup) return;
       markersGroup.clearLayers();
 
       const filtered = farmers.filter(f => {
@@ -166,19 +177,20 @@ export default function IndonesiaMap3D({
         markersGroup.addLayer(marker);
       });
     });
-  }, [farmers, filterRegion, highlightFarmerId, selectedFarmer]);
+  }, [farmers, filterRegion, highlightFarmerId, selectedFarmer, mapReady]);
 
   // Render User Live GPS Marker
   useEffect(() => {
     const coords = userCoords || myGps;
-    if (!coords || !coords.lat || !coords.lon || !mapInstanceRef.current) return;
+    if (!mapReady || !coords || !coords.lat || !coords.lon || !mapInstanceRef.current) return;
 
     import('leaflet').then((LModule) => {
       const L = LModule.default;
       const map = mapInstanceRef.current;
+      if (!map) return;
 
       if (userMarkerRef.current) {
-        map.removeLayer(userMarkerRef.current);
+        try { map.removeLayer(userMarkerRef.current); } catch (e) {}
       }
 
       const userIconHtml = `
@@ -214,7 +226,7 @@ export default function IndonesiaMap3D({
 
       userMarkerRef.current = userMarker;
     });
-  }, [myGps, userCoords]);
+  }, [myGps, userCoords, mapReady]);
 
   // Trigger GPS
   function handleTriggerGps() {
