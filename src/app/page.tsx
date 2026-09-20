@@ -84,7 +84,7 @@ export default function HomePage() {
     if (hour >= 5 && hour < 10) return 'Cuaca Pagi';
     if (hour >= 10 && hour < 15) return 'Cuaca Siang';
     if (hour >= 15 && hour < 18) return 'Cuaca Sore';
-    return 'Kondisi Cuaca';
+    return 'Cuaca Malam';
   };
 
   return (
