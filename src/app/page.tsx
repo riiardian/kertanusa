@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
+import LottieAnimation from '@/components/LottieAnimation';
 import { useEffect, useState } from 'react';
 import { 
   Sprout, Droplets, Thermometer, Sun, ShieldCheck, 
@@ -127,9 +128,9 @@ export default function HomePage() {
             
             {/* Suhu Udara */}
             <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
-                <Thermometer className="w-6 h-6" />
-              </div>
+              <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 p-1">
+              <LottieAnimation src="/thermometer.json" className="w-10 h-10" />
+            </div>
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-500">Suhu Udara Sawah</span>
                 <p className="text-2xl font-bold text-slate-900 mt-0.5">
@@ -143,9 +144,9 @@ export default function HomePage() {
 
             {/* Keadaan Air Tanah */}
             <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 mt-0.5">
-                <Droplets className="w-6 h-6" />
-              </div>
+              <div className="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 p-1">
+              <LottieAnimation src="/drop-water.json" className="w-10 h-10" />
+            </div>
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-500">Keadaan Air Tanah</span>
                 <p className="text-2xl font-bold text-slate-900 mt-0.5">
@@ -159,9 +160,9 @@ export default function HomePage() {
 
             {/* Sinar Matahari */}
             <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
-                <Sun className="w-6 h-6" />
-              </div>
+              <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 p-1">
+              <LottieAnimation src="/sun-hot.json" className="w-10 h-10" />
+            </div>
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-500">Sinar Matahari Hari Ini</span>
                 <p className="text-2xl font-bold text-slate-900 mt-0.5">
@@ -175,9 +176,9 @@ export default function HomePage() {
 
             {/* Kesehatan / Keasaman Tanah */}
             <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 p-1">
+              <LottieAnimation src="/plant.json" className="w-10 h-10" />
+            </div>
               <div className="flex-1">
                 <span className="text-xs font-medium text-slate-500">Kesehatan Tanah</span>
                 <p className="text-2xl font-bold text-slate-900 mt-0.5">
