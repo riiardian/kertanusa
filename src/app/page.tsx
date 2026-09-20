@@ -102,11 +102,11 @@ export default function HomePage() {
           <div className="max-w-3xl text-white space-y-5">
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow">
-              Presisi Cuaca & Kesehatan Lahan Pertanian
+              Sistem Pertanian Terpadu
             </h1>
 
             <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
-              Pantau mikroklimat sawah harian, kelembapan air tanah, dan estimasi waktu panen presisi berbasis satelit.
+              Integrasi pemantauan iklim sawah, kesehatan tanah, dan jadwal perawatan tanaman dalam satu pusat kendali presisi menuju panen raya.
             </p>
 
             {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri (Ditransisi Turun Sedikit) */}
