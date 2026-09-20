@@ -80,8 +80,8 @@ export default function HomePage() {
   return (
     <div className="w-full pb-14 text-slate-800">
       
-      {/* 1. HERO BANNER FULL-WIDTH DENGAN INDIKATOR LOTTIE DI SISI KIRI (TANPA KOTAK CARD) */}
-      <section className="relative w-full min-h-[540px] sm:min-h-[580px] md:min-h-[620px] flex items-center overflow-hidden">
+      {/* 1. HERO BANNER FULL-WIDTH LEBAR KE BAWAH (PANORAMIK & MEGAH) */}
+      <section className="relative w-full min-h-[720px] sm:min-h-[780px] md:min-h-[840px] lg:min-h-[880px] flex items-center overflow-hidden">
         
         {/* Full-width Image 4K Ultra HD */}
         <Image
@@ -98,25 +98,25 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent"></div>
 
         {/* Container Konten di Sisi Kiri Banner */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
-          <div className="max-w-3xl text-white space-y-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 sm:py-24 lg:py-28">
+          <div className="max-w-3xl text-white space-y-7">
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
               Pantau Kondisi Sawah & Pertumbuhan Tanaman
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-2xl">
+            <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
               Informasi cuaca sawah harian, kecukupan air tanah, dan perkiraan sisa hari menuju panen untuk petani.
             </p>
 
             {/* 4 Indikator Cuaca Murni Animasi Lottie di Sisi Kiri Lengkap dengan Info Wilayah */}
-            <div className="pt-6 border-t border-white/20">
+            <div className="pt-8 border-t border-white/20">
               
               {/* Baris Informasi Lokasi Pantauan */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2 text-sm text-emerald-300 font-semibold drop-shadow">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div className="flex items-center gap-2 text-sm sm:text-base text-emerald-300 font-semibold drop-shadow">
                   <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Pantauan Sawah: <strong className="text-white font-bold text-base">{locationName}</strong></span>
+                  <span>Pantauan Sawah: <strong className="text-white font-bold text-base sm:text-lg">{locationName}</strong></span>
                 </div>
 
                 {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
