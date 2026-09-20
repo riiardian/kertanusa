@@ -1,6 +1,20 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans, Lora } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
+
+const lora = Lora({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-lora',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'AgroNusantara AI - Keputusan Presisi & Intelijen Pasar Petani Pelosok',
@@ -13,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased overflow-x-hidden">
+    <html lang="id" className={`${jakarta.variable} ${lora.variable}`}>
+      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased overflow-x-hidden font-sans">
         <Navbar />
         <main className="flex-1 w-full">
           {children}
