@@ -57,7 +57,7 @@ export default function HomePage() {
         
         {/* Full-width Image Pertanian.webp */}
         <Image
-          src="/pertanian.webp"
+          src="/hero-pertanian-4k.webp" quality={95}
           alt="Lahan Pertanian Nusantara"
           fill
           priority
