@@ -97,10 +97,10 @@ export default function HomePage() {
         {/* Soft Dark Gradient on Left (Clean & Natural) */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
 
-        {/* Container Konten: Judul Diturunkan dari Atas & Pantauan Sawah MUTLAK di Bagian Bawah */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between pt-14 sm:pt-20 lg:pt-24 pb-8 sm:pb-10">
+        {/* Container Konten: Judul Diturunkan Proporsional & Pantauan Sawah Dinaikkan Sedikit (Aman dari Tepi Bawah) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24">
           
-          {/* Bagian Atas: Judul Diturunkan Sedikit agar Tidak Mepet Navbar */}
+          {/* Bagian Atas: Judul & Subtitle */}
           <div className="max-w-2xl text-white space-y-3.5">
             <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] text-white drop-shadow-md">
               Sinergi Cerdas Ekosistem Tani
@@ -111,7 +111,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Bagian Bawah: Pantauan Sawah Murni di Area Bawah (Hamparan Rumput Hijau, Tidak Menutupi Traktor) */}
+          {/* Bagian Bawah: Pantauan Sawah Dinaikkan Sedikit agar Bebas dari Tepi Bawah Layar */}
           <div className="max-w-3xl text-white pt-5 border-t border-white/20">
             
             {/* Baris Informasi Lokasi Pantauan */}
@@ -140,7 +140,7 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Baris 4 Indikator Lottie (Berukuran Besar, Gagah di Area Bawah) */}
+            {/* Baris 4 Indikator Lottie (Berukuran Besar, Gagah & Bebas Potong di Area Bawah) */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-7 pt-1">
               
               {/* Suhu Sawah */}
