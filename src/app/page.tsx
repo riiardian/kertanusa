@@ -53,7 +53,7 @@ export default function HomePage() {
     <div className="w-full pb-14 text-slate-800">
       
       {/* 1. HERO BANNER FULL-WIDTH (EDGE-TO-EDGE SEPERTI BRIN) */}
-      <section className="relative w-full h-[420px] sm:h-[480px] md:h-[520px] flex items-center overflow-hidden">
+      <section className="relative w-full h-[540px] sm:h-[620px] md:h-[700px] flex items-center overflow-hidden">
         
         {/* Full-width Image Pertanian.webp */}
         <Image
