@@ -8,6 +8,7 @@ import { Sprout, BarChart3, ScanSearch, Users, Menu, X, CloudSun, PlusCircle } f
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isHome = pathname === '/';
 
   const navItems = [
     { href: '/', label: 'Beranda', icon: Sprout },
@@ -19,9 +20,15 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0B1A13] border-b border-emerald-950 text-white">
+    <header
+      className={`${
+        isHome
+          ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-transparent border-b border-white/10 text-white'
+          : 'sticky top-0 z-50 bg-[#0B1A13] border-b border-emerald-950 text-white'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           
           {/* Brand Logo - Elegan, Natural & Modern */}
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -32,7 +39,7 @@ export default function Navbar() {
               <span className="font-bold text-base tracking-tight text-white group-hover:text-emerald-100 transition-colors">
                 Agro<span className="text-emerald-400">Nusantara</span>
               </span>
-              <span className="hidden sm:inline-block text-[9px] font-semibold uppercase tracking-wider text-emerald-300/90 bg-emerald-950/90 border border-emerald-800/80 px-1.5 py-0.5 rounded">
+              <span className="hidden sm:inline-block text-[9px] font-semibold uppercase tracking-wider text-emerald-300/90 bg-emerald-950/80 border border-emerald-800/80 px-1.5 py-0.5 rounded">
                 AI Tani
               </span>
             </div>
@@ -48,8 +55,8 @@ export default function Navbar() {
                   href={item.href}
                   className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                     isActive
-                      ? 'bg-emerald-900/80 text-emerald-200 border border-emerald-700/60'
-                      : 'text-slate-300 hover:text-white hover:bg-emerald-950/70'
+                      ? 'bg-emerald-600/90 text-white font-bold border border-emerald-400/40'
+                      : 'text-slate-200 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {item.label}
@@ -60,7 +67,7 @@ export default function Navbar() {
 
           {/* Right Action & Live Satellite Status */}
           <div className="hidden md:flex items-center gap-3">
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-950/70 border border-emerald-900/60 text-[11px] text-slate-300 font-medium">
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/40 border border-white/15 text-[11px] text-slate-200 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               <span>Satelit Terhubung</span>
             </div>
@@ -78,7 +85,7 @@ export default function Navbar() {
           <div className="flex lg:hidden">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-emerald-950 focus:outline-none"
+              className="p-2 rounded-md text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none"
               aria-label="Toggle Menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -90,7 +97,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-emerald-950 bg-[#0B1A13] px-4 pt-2 pb-4 space-y-1 shadow-lg">
+        <div className="lg:hidden border-t border-white/10 bg-slate-950/95 px-4 pt-2 pb-4 space-y-1 shadow-lg">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -101,8 +108,8 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-md text-sm font-semibold transition-colors ${
                   isActive
-                    ? 'bg-emerald-900/90 text-emerald-100 font-bold border border-emerald-700/60'
-                    : 'text-slate-300 hover:bg-emerald-950 hover:text-white'
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <Icon className="w-4 h-4 text-emerald-400" />
@@ -110,7 +117,7 @@ export default function Navbar() {
               </Link>
             );
           })}
-          <div className="pt-2 border-t border-emerald-950/80 mt-2">
+          <div className="pt-2 border-t border-white/10 mt-2">
             <Link
               href="/input-lahan"
               onClick={() => setMobileOpen(false)}

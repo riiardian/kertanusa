@@ -91,7 +91,7 @@ export default function HomePage() {
     <div className="w-full pb-14 text-slate-800">
       
       {/* 1. HERO BANNER FULL-WIDTH DENGAN TINGGI IDEAL & PROPORSIONAL */}
-      <section className="relative w-full min-h-[640px] sm:min-h-[680px] md:min-h-[720px] flex items-stretch overflow-hidden">
+      <section className="relative w-full min-h-[700px] sm:min-h-[740px] md:min-h-[780px] flex items-stretch overflow-hidden">
         
         {/* Full-width Image 4K Ultra HD */}
         <Image
@@ -108,7 +108,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/60 to-transparent"></div>
 
         {/* Container Konten: Judul Diturunkan Proporsional & Pantauan Sawah Berada di Bawah dengan Margin Aman */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between pt-24 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24">
           
           {/* Bagian Atas: Judul Sinergi Cerdas Ekosistem Pertanian */}
           <div className="max-w-2xl text-white space-y-3.5">
@@ -251,4 +251,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 
