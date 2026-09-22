@@ -1,6 +1,22 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+143. **Implementasi Opsi 1: Underline Tabs Komoditas & Penyelarasan Proporsi Angka Metrik [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Segmented control kapsul abu-abu pada pilihan komoditas (Padi, Jagung, Singkong, dll.) terasa kaku dan teksnya rawan terpotong di pojok kanan atas.
+      - Angka ton pada info tahun aktif ('57.2 Jt Ton' / '8.6 Jt Ton') ukurannya terlalu besar sehingga terlihat 'gede sendiri' dan tidak proporsional dibanding teks di sekitarnya.
+    - **Solusi & Implementasi**:
+      1. *Underline Tabs Minimalis (Opsi 1)*:
+         - Menghapus 100% wadah kapsul abu-abu (g-slate-100/90) dan card putih pembungkus tab aktif.
+         - Mengubahnya menjadi baris tab bergaris bawah (*underline tab*) yang membentang lapang di bawah subjudul header (order-b-2 border-emerald-600 untuk tab aktif dan order-transparent untuk tab tidak aktif).
+         - Seluruh nama komoditas kini terbaca utuh dan leluasa tanpa terpotong (*no cut-off*).
+      2. *Proporsi Ukuran Angka Ton*:
+         - Menyesuaikan ukuran angka ton menjadi 	ext-xs font-bold text-slate-900 sehingga sejajar dan seimbang dengan teks 'Tahun 2026 (Tgt):' dan badge persentase tren.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (
+pm run build).
+      - Verified visual via browser di http://localhost:3000.
+
 142. **Eliminasi Card Box pada Info Tahun Aktif (Pure Flat Typography) [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Box card di bagian 'Tahun 2026 (Tgt): 57.2 Jt Ton' terasa kaku dan masih menyisakan kesan card/kotak terpisah.
