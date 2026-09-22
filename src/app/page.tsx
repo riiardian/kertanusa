@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import LottieAnimation from '@/components/LottieAnimation';
-import WeatherTrendsCharts from '@/components/WeatherTrendsCharts';
+import MarketPriceWidget from '@/components/MarketPriceWidget';
 import CropGamificationTracker from '@/components/CropGamificationTracker';
 import { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
@@ -219,7 +219,7 @@ export default function HomePage() {
 
         {/* 2. DIAGRAM MONITORING: TREN 24 JAM SUHU & KELEMBAPAN TANAH + PRAKIRAAN HUJAN 7 HARI */}
         <section>
-          <WeatherTrendsCharts weather={weather} />
+          <MarketPriceWidget />
         </section>
 
         {/* 3. FITUR GAMIFIKASI: STREAK RAWAT SAWAH & POHON TUMBUH BERUBAH BENTUK */}
