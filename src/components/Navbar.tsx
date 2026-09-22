@@ -23,40 +23,35 @@ export default function Navbar() {
     <header
       className={`${
         isHome
-          ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-transparent border-b border-white/10 text-white'
+          ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/80 via-slate-950/30 to-transparent text-white'
           : 'sticky top-0 z-50 bg-[#0B1A13] border-b border-emerald-950 text-white'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* Brand Logo - Elegan, Natural & Modern */}
+          {/* Brand Logo (Tulisan AI Tani dihapus) */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-md bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-500 transition-colors">
               <Sprout className="w-4 h-4 text-emerald-100" />
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-base tracking-tight text-white group-hover:text-emerald-100 transition-colors">
-                Agro<span className="text-emerald-400">Nusantara</span>
-              </span>
-              <span className="hidden sm:inline-block text-[9px] font-semibold uppercase tracking-wider text-emerald-300/90 bg-emerald-950/80 border border-emerald-800/80 px-1.5 py-0.5 rounded">
-                AI Tani
-              </span>
-            </div>
+            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-emerald-100 transition-colors">
+              Agro<span className="text-emerald-400">Nusantara</span>
+            </span>
           </Link>
 
-          {/* Desktop Nav - Clean, Modern Typography (Bebas Icon Clutter) */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Desktop Nav - Garis Bawah Putih untuk Item Aktif & Hover (Tanpa Background Card) */}
+          <nav className="hidden lg:flex items-center gap-4">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  className={`py-1.5 px-1 text-xs font-semibold transition-all border-b-2 ${
                     isActive
-                      ? 'bg-emerald-600/90 text-white font-bold border border-emerald-400/40'
-                      : 'text-slate-200 hover:text-white hover:bg-white/10'
+                      ? 'border-white text-white font-bold'
+                      : 'border-transparent text-slate-200 hover:text-white hover:border-white'
                   }`}
                 >
                   {item.label}
@@ -97,7 +92,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-white/10 bg-slate-950/95 px-4 pt-2 pb-4 space-y-1 shadow-lg">
+        <div className="lg:hidden bg-slate-950/95 px-4 pt-2 pb-4 space-y-1 shadow-lg">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -106,14 +101,16 @@ export default function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-md text-sm font-semibold transition-colors ${
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-md text-sm font-semibold transition-colors ${
                   isActive
-                    ? 'bg-emerald-600 text-white font-bold'
-                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                    ? 'text-white font-bold border-b border-white'
+                    : 'text-slate-200 hover:text-white'
                 }`}
               >
-                <Icon className="w-4 h-4 text-emerald-400" />
-                <span>{item.label}</span>
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4 text-emerald-400" />
+                  <span>{item.label}</span>
+                </div>
               </Link>
             );
           })}
