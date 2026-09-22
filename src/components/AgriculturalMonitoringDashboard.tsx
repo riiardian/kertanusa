@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, Minus, MapPin, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, MapPin } from 'lucide-react';
 
 interface YearlyPoint {
   tahun: number;
@@ -163,7 +163,7 @@ export default function AgriculturalMonitoringDashboard() {
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(SVG_H - PAD_BOTTOM).toFixed(1)} L ${points[0].x.toFixed(1)} ${(SVG_H - PAD_BOTTOM).toFixed(1)} Z`;
 
-  // Hitung Donut Chart
+  // Hitung Donut Chart Tetap / Statis (Menampilkan 100% total nasional secara permanen)
   const donutRadius = 40;
   const donutStroke = 11;
   const circumference = 2 * Math.PI * donutRadius;
@@ -182,7 +182,7 @@ export default function AgriculturalMonitoringDashboard() {
     <div className="w-full space-y-6">
       
       {/* 1. HEADER SECTION (Seamless Flat, Nyatu dengan Background) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">
@@ -198,24 +198,27 @@ export default function AgriculturalMonitoringDashboard() {
           </p>
         </div>
 
-        {/* Tab Pilihan Komoditas: 100% Sinkron dengan Donut Chart */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 max-w-full">
-          {DATA_KOMODITAS.map((k) => (
-            <button
-              key={k.id}
-              onClick={() => {
-                setSelectedId(k.id);
-                setHoveredIdx(null);
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${
-                selectedId === k.id
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              {k.nama}
-            </button>
-          ))}
+        {/* Tab Pilihan Komoditas: Segmented Control Halus & Natural (Bukan Kotak Kasar) */}
+        <div className="inline-flex items-center p-1 bg-slate-100/90 rounded-xl gap-1 max-w-full overflow-x-auto self-start md:self-auto">
+          {DATA_KOMODITAS.map((k) => {
+            const isSelected = selectedId === k.id;
+            return (
+              <button
+                key={k.id}
+                onClick={() => {
+                  setSelectedId(k.id);
+                  setHoveredIdx(null);
+                }}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+                  isSelected
+                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                }`}
+              >
+                {k.nama}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -259,16 +262,12 @@ export default function AgriculturalMonitoringDashboard() {
             </div>
           </div>
 
-          {/* Penjelasan Wilayah Lumbung Terbesar (Sentra Produksi Utama) */}
-          <div className="flex items-start gap-2 text-xs bg-slate-50/80 p-3 rounded-lg border border-slate-100 text-slate-600">
-            <MapPin className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-slate-800">Daerah Lumbung Panen Terbesar (Sentra Utama): </span>
-              <span>{selected.lumbungTerbesar}</span>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                *Sentra utama adalah provinsi/kabupaten yang menghasilkan lebih dari 50% total pasokan panen nasional.
-              </p>
-            </div>
+          {/* Daerah Lumbung Panen Terbesar (Bersih tanpa teks catatan panjang) */}
+          <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50/80 px-3.5 py-2.5 rounded-lg border border-slate-100">
+            <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span>
+              Daerah Lumbung Panen Terbesar: <strong className="text-slate-900 font-semibold">{selected.lumbungTerbesar}</strong>
+            </span>
           </div>
 
           {/* KANVAS DIAGRAM GARIS (SVG LINE CHART) */}
@@ -423,7 +422,7 @@ export default function AgriculturalMonitoringDashboard() {
 
         </div>
 
-        {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (100% SINKRON DENGAN TAB) */}
+        {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (STATIS / TETAP MENAMPILKAN TOTAL) */}
         <div className="lg:col-span-4 space-y-4 pt-2 lg:pt-0 lg:border-l lg:border-slate-200/80 lg:pl-8">
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -438,7 +437,7 @@ export default function AgriculturalMonitoringDashboard() {
               Porsi pangsa hasil panen komoditas pangan, sayur, dan buah di seluruh wilayah Indonesia.
             </p>
 
-            {/* Donut Chart SVG */}
+            {/* Donut Chart SVG Statis (100% Total Nasional Tetap) */}
             <div className="relative flex items-center justify-center my-4">
               <svg width="124" height="124" viewBox="0 0 100 100" className="transform -rotate-90">
                 <circle
@@ -449,62 +448,46 @@ export default function AgriculturalMonitoringDashboard() {
                   stroke="#f1f5f9"
                   strokeWidth={donutStroke}
                 />
-                {donutSlices.map((slice) => {
-                  const isCurrent = selected.id === slice.id;
-                  return (
-                    <circle
-                      key={slice.id}
-                      cx="50"
-                      cy="50"
-                      r={donutRadius}
-                      fill="none"
-                      stroke={slice.warnaHex}
-                      strokeWidth={isCurrent ? donutStroke + 3 : donutStroke}
-                      strokeDasharray={`${slice.length} ${circumference}`}
-                      strokeDashoffset={-slice.offset}
-                      className="transition-all duration-200 cursor-pointer"
-                      onClick={() => {
-                        setSelectedId(slice.id);
-                        setHoveredIdx(null);
-                      }}
-                    />
-                  );
-                })}
+                {donutSlices.map((slice) => (
+                  <circle
+                    key={slice.id}
+                    cx="50"
+                    cy="50"
+                    r={donutRadius}
+                    fill="none"
+                    stroke={slice.warnaHex}
+                    strokeWidth={donutStroke}
+                    strokeDasharray={`${slice.length} ${circumference}`}
+                    strokeDashoffset={-slice.offset}
+                  />
+                ))}
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="text-sm font-black text-slate-900 leading-none">{selected.pangsaPersen}%</span>
-                <span className="text-[9px] text-slate-400 mt-0.5 truncate max-w-[60px]">{selected.nama.split('(')[0]}</span>
+                <span className="text-base font-black text-slate-900 leading-none">100%</span>
+                <span className="text-[9px] text-slate-400 mt-0.5">Total Nasional</span>
               </div>
             </div>
 
-            {/* List Legend: Klik Langsung Berpindah */}
+            {/* List Legend Statis (Hanya Menampilkan Data Tanpa Mengubah State Saat Diklik) */}
             <div className="space-y-1.5 pt-2">
-              {DATA_KOMODITAS.map((p) => {
-                const isSelected = selected.id === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      setSelectedId(p.id);
-                      setHoveredIdx(null);
-                    }}
-                    className={`w-full flex items-center justify-between text-xs px-2.5 py-1.5 rounded-md transition-colors text-left ${
-                      isSelected ? 'bg-slate-100 font-bold text-slate-900' : 'text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
-                      <span>{p.nama}</span>
-                    </div>
-                    <strong className="text-slate-900">{p.pangsaPersen}%</strong>
-                  </button>
-                );
-              })}
+              {DATA_KOMODITAS.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between text-xs px-2 py-1 text-slate-600"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
+                    <span className="font-medium text-slate-700">{p.nama}</span>
+                  </div>
+                  <strong className="text-slate-900 font-bold">{p.pangsaPersen}%</strong>
+                </div>
+              ))}
             </div>
           </div>
 
+          {/* Penjelasan Bersih Tanpa Emoji Lampu */}
           <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-500 leading-relaxed">
-            💡 <strong>Padi</strong> dan <strong>Jagung</strong> adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
+            Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
           </div>
         </div>
 
