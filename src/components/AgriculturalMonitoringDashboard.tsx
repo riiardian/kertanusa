@@ -1,542 +1,335 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  PieChart as PieIcon, 
-  BarChart3, 
-  TrendingUp, 
-  Award, 
-  Layers, 
-  Calendar, 
-  MapPin, 
-  Info,
-  ChevronRight,
-  Sparkles
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, PieChart as PieIcon, Calendar, MapPin } from 'lucide-react';
 
-// Data agregat historis komoditas pertanian nasional Indonesia (Sumber: BPS & Kementan)
-interface CommodityData {
-  id: string;
-  nama: string;
-  kategori: 'pangan' | 'sayuran' | 'buah';
-  kategoriLabel: string;
-  produksi2024: number; // Dalam Juta Ton
-  pangsaPersen: number; // Persentase total produksi
-  warna: string;
-  warnaHex: string;
-  sentraUtama: string;
-  buahAtauSayur: string;
-  historis: { tahun: number; produksi: number }[]; // Juta Ton
-  catatanTren: string;
+interface YearlyPoint {
+  tahun: number;
+  produksi: number; // Juta Ton
+  perubahanPersen: number; // YoY %
+  status: 'naik' | 'turun' | 'stabil';
+  keterangan: string;
 }
 
-const KOMODITAS_NASIONAL: CommodityData[] = [
+interface CommodityItem {
+  id: string;
+  nama: string;
+  kategori: 'Pangan' | 'Buah' | 'Sayur';
+  sentra: string;
+  shareNasional: number; // Persentase dari total produksi pertanian
+  warnaHex: string;
+  ringkasan5Tahun: string;
+  riwayat: YearlyPoint[];
+}
+
+const DATA_5_TAHUN: CommodityItem[] = [
   {
     id: 'padi',
     nama: 'Padi / Beras (GKG)',
-    kategori: 'pangan',
-    kategoriLabel: 'Tanaman Pangan',
-    produksi2024: 54.6,
-    pangsaPersen: 38.5,
-    warna: 'bg-emerald-600',
+    kategori: 'Pangan',
+    sentra: 'Jawa Timur, Jawa Barat, Jawa Tengah, Sulsel',
+    shareNasional: 38.5,
     warnaHex: '#059669',
-    sentraUtama: 'Jawa Timur, Jawa Barat, Jawa Tengah, Sulsel',
-    buahAtauSayur: 'Pangan Pokok #1',
-    historis: [
-      { tahun: 2000, produksi: 51.9 },
-      { tahun: 2005, produksi: 54.2 },
-      { tahun: 2010, produksi: 66.5 },
-      { tahun: 2015, produksi: 75.4 },
-      { tahun: 2020, produksi: 54.7 },
-      { tahun: 2024, produksi: 54.6 }
-    ],
-    catatanTren: 'Produksi stabil 53–55 juta ton setelah penyempurnaan metode KSA (Kerangka Sampel Area) BPS.'
+    ringkasan5Tahun: 'Fluktuatif akibat iklim; sempat terkoreksi di 2023 karena El Nino, lalu pulih di 2024.',
+    riwayat: [
+      { tahun: 2020, produksi: 54.65, perubahanPersen: 0, status: 'stabil', keterangan: 'Basis awal pandemi' },
+      { tahun: 2021, produksi: 54.42, perubahanPersen: -0.42, status: 'turun', keterangan: 'Curah hujan La Nina basah' },
+      { tahun: 2022, produksi: 54.75, perubahanPersen: 0.61, status: 'naik', keterangan: 'Perluasan bibit varietas genjah' },
+      { tahun: 2023, produksi: 53.98, perubahanPersen: -1.41, status: 'turun', keterangan: 'Dampak kemarau ekstrem El Nino' },
+      { tahun: 2024, produksi: 54.60, perubahanPersen: 1.15, status: 'naik', keterangan: 'Pemulihan pasokan & pompanisasi' }
+    ]
   },
   {
     id: 'jagung',
     nama: 'Jagung Pipil Kering',
-    kategori: 'pangan',
-    kategoriLabel: 'Tanaman Pangan',
-    produksi2024: 25.2,
-    pangsaPersen: 17.8,
-    warna: 'bg-amber-500',
-    warnaHex: '#f59e0b',
-    sentraUtama: 'Jawa Timur, Jawa Tengah, Lampung, Sulsel, NTB',
-    buahAtauSayur: 'Pangan & Pakan Ternak',
-    historis: [
-      { tahun: 2000, produksi: 9.7 },
-      { tahun: 2005, produksi: 12.5 },
-      { tahun: 2010, produksi: 18.3 },
-      { tahun: 2015, produksi: 19.6 },
-      { tahun: 2020, produksi: 22.8 },
-      { tahun: 2024, produksi: 25.2 }
-    ],
-    catatanTren: 'Pertumbuhan tertinggi (+160% sejak 2000) didorong permintaan pakan unggas & ternak nasional.'
-  },
-  {
-    id: 'singkong',
-    nama: 'Ubi Kayu (Singkong)',
-    kategori: 'pangan',
-    kategoriLabel: 'Tanaman Pangan',
-    produksi2024: 16.4,
-    pangsaPersen: 11.6,
-    warna: 'bg-yellow-600',
-    warnaHex: '#ca8a04',
-    sentraUtama: 'Lampung, Jawa Tengah, Jawa Timur, NTT',
-    buahAtauSayur: 'Bahan Baku Tapioka & Pangan',
-    historis: [
-      { tahun: 2000, produksi: 16.1 },
-      { tahun: 2005, produksi: 19.3 },
-      { tahun: 2010, produksi: 23.9 },
-      { tahun: 2015, produksi: 21.8 },
-      { tahun: 2020, produksi: 18.3 },
-      { tahun: 2024, produksi: 16.4 }
-    ],
-    catatanTren: 'Kerap diekspor dan menjadi komoditas penyangga pangan kering di musim kemarau.'
+    kategori: 'Pangan',
+    sentra: 'Jatim, Jateng, Lampung, Sulsel, NTB',
+    shareNasional: 17.8,
+    warnaHex: '#d97706',
+    ringkasan5Tahun: 'Konsisten meningkat setiap tahun seiring tingginya kebutuhan bahan pakan ternak nasional.',
+    riwayat: [
+      { tahun: 2020, produksi: 22.80, perubahanPersen: 0, status: 'stabil', keterangan: 'Basis awal periode' },
+      { tahun: 2021, produksi: 23.50, perubahanPersen: 3.07, status: 'naik', keterangan: 'Kenaikan serapan pakan ternak' },
+      { tahun: 2022, produksi: 24.20, perubahanPersen: 2.98, status: 'naik', keterangan: 'Ekspansi lahan tanam jagung' },
+      { tahun: 2023, produksi: 24.80, perubahanPersen: 2.48, status: 'naik', keterangan: 'Tahan cuaca kering di lahan tadah' },
+      { tahun: 2024, produksi: 25.20, perubahanPersen: 1.61, status: 'naik', keterangan: 'Produksi tertinggi 5 tahun terakhir' }
+    ]
   },
   {
     id: 'pisang',
-    nama: 'Pisang (Buah Terbesar RI)',
-    kategori: 'buah',
-    kategoriLabel: 'Buah-buahan',
-    produksi2024: 9.4,
-    pangsaPersen: 6.6,
-    warna: 'bg-lime-500',
-    warnaHex: '#84cc16',
-    sentraUtama: 'Jawa Timur (Malang), Jawa Barat, Lampung, Bali',
-    buahAtauSayur: 'Juara Produksi Buah RI',
-    historis: [
-      { tahun: 2000, produksi: 3.7 },
-      { tahun: 2005, produksi: 5.2 },
-      { tahun: 2010, produksi: 5.8 },
-      { tahun: 2015, produksi: 7.3 },
-      { tahun: 2020, produksi: 8.2 },
-      { tahun: 2024, produksi: 9.4 }
-    ],
-    catatanTren: 'Menyumbang lebih dari 35% total produksi seluruh buah-buahan di Indonesia.'
-  },
-  {
-    id: 'mangga',
-    nama: 'Mangga & Jeruk',
-    kategori: 'buah',
-    kategoriLabel: 'Buah-buahan',
-    produksi2024: 6.8,
-    pangsaPersen: 4.8,
-    warna: 'bg-orange-500',
-    warnaHex: '#f97316',
-    sentraUtama: 'Jawa Timur, Indramayu, Cirebon, Sumut (Jeruk Karo)',
-    buahAtauSayur: 'Buah Segar Favorit',
-    historis: [
-      { tahun: 2000, produksi: 2.1 },
-      { tahun: 2005, produksi: 3.4 },
-      { tahun: 2010, produksi: 4.2 },
-      { tahun: 2015, produksi: 5.1 },
-      { tahun: 2020, produksi: 6.0 },
-      { tahun: 2024, produksi: 6.8 }
-    ],
-    catatanTren: 'Musim panen raya serentak di kuartal III dan IV tiap tahunnya.'
+    nama: 'Pisang (Buah Terbesar)',
+    kategori: 'Buah',
+    sentra: 'Malang (Jatim), Jawa Barat, Lampung, Bali',
+    shareNasional: 6.6,
+    warnaHex: '#65a30d',
+    ringkasan5Tahun: 'Buah tropis nomor satu di Indonesia, menyumbang lebih dari 35% total seluruh panen buah.',
+    riwayat: [
+      { tahun: 2020, produksi: 8.18, perubahanPersen: 0, status: 'stabil', keterangan: 'Basis produksi buah' },
+      { tahun: 2021, produksi: 8.74, perubahanPersen: 6.85, status: 'naik', keterangan: 'Peningkatan konsumsi rumah tangga' },
+      { tahun: 2022, produksi: 9.24, perubahanPersen: 5.72, status: 'naik', keterangan: 'Permintaan pasar modern melonjak' },
+      { tahun: 2023, produksi: 9.30, perubahanPersen: 0.65, status: 'naik', keterangan: 'Stabil di musim kemarau' },
+      { tahun: 2024, produksi: 9.42, perubahanPersen: 1.29, status: 'naik', keterangan: 'Rekor panen buah segar' }
+    ]
   },
   {
     id: 'cabai',
-    nama: 'Aneka Cabai (Rawit & Merah)',
-    kategori: 'sayuran',
-    kategoriLabel: 'Sayur-sayuran',
-    produksi2024: 3.1,
-    pangsaPersen: 2.2,
-    warna: 'bg-rose-600',
+    nama: 'Cabai Rawit & Merah',
+    kategori: 'Sayur',
+    sentra: 'Kediri, Blitar, Garut, Temanggung, Lombok',
+    shareNasional: 2.2,
     warnaHex: '#e11d48',
-    sentraUtama: 'Kediri, Blitar, Garut, Temanggung, Lombok',
-    buahAtauSayur: 'Sayuran Super Strategis',
-    historis: [
-      { tahun: 2000, produksi: 1.1 },
-      { tahun: 2005, produksi: 1.4 },
-      { tahun: 2010, produksi: 1.8 },
-      { tahun: 2015, produksi: 2.1 },
-      { tahun: 2020, produksi: 2.7 },
-      { tahun: 2024, produksi: 3.1 }
-    ],
-    catatanTren: 'Komoditas pengendali inflasi nasional nomor satu di pasar pangan perkotaan.'
+    ringkasan5Tahun: 'Volatilitas tinggi; sempat turun di 2023 akibat kemarau kering, namun melesat tajam di 2024.',
+    riwayat: [
+      { tahun: 2020, produksi: 2.72, perubahanPersen: 0, status: 'stabil', keterangan: 'Basis produksi sayuran pedas' },
+      { tahun: 2021, produksi: 2.75, perubahanPersen: 1.10, status: 'naik', keterangan: 'Pasokan aman di sentra Jatim' },
+      { tahun: 2022, produksi: 2.98, perubahanPersen: 8.36, status: 'naik', keterangan: 'Panen raya serentak di Jawa' },
+      { tahun: 2023, produksi: 2.85, perubahanPersen: -4.36, status: 'turun', keterangan: 'Kekeringan menekan luas panen' },
+      { tahun: 2024, produksi: 3.10, perubahanPersen: 8.77, status: 'naik', keterangan: 'Lonjakan hasil panen irigasi tetes' }
+    ]
   },
   {
     id: 'bawang',
-    nama: 'Bawang Merah & Putih',
-    kategori: 'sayuran',
-    kategoriLabel: 'Sayur-sayuran',
-    produksi2024: 2.2,
-    pangsaPersen: 1.6,
-    warna: 'bg-purple-600',
+    nama: 'Bawang Merah',
+    kategori: 'Sayur',
+    sentra: 'Brebes, Nganjuk, Bima, Demak, Enrekang',
+    shareNasional: 1.6,
     warnaHex: '#9333ea',
-    sentraUtama: 'Brebes, Nganjuk, Bima, Demak, Enrekang',
-    buahAtauSayur: 'Bumbu Dapur Wajib',
-    historis: [
-      { tahun: 2000, produksi: 0.8 },
-      { tahun: 2005, produksi: 0.9 },
-      { tahun: 2010, produksi: 1.1 },
-      { tahun: 2015, produksi: 1.3 },
-      { tahun: 2020, produksi: 1.8 },
-      { tahun: 2024, produksi: 2.2 }
-    ],
-    catatanTren: 'Swasembada bawang merah berhasil dicapai, Brebes dan Bima jadi lumbung terbesar.'
-  },
-  {
-    id: 'hortilain',
-    nama: 'Hortikultura & Sayur Lainnya',
-    kategori: 'sayuran',
-    kategoriLabel: 'Sayur & Buah Lain',
-    produksi2024: 23.9,
-    pangsaPersen: 16.9,
-    warna: 'bg-slate-500',
-    warnaHex: '#64748b',
-    sentraUtama: 'Sumatera Utara, Jawa Barat, Malang, Bali, Sulawesi',
-    buahAtauSayur: 'Kubis, Tomat, Nanas, Durian, dll',
-    historis: [
-      { tahun: 2000, produksi: 11.2 },
-      { tahun: 2005, produksi: 14.6 },
-      { tahun: 2010, produksi: 17.5 },
-      { tahun: 2015, produksi: 20.2 },
-      { tahun: 2020, produksi: 22.4 },
-      { tahun: 2024, produksi: 23.9 }
-    ],
-    catatanTren: 'Gabungan komoditas sayur daun, tomat, wortel, nanas, pepaya, dan buah tropis lainnya.'
+    ringkasan5Tahun: 'Swasembada terjaga dengan pasokan lumbung Brebes & Bima yang konsisten di atas 2 juta ton.',
+    riwayat: [
+      { tahun: 2020, produksi: 1.82, perubahanPersen: 0, status: 'stabil', keterangan: 'Basis panen bawang' },
+      { tahun: 2021, produksi: 2.00, perubahanPersen: 9.89, status: 'naik', keterangan: 'Ekspansi lahan di Bima & Nganjuk' },
+      { tahun: 2022, produksi: 1.98, perubahanPersen: -1.00, status: 'turun', keterangan: 'Hujan basah memicu serangan ulat' },
+      { tahun: 2023, produksi: 2.10, perubahanPersen: 6.06, status: 'naik', keterangan: 'Cuaca terik cocok untuk umbi' },
+      { tahun: 2024, produksi: 2.25, perubahanPersen: 7.14, status: 'naik', keterangan: 'Produksi tertinggi sepanjang sejarah' }
+    ]
   }
 ];
 
-// Data tren total produksi gabungan per tahun (Juta Ton)
-const TOTAL_TREN_TAHUN = [
-  { tahun: '2000', total: 96.5, ket: 'Awal reformasi pertanian' },
-  { tahun: '2005', total: 111.5, ket: 'Perluasan bibit hibrida' },
-  { tahun: '2010', total: 149.3, ket: 'Ekspansi komoditas pangan' },
-  { tahun: '2015', total: 168.0, ket: 'Mekanisasi alat mesin tani' },
-  { tahun: '2020', total: 147.0, ket: 'Standardisasi KSA BPS' },
-  { tahun: '2024', total: 141.6, ket: 'Ketahanan iklim & irigasi modern' }
+// Data komposisi proporsi nasional (Diagram Bulat Simpel)
+const PROPORSI_NASIONAL = [
+  { label: 'Padi (Beras)', persen: 38.5, warna: '#059669' },
+  { label: 'Jagung', persen: 17.8, warna: '#d97706' },
+  { label: 'Singkong / Umbi', persen: 11.6, warna: '#ca8a04' },
+  { label: 'Buah-buahan', persen: 16.5, warna: '#65a30d' },
+  { label: 'Sayuran', persen: 10.2, warna: '#e11d48' },
+  { label: 'Lainnya', persen: 5.4, warna: '#64748b' }
 ];
 
 export default function AgriculturalMonitoringDashboard() {
-  const [kategoriAktif, setKategoriAktif] = useState<'semua' | 'pangan' | 'sayuran' | 'buah'>('semua');
-  const [selectedKomoditas, setSelectedKomoditas] = useState<CommodityData>(KOMODITAS_NASIONAL[0]);
-  const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState('padi');
+  const selected = DATA_5_TAHUN.find((item) => item.id === selectedId) || DATA_5_TAHUN[0];
 
-  // Filter list sesuai tab kategori
-  const filteredList = kategoriAktif === 'semua' 
-    ? KOMODITAS_NASIONAL 
-    : KOMODITAS_NASIONAL.filter(k => k.kategori === kategoriAktif);
+  // Hitung SVG Donut Chart Minimalis
+  const radius = 48;
+  const strokeWidth = 14;
+  const circumference = 2 * Math.PI * radius; // ~301.59
 
-  // Perhitungan SVG Donut Chart (Diagram Bulat)
-  const radius = 68;
-  const strokeWidth = 26;
-  const circumference = 2 * Math.PI * radius; // ~427.25
-
-  let accumulatedOffset = 0;
-  const slices = KOMODITAS_NASIONAL.map((item) => {
-    const sliceLength = (item.pangsaPersen / 100) * circumference;
-    const offset = accumulatedOffset;
-    accumulatedOffset += sliceLength;
+  let runningOffset = 0;
+  const donutSlices = PROPORSI_NASIONAL.map((item) => {
+    const strokeLength = (item.persen / 100) * circumference;
+    const offset = runningOffset;
+    runningOffset += strokeLength;
     return {
       ...item,
-      sliceLength,
+      strokeLength,
       offset
     };
   });
 
-  // Highlighted info di tengah diagram bulat
-  const activeDonutItem = hoveredSlice 
-    ? KOMODITAS_NASIONAL.find(k => k.id === hoveredSlice) || selectedKomoditas 
-    : selectedKomoditas;
+  // Skala perbandingan visual tinggi bar 5 tahun
+  const maxVal = Math.max(...selected.riwayat.map((r) => r.produksi)) * 1.12 || 1;
 
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
+    <div className="rounded-xl bg-white border border-slate-200 overflow-hidden">
       
-      {/* 1. HEADER UTAMA SECTION */}
-      <div className="p-5 sm:p-6 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* 1. HEADER SECTION (Bersih, Rapi, Natural) */}
+      <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wide">
-              Data Resmi BPS & Kementan
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
+              BPS & Kementerian Pertanian
             </span>
-            <span className="text-xs text-slate-500 font-medium">Historis 2000 – 2024/2025</span>
+            <span className="text-xs text-slate-400 font-medium">Periode 2020 – 2024</span>
           </div>
-          <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-1 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-700 shrink-0" />
-            Monitoring & Statistik Produksi Pertanian Indonesia
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+            Monitoring Kenaikan & Penurunan Produksi Pertanian (5 Tahun Terakhir)
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5 max-w-2xl">
-            Pantauan komprehensif volume produksi pangan, aneka sayuran, hingga buah-buahan terbanyak yang dipanen petani Nusantara.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Evaluasi tahunan hasil panen komoditas pangan pokok, aneka sayuran, dan buah-buahan di Indonesia.
           </p>
         </div>
 
-        {/* Tab Selector Kategori */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-xl self-start md:self-auto overflow-x-auto max-w-full">
-          {[
-            { id: 'semua', label: 'Semua Komoditas' },
-            { id: 'pangan', label: 'Pangan Pokok' },
-            { id: 'sayuran', label: 'Sayur-sayuran' },
-            { id: 'buah', label: 'Buah-buahan' },
-          ].map((tab) => (
+        {/* Tab Pilihan Komoditas: Simple Flat Buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 max-w-full">
+          {DATA_5_TAHUN.map((k) => (
             <button
-              key={tab.id}
-              onClick={() => setKategoriAktif(tab.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
-                kategoriAktif === tab.id
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              key={k.id}
+              onClick={() => setSelectedId(k.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                selectedId === k.id
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
               }`}
             >
-              {tab.label}
+              {k.nama.split('(')[0].trim()}
             </button>
           ))}
         </div>
       </div>
 
-      {/* 2. BARIS KARTU HIGHLIGHT UTAMA (METRIK JUARA) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-b border-slate-100 bg-white">
+      {/* 2. AREA MONITORING 5 TAHUN (TREN NAIK / TURUN TAHUN KE TAHUN) */}
+      <div className="p-5 sm:p-6 bg-slate-50/50 border-b border-slate-100">
         
-        {/* Pangan Terbanyak */}
-        <div className="p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Pangan #1 Terbanyak</span>
-            <Award className="w-4 h-4 text-emerald-600" />
+        {/* Info Komoditas yang Sedang Dipantau */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-bold text-slate-900">{selected.nama}</span>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                {selected.kategori}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {selected.ringkasan5Tahun}
+            </p>
           </div>
-          <div className="mt-2">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Padi (Beras)</div>
-            <div className="text-xs text-emerald-700 font-bold mt-0.5">54.60 Juta Ton / Thn</div>
+          <div className="text-xs text-slate-600 flex items-center gap-1.5 self-start sm:self-auto">
+            <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span>Sentra: <strong className="text-slate-900">{selected.sentra}</strong></span>
           </div>
-          <span className="text-[11px] text-slate-400 mt-2 block">Sentra: Jatim, Jabar, Jateng</span>
         </div>
 
-        {/* Buah Terbanyak */}
-        <div className="p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Buah #1 Terbanyak</span>
-            <Sparkles className="w-4 h-4 text-lime-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Pisang Nusantara</div>
-            <div className="text-xs text-lime-700 font-bold mt-0.5">9.40 Juta Ton / Thn</div>
-          </div>
-          <span className="text-[11px] text-slate-400 mt-2 block">Menyumbang 35%+ total buah RI</span>
-        </div>
+        {/* Grid 5 Kolom Sejajar: 2020 s/d 2024 */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+          {selected.riwayat.map((item, idx) => {
+            const isLatest = idx === selected.riwayat.length - 1;
+            const isUp = item.status === 'naik';
+            const isDown = item.status === 'turun';
+            const barHeightPct = Math.round((item.produksi / maxVal) * 100);
 
-        {/* Sayuran Paling Bernilai */}
-        <div className="p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Sayur Paling Bernilai</span>
-            <TrendingUp className="w-4 h-4 text-rose-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Cabai & Bawang</div>
-            <div className="text-xs text-rose-700 font-bold mt-0.5">5.30 Juta Ton / Thn</div>
-          </div>
-          <span className="text-[11px] text-slate-400 mt-2 block">Komoditas pengendali inflasi utama</span>
-        </div>
+            return (
+              <div
+                key={item.tahun}
+                className={`p-3.5 rounded-lg border transition-all flex flex-col justify-between ${
+                  isLatest
+                    ? 'bg-white border-emerald-300 ring-1 ring-emerald-200'
+                    : 'bg-white border-slate-200'
+                }`}
+              >
+                {/* Header Tahun & Badge Status */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-black text-slate-900">{item.tahun}</span>
+                    {idx === 0 ? (
+                      <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                        Acuan
+                      </span>
+                    ) : isUp ? (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <TrendingUp className="w-3 h-3" />
+                        +{item.perubahanPersen}%
+                      </span>
+                    ) : isDown ? (
+                      <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <TrendingDown className="w-3 h-3" />
+                        {item.perubahanPersen}%
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Minus className="w-3 h-3" />
+                        0%
+                      </span>
+                    )}
+                  </div>
 
-        {/* Pertumbuhan Produksi */}
-        <div className="p-4 sm:p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Produksi Nasional</span>
-            <Layers className="w-4 h-4 text-slate-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">~141.6 Juta Ton</div>
-            <div className="text-xs text-slate-700 font-bold mt-0.5">Semua subsektor pertanian</div>
-          </div>
-          <span className="text-[11px] text-slate-400 mt-2 block">Diolah dari 10.6 juta Ha lahan panen</span>
+                  {/* Nilai Produksi */}
+                  <div className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none mt-2">
+                    {item.produksi}
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-medium">Juta Ton</div>
+                </div>
+
+                {/* Indikator Bar Vertikal Natural */}
+                <div className="my-3">
+                  <div className="w-full bg-slate-100 rounded h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full rounded transition-all duration-500 ${
+                        isLatest ? 'bg-emerald-600' : isDown ? 'bg-rose-500' : 'bg-slate-700'
+                      }`}
+                      style={{ width: `${barHeightPct}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Catatan Singkat Penyebab Fluktuasi */}
+                <div className="text-[10px] text-slate-500 leading-tight pt-1 border-t border-slate-100">
+                  {item.keterangan}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
       </div>
 
-      {/* 3. BAGIAN INTI: DIAGRAM BULAT (PROPORSI) & DIAGRAM HISTORIS (2000 - SEKARANG) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+      {/* 3. SECTION BAWAH: DIAGRAM BULAT PROPORSI & RANGKUMAN (Tanpa Card AI Slop) */}
+      <div className="p-5 flex flex-col md:flex-row items-center justify-between gap-6">
         
-        {/* KOLOM KIRI: DIAGRAM BULAT (DONUT CHART) INTERAKTIF */}
-        <div className="lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                <PieIcon className="w-4 h-4 text-emerald-700" />
-                Diagram Bulat Proporsi Komoditas Terbanyak
-              </h3>
-              <span className="text-[11px] text-slate-400 font-medium">Hover untuk detail</span>
-            </div>
-            <p className="text-xs text-slate-500 mb-4">
-              Porsi pembagian volume hasil panen nasional. Padi dan Jagung mendominasi lebih dari 55% total tonase pangan.
-            </p>
-
-            {/* SVG DONUT CHART INTERAKTIF */}
-            <div className="relative flex items-center justify-center my-3">
-              <svg width="220" height="220" viewBox="0 0 200 200" className="transform -rotate-90">
-                {/* Background Ring */}
+        {/* Diagram Bulat Minimalis */}
+        <div className="flex items-center gap-5 shrink-0">
+          <div className="relative w-24 h-24 flex items-center justify-center">
+            <svg width="96" height="96" viewBox="0 0 120 120" className="transform -rotate-90">
+              <circle
+                cx="60"
+                cy="60"
+                r={radius}
+                fill="none"
+                stroke="#f1f5f9"
+                strokeWidth={strokeWidth}
+              />
+              {donutSlices.map((slice, i) => (
                 <circle
-                  cx="100"
-                  cy="100"
+                  key={i}
+                  cx="60"
+                  cy="60"
                   r={radius}
                   fill="none"
-                  stroke="#f1f5f9"
+                  stroke={slice.warna}
                   strokeWidth={strokeWidth}
+                  strokeDasharray={`${slice.strokeLength} ${circumference}`}
+                  strokeDashoffset={-slice.offset}
                 />
-                
-                {/* Slices */}
-                {slices.map((slice) => {
-                  const isHovered = hoveredSlice === slice.id;
-                  const isSelected = selectedKomoditas.id === slice.id;
-                  return (
-                    <circle
-                      key={slice.id}
-                      cx="100"
-                      cy="100"
-                      r={radius}
-                      fill="none"
-                      stroke={slice.warnaHex}
-                      strokeWidth={isHovered || isSelected ? strokeWidth + 4 : strokeWidth}
-                      strokeDasharray={`${slice.sliceLength} ${circumference}`}
-                      strokeDashoffset={-slice.offset}
-                      className="transition-all duration-200 cursor-pointer"
-                      onMouseEnter={() => setHoveredSlice(slice.id)}
-                      onMouseLeave={() => setHoveredSlice(null)}
-                      onClick={() => setSelectedKomoditas(slice)}
-                    />
-                  );
-                })}
-              </svg>
-
-              {/* Teks Tengah Donut */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-4">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  {activeDonutItem.kategoriLabel}
-                </span>
-                <span className="text-lg font-black text-slate-900 leading-tight mt-0.5 line-clamp-1">
-                  {activeDonutItem.nama.split('(')[0]}
-                </span>
-                <span className="text-base font-extrabold text-emerald-700 mt-0.5">
-                  {activeDonutItem.pangsaPersen}%
-                </span>
-                <span className="text-[10px] text-slate-500 font-medium">
-                  {activeDonutItem.produksi2024} Juta Ton
-                </span>
-              </div>
+              ))}
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-[11px] font-black text-slate-900">100%</span>
+              <span className="text-[9px] text-slate-400">Total Panen</span>
             </div>
           </div>
 
-          {/* Legend Warna Diagram Bulat */}
-          <div className="grid grid-cols-2 gap-2 pt-4 border-t border-slate-100">
-            {KOMODITAS_NASIONAL.slice(0, 6).map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedKomoditas(item)}
-                onMouseEnter={() => setHoveredSlice(item.id)}
-                onMouseLeave={() => setHoveredSlice(null)}
-                className={`flex items-center gap-2 p-1.5 rounded-lg text-left transition-colors text-xs ${
-                  selectedKomoditas.id === item.id ? 'bg-slate-100 font-bold text-slate-900' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.warnaHex }} />
-                <span className="truncate">{item.nama.split('(')[0]}</span>
-                <span className="ml-auto text-[11px] text-slate-400">{item.pangsaPersen}%</span>
-              </button>
+          {/* Legend Minimalis 2 Kolom */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+            {PROPORSI_NASIONAL.map((p) => (
+              <div key={p.label} className="flex items-center gap-1.5 text-slate-600">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.warna }} />
+                <span className="text-slate-700 font-medium">{p.label}:</span>
+                <strong className="text-slate-900">{p.persen}%</strong>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* KOLOM KANAN: DIAGRAM HISTORIS (2000 - SEKARANG) & DETAIL SENTRA */}
-        <div className="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-emerald-700" />
-                  Grafik Tren Produksi: {selectedKomoditas.nama}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Perkembangan panen dari tahun 2000 hingga 2024/2025 (Satuan: Juta Ton)
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 self-start">
-                <span className="font-semibold">{selectedKomoditas.buahAtauSayur}</span>
-              </div>
-            </div>
-
-            {/* DIAGRAM BATANG HISTORIS (2000 - 2024) */}
-            <div className="space-y-2.5 my-4 bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-              {(() => {
-                const maxVal = Math.max(...selectedKomoditas.historis.map(h => h.produksi)) * 1.15 || 1;
-                return selectedKomoditas.historis.map((h, idx) => {
-                  const widthPct = Math.round((h.produksi / maxVal) * 100);
-                  const isLatest = idx === selectedKomoditas.historis.length - 1;
-
-                  return (
-                    <div key={h.tahun} className="flex items-center gap-3 text-xs">
-                      <span className="w-10 font-bold text-slate-600 text-right shrink-0">{h.tahun}</span>
-                      <div className="flex-1 bg-slate-200/80 rounded-full h-5 overflow-hidden flex items-center p-0.5">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 flex items-center justify-end px-2 ${
-                            isLatest ? 'bg-emerald-600' : 'bg-slate-700'
-                          }`}
-                          style={{ width: `${Math.max(widthPct, 12)}%` }}
-                        >
-                          <span className="text-[10px] text-white font-bold tracking-tight">
-                            {h.produksi} Jt
-                          </span>
-                        </div>
-                      </div>
-                      <span className="text-[11px] text-slate-400 w-16 text-right font-medium">
-                        {h.produksi} Juta T
-                      </span>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-
-            {/* Catatan Analisis Komoditas yang Dipilih */}
-            <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-100 flex items-start gap-2.5">
-              <Info className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-              <div className="text-xs text-slate-700 space-y-1">
-                <p className="font-semibold text-slate-900">{selectedKomoditas.catatanTren}</p>
-                <p className="text-[11px] text-slate-600 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <strong>Lumbung Utama:</strong> {selectedKomoditas.sentraUtama}
-                </p>
-              </div>
-            </div>
+        {/* Ringkasan Insight BPS 5 Tahun */}
+        <div className="text-xs text-slate-600 space-y-1 md:text-right border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 w-full md:w-auto">
+          <div className="font-semibold text-slate-900 flex items-center md:justify-end gap-1.5">
+            <Calendar className="w-4 h-4 text-emerald-700" />
+            <span>Tren Komoditas Unggulan Terbanyak (2020 – 2024)</span>
           </div>
-
-          {/* Quick Switcher Komoditas di Bagian Bawah */}
-          <div className="mt-4 pt-3 border-t border-slate-100">
-            <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider block mb-2">
-              Pilih Komoditas untuk Menampilkan Tren Historis:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {filteredList.map((k) => (
-                <button
-                  key={k.id}
-                  onClick={() => setSelectedKomoditas(k)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                    selectedKomoditas.id === k.id
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  {k.nama.split('(')[0]}
-                </button>
-              ))}
-            </div>
-          </div>
-
+          <p className="text-slate-500 max-w-md md:ml-auto">
+            Padi tetap menjadi komoditas pangan terbesar (<strong>54.60 Juta Ton</strong>), sedangkan <strong>Pisang</strong> memimpin produksi buah nasional (<strong>9.42 Juta Ton</strong>) dengan tren naik konsisten 5 tahun berturut-turut.
+          </p>
         </div>
 
-      </div>
-
-      {/* 4. FOOTER: PERBANDINGAN TREN NASIONAL DARI TAHUN 2000 & STATISTIK PETANI */}
-      <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2 text-slate-600">
-          <Layers className="w-4 h-4 text-emerald-700 shrink-0" />
-          <span>
-            <strong>Kesimpulan BPS:</strong> Produksi komoditas pangan & hortikultura Indonesia tumbuh rata-rata <strong>+2.4% per tahun</strong> sejak era tahun 2000.
-          </span>
-        </div>
-        <div className="text-slate-400 text-[11px] shrink-0">
-          Diperbarui: Sensus Pertanian & Estimasi Terkini
-        </div>
       </div>
 
     </div>
