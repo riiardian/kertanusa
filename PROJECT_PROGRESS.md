@@ -1,6 +1,30 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+139. **Redesain Kabar Pasar & Panduan Tanam: Gaya Blog Berita Natural & Bahasa Simpel Petani [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Tampilan card kotak bertingkat (card inside card) terasa kaku dan terlihat seperti 'AI slop'.
+      - Istilah teknis sebelumnya (ambang impas, indeks NTP abstrak, volatilitas pasar) terlalu rumit bagi petani di pelosok yang minim literasi.
+      - User menginginkan desain yang mengalir alami seperti blog berita (editorial news) dengan bahasa sederhana yang langsung menjawab pertanyaan: 'apakah aman ditanam?', 'kenapa jagung bagus?', dan 'kenapa sayur/singkong harus hati-hati?'.
+    - **Solusi & Implementasi**:
+      1. *Gaya Blog Berita (Clean Editorial Flow)*:
+         - Menghapus 2 card kotak bertingkat beserta border divider-nya.
+         - Menggantinya dengan satu strip berita pasar natural (order-l-4 border-emerald-600 bg-emerald-50/30 pl-4 py-2.5 rounded-r-lg).
+         - Dilengkapi judul berita lugas dan 1 paragraf penjelasan renyah yang bisa dipahami dalam 5 detik.
+      2. *Bahasa Simpel & Aksi Nyata Petani*:
+         - **Padi**: 'Paling Aman Ditanam Kapan Saja, Pasar Dijamin Bulog' (Sangat aman, pasar dijamin, harga standar pemerintah).
+         - **Jagung**: 'Peluang Untung Besar: Pabrik Pakan Ternak Selalu Kekurangan Jagung' (Permintaan pabrik ayam petelur/pedaging tinggi, berapa pun hasil panen pasti diserap).
+         - **Sayur (Cabai/Bawang)**: 'Awas Jebakan Latah Tanam: Jangan Asal Tanam Saat Harga Sedang Mahal' (Edukasi agar tidak latah menanam serentak yang memicu banjir pasokan & anjlok harga).
+         - **Singkong**: 'Waspada Permainan Pabrik: Jangan Bergantung Pada Satu Pembeli' (Edukasi waspada potongan timbangan kadar air & monopoli tengkulak).
+         - **Buah**: 'Pasar Terus Tumbuh: Toko Buah & Supermarket Kota Butuh Suplai Rutin' (Pemasukan rutin jangka panjang).
+         - **Kedelai/Kacang**: 'Peluang Bagus: Pengrajin Tahu-Tempe Mengantre Kedelai Lokal' (Cocok selingan padi, terserap tunai).
+      3. *Inline Badge Natural*:
+         - 4 poin kunci disajikan dalam bentuk inline badge horizontal bersih (Saran Tanam, Dompet Petani/NTP, Acuan Harga Pasar, Sentra Lumbung Daerah).
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (
+pm run build).
+      - Verified visual via browser di http://localhost:3000.
+
 138. **Integrasi Indikator Urgensi Lomba: Nilai Tukar Petani (NTP) & Sinyal Keseimbangan Pasar (Opsi 1 & 3) [2026-09-23]**:
     - **Latar Belakang & Masukan User**:
       - Untuk memperkuat daya pikat inovasi pada ajang kompetisi teknologi/hackathon (ICONFEST) agar dashboard tidak hanya dipandang sebagai visualisasi data tonase panen biasa, melainkan menyentuh kedaulatan dompet petani dan dinamika riil pasar.
