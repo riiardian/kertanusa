@@ -1,6 +1,21 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+141. **Penyempurnaan Detail Monitoring: Icon Sentra, Data Mencakup, Icon Tren Asli & Saran Petani [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Sentra utama dikembalikan menggunakan icon lokasi (MapPin) dengan nama wilayah di-*bold*.
+      - Data 'Mencakup: ...' dikembalikan di bawah nama komoditas agar varietas populer tetap terbaca jelas.
+      - Indikator naik/turun di diagram garis dibersihkan dari karakter segitiga kasar (▲/▼), digantikan format persentase bersih, serta badge tahun atas kembali menggunakan icon SVG asli (TrendingUp / TrendingDown).
+      - Penjelasan singkat disempurnakan dengan menambahkan **Saran petani** yang praktis dan langsung dapat dieksekusi di lapangan.
+    - **Implementasi**:
+      1. *Data Mencakup & Sentra*: Menampilkan kembali 'Mencakup: [komoditasPopuler]' dan 'Sentra utama: [lumbungTerbesar]' ber-icon lokasi hijau tebal.
+      2. *Icon Tren Asli*: Menggunakan komponen Lucide TrendingUp dan TrendingDown di badge tahun aktif, serta angka bersih +X% / -X% pada kurva line chart.
+      3. *Saran Petani Terpadu*: Setiap komoditas memiliki rekomendasi lapangan yang jelas (misal: padi aman ditanam rutin di sawah beririgasi; sayur hindari latah tanam serentak; singkong olah mandiri; jagung genjot serapan pakan ayam).
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (
+pm run build).
+      - Verified visual via browser di http://localhost:3000.
+
 140. **Pembersihan Total Elemen Card & Pill Warna-Warni: Standar Desain Clean & Natural AeroFlazz [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Card pill warna-warni (seperti kotak biru 'Sangat Bagus Ditanam', pill 'Dompet Petani', pill 'Harga', dsb.) terlihat seperti 'AI slop' yang berantakan dan terlalu banyak memuat informasi yang tidak esensial.
