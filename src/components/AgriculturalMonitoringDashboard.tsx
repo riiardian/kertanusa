@@ -242,7 +242,7 @@ export default function AgriculturalMonitoringDashboard() {
         {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
         <div className="lg:col-span-8 space-y-3">
           
-          {/* Header Komoditas & Angka Produksi Aktif */}
+          {/* Header Komoditas & Angka Produksi Aktif (Flat Natural Tanpa Card) */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -264,22 +264,22 @@ export default function AgriculturalMonitoringDashboard() {
               </div>
             </div>
 
-            {/* Badge Tahun Aktif dengan Icon Naik-Turun (TrendingUp / TrendingDown) */}
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg self-start sm:self-auto text-xs shadow-2xs">
-              <span className="text-slate-500">Tahun {activePoint.labelTahun}:</span>
-              <span className="font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
+            {/* Info Tahun Aktif: Murni Tipografi Datar Tanpa Box Card */}
+            <div className="flex items-baseline gap-1.5 text-xs text-slate-500 self-start sm:self-auto">
+              <span>Tahun {activePoint.labelTahun}:</span>
+              <span className="text-base font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
               {activePoint.perubahanPersen > 0 && (
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                <span className="font-semibold text-emerald-700 flex items-center gap-0.5">
                   <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
                 </span>
               )}
               {activePoint.perubahanPersen < 0 && (
-                <span className="text-xs font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                <span className="font-semibold text-rose-700 flex items-center gap-0.5">
                   <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
                 </span>
               )}
               {activePoint.perubahanPersen === 0 && (
-                <span className="text-slate-400">Basis</span>
+                <span className="text-slate-400 font-medium">Basis</span>
               )}
             </div>
           </div>
@@ -348,7 +348,7 @@ export default function AgriculturalMonitoringDashboard() {
                 strokeLinejoin="round"
               />
 
-              {/* Titik Vertex Tiap Tahun & Label Naik-Turun (Tanpa Karakter Segitiga Kasar) */}
+              {/* Titik Vertex Tiap Tahun & Label Naik-Turun */}
               {points.map((p, idx) => {
                 const isHovered = hoveredIdx === idx;
                 const isUp = p.status === 'naik';
@@ -384,7 +384,7 @@ export default function AgriculturalMonitoringDashboard() {
                       {p.produksi}
                     </text>
 
-                    {/* Persentase Naik/Turun Bersih Tanpa Segitiga Kasar */}
+                    {/* Persentase Naik/Turun */}
                     {idx > 0 && (
                       <text
                         x={p.x}

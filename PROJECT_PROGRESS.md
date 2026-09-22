@@ -1,6 +1,18 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+142. **Eliminasi Card Box pada Info Tahun Aktif (Pure Flat Typography) [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Box card di bagian 'Tahun 2026 (Tgt): 57.2 Jt Ton' terasa kaku dan masih menyisakan kesan card/kotak terpisah.
+      - User meminta agar card tersebut dihilangkan sehingga menyatu datar dengan layout.
+    - **Aksi & Solusi**:
+      1. Menghapus wrapper card border abu-abu dan background box pada info tahun aktif.
+      2. Menggantinya menjadi tipografi datar murni (	ext-slate-500 dan 	ext-slate-900 font-bold) yang berjejer rata dengan nama komoditas dan persentase tren naik/turun.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (
+pm run build).
+      - Verified visual via browser di http://localhost:3000.
+
 141. **Penyempurnaan Detail Monitoring: Icon Sentra, Data Mencakup, Icon Tren Asli & Saran Petani [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Sentra utama dikembalikan menggunakan icon lokasi (MapPin) dengan nama wilayah di-*bold*.
