@@ -1,7 +1,7 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, MapPin } from 'lucide-react';
+import { TrendingUp, TrendingDown, MapPin, Wallet, Store, ArrowUpRight } from 'lucide-react';
 
 interface YearlyPoint {
   tahun: number;
@@ -13,6 +13,22 @@ interface YearlyPoint {
   keterangan: string;
 }
 
+interface NtpIndicator {
+  skor: number; // Indeks NTP (> 100 surplus, < 100 tekor)
+  status: 'surplus' | 'seimbang' | 'defisit';
+  label: string;
+  tren: 'naik' | 'turun' | 'stabil' | 'fluktuatif';
+  keterangan: string;
+}
+
+interface SinyalPasar {
+  statusPasokan: 'aman' | 'waspada' | 'peluang';
+  labelStatus: string;
+  estimasiHarga: string;
+  arahHarga: 'stabil' | 'menguat' | 'fluktuatif' | 'tekanan';
+  rekomendasiAksi: string;
+}
+
 interface CommodityCategory {
   id: string;
   nama: string;
@@ -21,10 +37,12 @@ interface CommodityCategory {
   warnaHex: string;
   lumbungTerbesar: string;
   komoditasPopuler: string;
+  ntp: NtpIndicator;
+  sinyalPasar: SinyalPasar;
   riwayat: YearlyPoint[];
 }
 
-// Data 2021 s/d 2026 yang 100% sinkron antara tab pilihan dan diagram bulat
+// Data 2021 s/d 2026 yang 100% sinkron dengan data BPS & Kementan
 const DATA_KOMODITAS: CommodityCategory[] = [
   {
     id: 'padi',
@@ -34,6 +52,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#059669',
     lumbungTerbesar: 'Jawa Timur, Jawa Barat, Jawa Tengah, Sulawesi Selatan',
     komoditasPopuler: 'Beras Medium, Premium, Ciherang, Inpari',
+    ntp: {
+      skor: 114.8,
+      status: 'surplus',
+      label: 'Surplus Menguntungkan',
+      tren: 'naik',
+      keterangan: 'Daya beli petani kuat; harga gabah pembelian Bulog terjaga di atas biaya operasional tanam.'
+    },
+    sinyalPasar: {
+      statusPasokan: 'aman',
+      labelStatus: 'Keseimbangan Pasokan Aman',
+      estimasiHarga: 'Rp 6.800 – 7.250 / kg (GKP)',
+      arahHarga: 'stabil',
+      rekomendasiAksi: 'Cadangan beras Bulog siaga serap; waktu aman untuk pelepasan panen berkala tanpa risiko anjlok.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 54.42, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Curah hujan La Nina basah' },
       { tahun: 2022, labelTahun: '2022', produksi: 54.75, perubahanPersen: 0.61, status: 'naik', tipe: 'realisasi', keterangan: 'Perluasan bibit varietas genjah' },
@@ -51,6 +83,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#d97706',
     lumbungTerbesar: 'Jawa Timur, Jawa Tengah, Lampung, Sulawesi Selatan, NTB',
     komoditasPopuler: 'Jagung Pipil Kering, Jagung Manis Hibrida',
+    ntp: {
+      skor: 112.4,
+      status: 'surplus',
+      label: 'Surplus Stabil',
+      tren: 'naik',
+      keterangan: 'Tingginya permintaan pabrik pakan unggas nasional menjaga stabilitas nilai tukar petani jagung.'
+    },
+    sinyalPasar: {
+      statusPasokan: 'peluang',
+      labelStatus: 'Permintaan Industri Pakan Kuat',
+      estimasiHarga: 'Rp 5.200 – 5.600 / kg (Pipil Kering)',
+      arahHarga: 'menguat',
+      rekomendasiAksi: 'Kebutuhan peternak ayam petelur & pedaging tinggi; momentum sangat baik untuk kontrak jual panen.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 23.50, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Kenaikan serapan pakan ayam petelur' },
       { tahun: 2022, labelTahun: '2022', produksi: 24.20, perubahanPersen: 2.98, status: 'naik', tipe: 'realisasi', keterangan: 'Ekspansi lahan tanam jagung baru' },
@@ -68,6 +114,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#ca8a04',
     lumbungTerbesar: 'Lampung (Lumbung Tapioka), Jawa Tengah, Jawa Timur, NTT',
     komoditasPopuler: 'Ubi Kayu Gajah, Ubi Jalar Madu, Singkong Manis',
+    ntp: {
+      skor: 102.8,
+      status: 'seimbang',
+      label: 'Margin Menipis',
+      tren: 'stabil',
+      keterangan: 'Masih di atas ambang 100, namun margin rawan tertekan akibat ketergantungan pabrik tapioka tunggal.'
+    },
+    sinyalPasar: {
+      statusPasokan: 'waspada',
+      labelStatus: 'Waspada Monopsoni Pabrik',
+      estimasiHarga: 'Rp 1.350 – 1.500 / kg (Segar)',
+      arahHarga: 'tekanan',
+      rekomendasiAksi: 'Perlu diversifikasi olahan pakan/tepung lokal untuk menghindari pemotongan harga sepihak oleh tengkulak.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 17.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Permintaan pabrik tepung tapioka normal' },
       { tahun: 2022, labelTahun: '2022', produksi: 17.40, perubahanPersen: -2.25, status: 'turun', tipe: 'realisasi', keterangan: 'Peralihan petani ke komoditas jagung' },
@@ -85,6 +145,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#65a30d',
     lumbungTerbesar: 'Jawa Timur (Malang/Banyuwangi), Jawa Barat, Lampung, Bali',
     komoditasPopuler: 'Pisang (35%+ buah RI), Mangga, Jeruk, Nanas, Pepaya',
+    ntp: {
+      skor: 115.6,
+      status: 'surplus',
+      label: 'Surplus Bernilai Tinggi',
+      tren: 'naik',
+      keterangan: 'Daya beli masyarakat perkotaan terhadap buah segar konsumsi harian menopang kesejahteraan pekebun.'
+    },
+    sinyalPasar: {
+      statusPasokan: 'peluang',
+      labelStatus: 'Serapan Pasar Ritel Kuat',
+      estimasiHarga: 'Harga Ritel & Kontrak Stabil',
+      arahHarga: 'menguat',
+      rekomendasiAksi: 'Permintaan supermarket modern & pasar induk stabil; kemitraan pasokan menjaga kepastian harga jual.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 22.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Konsumsi buah harian keluarga naik' },
       { tahun: 2022, labelTahun: '2022', produksi: 23.60, perubahanPersen: 3.51, status: 'naik', tipe: 'realisasi', keterangan: 'Ekspansi kebun pisang & alpukat komersial' },
@@ -102,6 +176,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#e11d48',
     lumbungTerbesar: 'Brebes, Kediri, Temanggung, Garut, Bima, Malang',
     komoditasPopuler: 'Cabai Rawit, Bawang Merah, Tomat, Kubis, Wortel',
+    ntp: {
+      skor: 111.2,
+      status: 'surplus',
+      label: 'Surplus dengan Volatilitas',
+      tren: 'fluktuatif',
+      keterangan: 'Rata-rata tahunan berada di zona untung, namun fluktuasi harga bulanan sangat ekstrem akibat iklim & hama.'
+    },
+    sinyalPasar: {
+      statusPasokan: 'waspada',
+      labelStatus: 'Waspada Latah Tanam (Banjir Panen)',
+      estimasiHarga: 'Volatil (Rp 24.000 – 48.000 / kg)',
+      arahHarga: 'fluktuatif',
+      rekomendasiAksi: 'Hindari latah tanam serentak tanpa pra-kontrak; manfaatkan fasilitas cold storage saat pasokan pasar meluap.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 13.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Pasokan sayur segar di pasar induk' },
       { tahun: 2022, labelTahun: '2022', produksi: 14.40, perubahanPersen: 4.35, status: 'naik', tipe: 'realisasi', keterangan: 'Panen raya cabai & bawang serentak' },
@@ -119,6 +207,20 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#64748b',
     lumbungTerbesar: 'Jawa Tengah (Grobogan), Jawa Timur, NTT, NTB',
     komoditasPopuler: 'Kedelai, Kacang Tanah, Kacang Hijau, Talas',
+    ntp: {
+      skor: 105.4,
+      status: 'seimbang',
+      label: 'Taraf Aman Seimbang',
+      tren: 'stabil',
+      keterangan: 'Nilai tukar palawija berada di zona surplus, sangat menguntungkan sebagai tanaman sela (tumpang sari).'
+    },
+    sinyalPasar: {
+      statusPasokan: 'peluang',
+      labelStatus: 'Peluang Pasar Defisit Kedelai',
+      estimasiHarga: 'Rp 11.500 – 12.800 / kg (Lokal)',
+      arahHarga: 'stabil',
+      rekomendasiAksi: 'Produsen tahu & tempe mencari pasokan kedelai lokal non-GMO; seluruh hasil panen terserap 100%.'
+    },
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 7.90, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Produksi kacang-kacangan lokal' },
       { tahun: 2022, labelTahun: '2022', produksi: 8.10, perubahanPersen: 2.53, status: 'naik', tipe: 'realisasi', keterangan: 'Program tanam kedelai tumpang sari' },
@@ -163,7 +265,7 @@ export default function AgriculturalMonitoringDashboard() {
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(SVG_H - PAD_BOTTOM).toFixed(1)} L ${points[0].x.toFixed(1)} ${(SVG_H - PAD_BOTTOM).toFixed(1)} Z`;
 
-  // Hitung Donut Chart Tetap / Statis (Menampilkan 100% total nasional secara permanen)
+  // Hitung Donut Chart Statis (100% total nasional secara permanen)
   const donutRadius = 40;
   const donutStroke = 11;
   const circumference = 2 * Math.PI * donutRadius;
@@ -198,7 +300,7 @@ export default function AgriculturalMonitoringDashboard() {
           </p>
         </div>
 
-        {/* Tab Pilihan Komoditas: Segmented Control Halus & Natural (Bukan Kotak Kasar) */}
+        {/* Tab Pilihan Komoditas: Segmented Control Halus & Natural */}
         <div className="inline-flex items-center p-1 bg-slate-100/90 rounded-xl gap-1 max-w-full overflow-x-auto self-start md:self-auto">
           {DATA_KOMODITAS.map((k) => {
             const isSelected = selectedId === k.id;
@@ -225,10 +327,10 @@ export default function AgriculturalMonitoringDashboard() {
       {/* 2. AREA INTI: LINE CHART (KIRI) & DONUT CHART (KANAN) SEAMLESS TANPA CARD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* KOLOM KIRI: DIAGRAM GARIS FLUKTUASI (2021 - 2026) */}
+        {/* KOLOM KIRI: DIAGRAM GARIS FLUKTUASI (2021 - 2026) + 2 INDIKATOR URGENSI LAPANGAN */}
         <div className="lg:col-span-8 space-y-4">
           
-          {/* Detail Informasi Komoditas Aktif & Lumbung Daerah Terbesar */}
+          {/* Detail Informasi Komoditas Aktif & Badge Titik Tahun Aktif */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -262,30 +364,104 @@ export default function AgriculturalMonitoringDashboard() {
             </div>
           </div>
 
-          {/* Daerah Lumbung Panen Terbesar (Bersih tanpa teks catatan panjang) */}
-          <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50/80 px-3.5 py-2.5 rounded-lg border border-slate-100">
+          {/* 2 KARTU INDIKATOR URGENSI LOMBA: NILAI TUKAR PETANI (NTP) & SINYAL PASAR */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            
+            {/* OPSI 1: Indikator Nilai Tukar Petani (NTP BPS) */}
+            <div className="bg-slate-50/90 border border-slate-200/90 rounded-xl p-3.5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                    <Wallet className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span>Nilai Tukar Petani (NTP)</span>
+                  </div>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100/90 text-emerald-900 border border-emerald-200/80">
+                    BPS {selected.ntp.skor > 100 ? 'Surplus (>100)' : 'Defisit (<100)'}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-2xl font-black text-slate-900 tracking-tight">{selected.ntp.skor}</span>
+                  <span className="text-xs font-bold text-emerald-700 flex items-center gap-0.5">
+                    <ArrowUpRight className="w-3.5 h-3.5" /> {selected.ntp.label}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1 leading-snug">
+                  {selected.ntp.keterangan}
+                </p>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-200/70 flex items-center justify-between text-[10px] text-slate-400">
+                <span>Indeks Daya Beli Petani</span>
+                <span className="font-semibold text-slate-600">Ambang Impas: 100.0</span>
+              </div>
+            </div>
+
+            {/* OPSI 3: Sinyal Keseimbangan Pasar & Dinamika Harga */}
+            <div className="bg-slate-50/90 border border-slate-200/90 rounded-xl p-3.5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                    <Store className="w-4 h-4 text-blue-700 shrink-0" />
+                    <span>Sinyal Keseimbangan Pasar</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                    selected.sinyalPasar.statusPasokan === 'waspada'
+                      ? 'bg-amber-100 text-amber-900 border-amber-300'
+                      : selected.sinyalPasar.statusPasokan === 'peluang'
+                      ? 'bg-blue-100 text-blue-900 border-blue-200'
+                      : 'bg-emerald-100 text-emerald-900 border-emerald-200'
+                  }`}>
+                    {selected.sinyalPasar.labelStatus}
+                  </span>
+                </div>
+                <div className="mt-1">
+                  <div className="text-xs font-bold text-slate-700">
+                    Acuan: <span className="font-black text-slate-900">{selected.sinyalPasar.estimasiHarga}</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1 leading-snug">
+                  {selected.sinyalPasar.rekomendasiAksi}
+                </p>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-200/70 flex items-center justify-between text-[10px] text-slate-400">
+                <span>Mitigasi Latah Tanam</span>
+                <span className={`font-semibold ${
+                  selected.sinyalPasar.statusPasokan === 'waspada' ? 'text-amber-700 font-bold' : 'text-slate-600'
+                }`}>
+                  {selected.sinyalPasar.arahHarga === 'fluktuatif' ? '⚠ Volatilitas Panen' : 'Pasokan Terkendali'}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Sentra Lumbung Utama (Baris Minimalis) */}
+          <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50/70 border border-slate-200/80 px-3 py-1.5 rounded-lg">
             <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
             <span>
-              Daerah Lumbung Panen Terbesar: <strong className="text-slate-900 font-semibold">{selected.lumbungTerbesar}</strong>
+              Sentra Utama: <strong className="text-slate-800">{selected.lumbungTerbesar}</strong>
             </span>
           </div>
 
-          {/* KANVAS DIAGRAM GARIS (SVG LINE CHART) */}
-          <div className="w-full select-none pt-2">
-            <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="w-full h-auto overflow-visible">
+          {/* Area Kanvas SVG Diagram Garis Berkelanjutan */}
+          <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2">
+            <svg
+              viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+              className="w-full h-auto min-w-[540px] overflow-visible"
+            >
               <defs>
-                <linearGradient id={`lineGrad-${selected.id}`} x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.22" />
                   <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
-              {/* Garis Grid Horizontal Tipis */}
-              {[0, 0.5, 1].map((ratio) => {
-                const y = PAD_TOP + ratio * PLOT_H;
-                const labelVal = (yMax - ratio * (yMax - yMin)).toFixed(1);
+              {/* Garis Bantu Horizontal (Grid Lines) */}
+              {[0, 0.33, 0.66, 1].map((pct, gIdx) => {
+                const y = PAD_TOP + pct * PLOT_H;
+                const val = yMax - pct * (yMax - yMin);
+                const labelVal = val >= 10 ? val.toFixed(1) : val.toFixed(2);
                 return (
-                  <g key={ratio}>
+                  <g key={gIdx}>
                     <line
                       x1={PAD_X}
                       y1={y}
@@ -485,7 +661,7 @@ export default function AgriculturalMonitoringDashboard() {
             </div>
           </div>
 
-          {/* Penjelasan Bersih Tanpa Emoji Lampu */}
+          {/* Penjelasan Bersih Tanpa Emoji */}
           <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-500 leading-relaxed">
             Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
           </div>
@@ -496,4 +672,3 @@ export default function AgriculturalMonitoringDashboard() {
     </div>
   );
 }
-

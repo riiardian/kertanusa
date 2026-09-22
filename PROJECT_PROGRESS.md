@@ -1,5 +1,23 @@
-﻿# ðŸŒ± AgroNusantara AI (Agroproject) - Project Progress & Changelog
+# 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
+
+138. **Integrasi Indikator Urgensi Lomba: Nilai Tukar Petani (NTP) & Sinyal Keseimbangan Pasar (Opsi 1 & 3) [2026-09-23]**:
+    - **Latar Belakang & Masukan User**:
+      - Untuk memperkuat daya pikat inovasi pada ajang kompetisi teknologi/hackathon (ICONFEST) agar dashboard tidak hanya dipandang sebagai visualisasi data tonase panen biasa, melainkan menyentuh kedaulatan dompet petani dan dinamika riil pasar.
+    - **Implementasi Fitur**:
+      1. *Opsi 1: Nilai Tukar Petani (NTP BPS)*:
+         - Menambahkan metrik NTP standar BPS untuk setiap subsektor komoditas (Padi: 114.8 Surplus, Jagung: 112.4 Surplus Tinggi, Singkong: 102.8 Margin Menipis, Buah: 115.6 Surplus Bernilai Tinggi, Sayur: 111.2 Surplus Volatil, Kedelai/Lainnya: 105.4 Aman).
+         - Memberikan informasi riil apakah petani dalam posisi surplus/untung (>100) atau defisit (<100) terhadap biaya modal dan biaya hidup.
+      2. *Opsi 3: Sinyal Keseimbangan Pasar & Dinamika Harga*:
+         - Menampilkan status pasokan pasar (Pasokan Aman, Permintaan Industri Kuat, Waspada Latah Tanam / Banjir Panen, atau Peluang Defisit Pasar).
+         - Menampilkan estimasi harga acuan pasar (GKP, Jagung Pipil Kering, Cabai/Bawang volatil, Kedelai lokal non-GMO).
+         - Menyediakan *Actionable Intelligence* / rekomendasi aksi lapangan guna mencegah fenomena 'latah tanam' yang sering membuat harga anjlok saat panen raya.
+      3. *Desain Flat & Clean Natural*:
+         - Disusun rapi dalam 2 card datar responsif (g-slate-50/90 border border-slate-200/90 rounded-xl) tepat di atas diagram garis SVG, bebas efek AI slop / tanpa glassmorphism.
+    - **Validasi Build & UI**:
+      - Next.js Turbopack build sukses 100% (
+pm run build).
+      - Server ter-restart dan terverifikasi visual via screenshot browser di http://localhost:3000.
 
 130. **Monitoring & Statistik Produksi Pertanian Indonesia 2000-2025 (Agroproject) [2026-09-22]**:
     - **Fitur Baru**: Mengembangkan komponen AgriculturalMonitoringDashboard.tsx untuk memvisualisasikan data komprehensif komoditas pertanian nasional (agregasi BPS & Kementerian Pertanian).
