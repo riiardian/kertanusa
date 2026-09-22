@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import LottieAnimation from '@/components/LottieAnimation';
-import MarketPriceWidget from '@/components/MarketPriceWidget';
+import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
 import CropGamificationTracker from '@/components/CropGamificationTracker';
 import { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
@@ -219,7 +219,7 @@ export default function HomePage() {
 
         {/* 2. DIAGRAM MONITORING: TREN 24 JAM SUHU & KELEMBAPAN TANAH + PRAKIRAAN HUJAN 7 HARI */}
         <section>
-          <MarketPriceWidget />
+          <AgriculturalMonitoringDashboard />
         </section>
 
         {/* 3. FITUR GAMIFIKASI: STREAK RAWAT SAWAH & POHON TUMBUH BERUBAH BENTUK */}
@@ -251,3 +251,4 @@ export default function HomePage() {
     </div>
   );
 }
+
