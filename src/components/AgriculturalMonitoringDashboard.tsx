@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, MapPin } from 'lucide-react';
@@ -186,15 +186,15 @@ export default function AgriculturalMonitoringDashboard() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">
-              BPS & Kementan RI
+              Data Resmi BPS
             </span>
-            <span className="text-xs text-slate-500 font-medium">Periode 2021 – 2026 (Terkini)</span>
+            <span className="text-xs text-slate-500 font-medium">Periode 2021 - 2026</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Monitoring Fluktuasi Panen Nasional & Proporsi Komoditas
+            Statistik Panen & Pasokan Pangan Nasional
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Diagram garis fluktuasi naik-turun hasil panen tahun ke tahun hingga target 2026, sinkron dengan komposisi produksi pangan nasional.
+            Perkembangan hasil panen tahunan untuk membaca ketersediaan stok pangan dan potensi pasar.
           </p>
         </div>
 
@@ -496,3 +496,4 @@ export default function AgriculturalMonitoringDashboard() {
     </div>
   );
 }
+
