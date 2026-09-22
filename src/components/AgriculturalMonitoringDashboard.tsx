@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, MapPin, Newspaper, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 
 interface YearlyPoint {
   tahun: number;
@@ -21,19 +20,11 @@ interface CommodityCategory {
   warnaHex: string;
   lumbungTerbesar: string;
   komoditasPopuler: string;
-
-  // Bahasa Blog Berita Simpel & Jelas untuk Petani
-  judulBerita: string;
-  isiBerita: string;
-  saranTanam: string;
-  saranTanamTipe: 'sangat-aman' | 'sangat-bagus' | 'waspada' | 'peluang';
-  keuntunganPetani: string;
-  acuanHargaPasar: string;
-
+  ringkasan: string;
   riwayat: YearlyPoint[];
 }
 
-// Data 2021 s/d 2026 yang 100% sinkron antara data resmi dan fakta lapangan
+// Data 2021 s/d 2026: bersih, natural, tanpa elemen AI slop
 const DATA_KOMODITAS: CommodityCategory[] = [
   {
     id: 'padi',
@@ -43,12 +34,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#059669',
     lumbungTerbesar: 'Jawa Timur, Jawa Barat, Jawa Tengah, Sulawesi Selatan',
     komoditasPopuler: 'Beras Medium, Premium, Ciherang, Inpari',
-    judulBerita: 'Paling Aman Ditanam Kapan Saja, Pasar Dijamin Bulog',
-    isiBerita: 'Beras adalah makanan pokok setiap hari, jadi hasil panen pasti selalu laku dan diserap pasar. Petani tidak perlu takut harga anjlok mendadak karena ada Bulog yang siap membeli gabah dengan harga standar pemerintah.',
-    saranTanam: 'Sangat Aman Ditanam (Pilihan Utama Tanpa Takut Rugi Pasar)',
-    saranTanamTipe: 'sangat-aman',
-    keuntunganPetani: 'Pasti Laku & Untung (NTP 114.8)',
-    acuanHargaPasar: 'Rp 6.800 – 7.250 / kg (Gabah Kering)',
+    ringkasan: 'Beras merupakan kebutuhan pangan pokok dengan kepastian serapan pasar tertinggi melalui cadangan Bulog. Nilai Tukar Petani berada di level surplus (NTP 114.8) dengan harga gabah kering panen stabil di kisaran Rp 6.800 – 7.250 / kg.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 54.42, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Curah hujan La Nina basah' },
       { tahun: 2022, labelTahun: '2022', produksi: 54.75, perubahanPersen: 0.61, status: 'naik', tipe: 'realisasi', keterangan: 'Perluasan bibit varietas genjah' },
@@ -66,12 +52,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#d97706',
     lumbungTerbesar: 'Jawa Timur, Jawa Tengah, Lampung, Sulawesi Selatan, NTB',
     komoditasPopuler: 'Jagung Pipil Kering, Jagung Manis Hibrida',
-    judulBerita: 'Peluang Untung Besar: Pabrik Pakan Ternak Selalu Kekurangan Jagung',
-    isiBerita: 'Pabrik pakan ayam petelur dan ayam pedaging di Indonesia selalu kekurangan jagung dalam jumlah besar setiap bulan. Berapa pun jagung kering yang dipanen petani langsung diborong habis dengan harga bagus.',
-    saranTanam: 'Sangat Bagus Ditanam (Permintaan Pabrik Terbuka Lebar)',
-    saranTanamTipe: 'sangat-bagus',
-    keuntunganPetani: 'Untung Bagus & Stabil (NTP 112.4)',
-    acuanHargaPasar: 'Rp 5.200 – 5.600 / kg (Pipil Kering)',
+    ringkasan: 'Permintaan industri pakan ternak konsisten tinggi dan menyerap hasil panen secara luas. Nilai Tukar Petani terjaga sehat di level surplus (NTP 112.4) dengan acuan harga pipil kering Rp 5.200 – 5.600 / kg.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 23.50, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Kenaikan serapan pakan ayam petelur' },
       { tahun: 2022, labelTahun: '2022', produksi: 24.20, perubahanPersen: 2.98, status: 'naik', tipe: 'realisasi', keterangan: 'Ekspansi lahan tanam jagung baru' },
@@ -89,12 +70,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#ca8a04',
     lumbungTerbesar: 'Lampung (Lumbung Tapioka), Jawa Tengah, Jawa Timur, NTT',
     komoditasPopuler: 'Ubi Kayu Gajah, Ubi Jalar Madu, Singkong Manis',
-    judulBerita: 'Waspada Permainan Pabrik: Jangan Bergantung Pada Satu Pembeli',
-    isiBerita: 'Singkong masih menghasilkan uang, tapi rawan dipermainkan pabrik tapioka yang memotong timbangan dan menekan harga semaunya. Jangan tanam besar-besaran jika di daerah Anda hanya ada satu pabrik pembeli tunggal.',
-    saranTanam: 'Hati-hati (Sebaiknya Olah Jadi Gaplek atau Pakan Mandiri)',
-    saranTanamTipe: 'waspada',
-    keuntunganPetani: 'Untung Tipis (NTP 102.8)',
-    acuanHargaPasar: 'Rp 1.350 – 1.500 / kg (Singkong Segar)',
+    ringkasan: 'Produksi umbi relatif stabil namun margin petani rawan tertekan akibat ketergantungan pada pabrik tapioka tunggal. Nilai Tukar Petani tercatat 102.8 dengan harga singkong segar di kisaran Rp 1.350 – 1.500 / kg.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 17.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Permintaan pabrik tepung tapioka normal' },
       { tahun: 2022, labelTahun: '2022', produksi: 17.40, perubahanPersen: -2.25, status: 'turun', tipe: 'realisasi', keterangan: 'Peralihan petani ke komoditas jagung' },
@@ -112,12 +88,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#65a30d',
     lumbungTerbesar: 'Jawa Timur (Malang/Banyuwangi), Jawa Barat, Lampung, Bali',
     komoditasPopuler: 'Pisang (35%+ buah RI), Mangga, Jeruk, Nanas, Pepaya',
-    judulBerita: 'Pasar Terus Tumbuh: Toko Buah & Supermarket Kota Butuh Suplai Rutin',
-    isiBerita: 'Konsumsi buah segar masyarakat perkotaan meningkat pesat, terutama pisang, mangga, jeruk, dan pepaya. Kebun buah memberikan pemasukan rutin jangka panjang dengan harga jual yang stabil dan tidak mudah anjlok.',
-    saranTanam: 'Sangat Bagus Ditanam (Pemasukan Rutin Jangka Panjang)',
-    saranTanamTipe: 'sangat-bagus',
-    keuntunganPetani: 'Untung Tebal (NTP 115.6)',
-    acuanHargaPasar: 'Harga Ritel Stabil Tinggi',
+    ringkasan: 'Permintaan buah segar dari ritel modern dan konsumsi perkotaan stabil sepanjang tahun. Nilai Tukar Petani berada di level surplus tinggi (NTP 115.6) dengan stabilitas harga jual yang relatif terjaga.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 22.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Konsumsi buah harian keluarga naik' },
       { tahun: 2022, labelTahun: '2022', produksi: 23.60, perubahanPersen: 3.51, status: 'naik', tipe: 'realisasi', keterangan: 'Ekspansi kebun pisang & alpukat komersial' },
@@ -135,12 +106,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#e11d48',
     lumbungTerbesar: 'Brebes, Kediri, Temanggung, Garut, Bima, Malang',
     komoditasPopuler: 'Cabai Rawit, Bawang Merah, Tomat, Kubis, Wortel',
-    judulBerita: 'Awas Jebakan Latah Tanam: Jangan Asal Tanam Saat Harga Sedang Mahal',
-    isiBerita: 'Banyak petani latah ikut-ikutan menanam cabai karena melihat harga di pasar sedang mahal. Akibatnya, 3 bulan kemudian saat panen raya serentak, pasar banjir dan harga hancur lebur sampai tekor ongkos petik.',
-    saranTanam: 'Waspada Latah Tanam (Tanam di Luar Musim Panen Raya atau Siapkan Gudang Pendingin)',
-    saranTanamTipe: 'waspada',
-    keuntunganPetani: 'Bisa Untung Besar, Tapi Rawan Tekor (NTP 111.2)',
-    acuanHargaPasar: 'Naik-Turun Ekstrem: Rp 24.000 – 48.000 / kg',
+    ringkasan: 'Komoditas sayur rentan terhadap fluktuasi harga akibat fenomena latah tanam saat panen raya serentak. Nilai Tukar Petani tercatat 111.2 dengan harga pasar bergerak volatil antara Rp 24.000 – 48.000 / kg.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 13.80, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Pasokan sayur segar di pasar induk' },
       { tahun: 2022, labelTahun: '2022', produksi: 14.40, perubahanPersen: 4.35, status: 'naik', tipe: 'realisasi', keterangan: 'Panen raya cabai & bawang serentak' },
@@ -158,12 +124,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
     warnaHex: '#64748b',
     lumbungTerbesar: 'Jawa Tengah (Grobogan), Jawa Timur, NTT, NTB',
     komoditasPopuler: 'Kedelai, Kacang Tanah, Kacang Hijau, Talas',
-    judulBerita: 'Peluang Bagus: Pengrajin Tahu-Tempe Mengantre Kedelai Lokal',
-    isiBerita: 'Indonesia masih kekurangan pasokan kedelai lokal segar untuk bahan baku tahu-tempe. Hasil panen kedelai dan kacang tanah lokal pasti langsung diborong habis oleh pengrajin makanan dengan pembayaran tunai.',
-    saranTanam: 'Cocok Ditanam Selingan Setelah Panen Padi',
-    saranTanamTipe: 'peluang',
-    keuntunganPetani: 'Aman & Modal Ringan (NTP 105.4)',
-    acuanHargaPasar: 'Rp 11.500 – 12.800 / kg (Kedelai Lokal)',
+    ringkasan: 'Kebutuhan kedelai dan kacang tanah lokal untuk industri olahan tahu-tempe masih terbuka luas. Nilai Tukar Petani berada di level 105.4 dengan harga pasar kompetitif di kisaran Rp 11.500 – 12.800 / kg.',
     riwayat: [
       { tahun: 2021, labelTahun: '2021', produksi: 7.90, perubahanPersen: 0, status: 'stabil', tipe: 'realisasi', keterangan: 'Produksi kacang-kacangan lokal' },
       { tahun: 2022, labelTahun: '2022', produksi: 8.10, perubahanPersen: 2.53, status: 'naik', tipe: 'realisasi', keterangan: 'Program tanam kedelai tumpang sari' },
@@ -226,7 +187,7 @@ export default function AgriculturalMonitoringDashboard() {
   return (
     <div className="w-full space-y-6">
       
-      {/* 1. HEADER SECTION (Seamless Flat, Nyatu dengan Background) */}
+      {/* 1. HEADER SECTION (Clean & Natural) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -267,103 +228,48 @@ export default function AgriculturalMonitoringDashboard() {
         </div>
       </div>
 
-      {/* 2. AREA INTI: GAYA BLOG BERITA PASAR & DIAGRAM GARIS (KIRI) + DIAGRAM BULAT (KANAN) */}
+      {/* 2. AREA INTI: LINE CHART & DONUT CHART (CLEAN NATURAL, TANPA CARD KASAR) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* KOLOM KIRI: GAYA BLOG BERITA LAPANGAN + DIAGRAM GARIS FLUKTUASI */}
-        <div className="lg:col-span-8 space-y-4">
+        {/* KOLOM KIRI: INFO KOMODITAS, RINGKASAN NATURAL & DIAGRAM GARIS FLUKTUASI */}
+        <div className="lg:col-span-8 space-y-3.5">
           
-          {/* Header Komoditas & Titik Tahun Aktif */}
+          {/* Header Komoditas & Angka Produksi Aktif */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-black text-slate-900">{selected.nama}</span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                  {selected.kategoriLabel}
-                </span>
+                <span className="text-lg font-bold text-slate-900">{selected.nama}</span>
+                <span className="text-xs text-slate-500 font-medium">({selected.kategoriLabel})</span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Mencakup: <strong className="text-slate-700">{selected.komoditasPopuler}</strong>
+                Sentra utama: <span className="text-slate-700">{selected.lumbungTerbesar}</span>
               </p>
             </div>
 
-            {/* Badge Titik Tahun Aktif */}
-            <div className="flex items-center gap-2.5 bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg self-start sm:self-auto shadow-2xs">
-              <span className="text-xs text-slate-500 font-medium">Tahun {activePoint.labelTahun}:</span>
-              <span className="text-base font-black text-slate-900 leading-none">{activePoint.produksi} Jt Ton</span>
+            {/* Badge Tahun Aktif (Minimalis, Natural) */}
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md self-start sm:self-auto text-xs">
+              <span className="text-slate-500">Tahun {activePoint.labelTahun}:</span>
+              <span className="font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
               {activePoint.perubahanPersen > 0 && (
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                  <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
+                <span className="font-semibold text-emerald-700">
+                  ▲ +{activePoint.perubahanPersen}%
                 </span>
               )}
               {activePoint.perubahanPersen < 0 && (
-                <span className="text-xs font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                  <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
+                <span className="font-semibold text-rose-700">
+                  ▼ {activePoint.perubahanPersen}%
                 </span>
               )}
               {activePoint.perubahanPersen === 0 && (
-                <span className="text-xs font-semibold text-slate-400">Basis</span>
+                <span className="text-slate-400">Basis</span>
               )}
             </div>
           </div>
 
-          {/* GAYA BLOG BERITA: PENJELASAN PASAR SIMPEL & ALAMI TANPA KOTAK CARD KASAR */}
-          <div className="border-l-4 border-emerald-600 bg-emerald-50/30 pl-4 pr-3 py-2.5 rounded-r-lg space-y-2">
-            <div>
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-800">
-                <Newspaper className="w-3.5 h-3.5" />
-                <span>Kabar Pasar & Saran Tanam Lapangan</span>
-              </div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-900 mt-1 leading-snug">
-                {selected.judulBerita}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1">
-                {selected.isiBerita}
-              </p>
-            </div>
-
-            {/* Rekap 4 Poin Kunci Praktis (Flat Natural Inline Row, Bukan Card Kasar) */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-              {/* Badge Saran Tanam */}
-              <span
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md font-bold ${
-                  selected.saranTanamTipe === 'waspada'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                    : selected.saranTanamTipe === 'sangat-aman'
-                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                    : 'bg-blue-100 text-blue-900 border border-blue-300'
-                }`}
-              >
-                {selected.saranTanamTipe === 'waspada' ? (
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
-                ) : (
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-700" />
-                )}
-                <span>{selected.saranTanam}</span>
-              </span>
-
-              {/* Status Dompet Petani */}
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
-                <span className="text-slate-400">Dompet Petani:</span>
-                <strong className="text-slate-900">{selected.keuntunganPetani}</strong>
-              </span>
-
-              {/* Acuan Harga */}
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
-                <span className="text-slate-400">Harga:</span>
-                <strong className="text-slate-900">{selected.acuanHargaPasar}</strong>
-              </span>
-
-              {/* Sentra Lumbung */}
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
-                <MapPin className="w-3 h-3 text-emerald-700" />
-                <span className="text-slate-400">Sentra:</span>
-                <strong className="text-slate-900 truncate max-w-[200px]" title={selected.lumbungTerbesar}>
-                  {selected.lumbungTerbesar}
-                </strong>
-              </span>
-            </div>
-          </div>
+          {/* Penjelasan Ringkas & Natural (Tanpa Kotak Card Warna-Warni) */}
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-2">
+            {selected.ringkasan}
+          </p>
 
           {/* Area Kanvas SVG Diagram Garis Berkelanjutan */}
           <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2">
