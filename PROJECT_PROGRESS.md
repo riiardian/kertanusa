@@ -1,6 +1,17 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+147. **Penyelarasan Presisi Garis Bawah Diagram Fluktuasi dengan Catatan Proporsi Nasional [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Posisi bagian bawah diagram naik-turun produksi (2021-2026) sebelumnya berhenti lebih tinggi sehingga menyisakan celah kosong (*empty space*) di kolom kiri dibanding teks catatan kaki di kolom kanan (*Padi dan Jagung adalah dua komoditas terbesar...*).
+      - User meminta agar bagian bawah diagram disejajarkan rata ke bawah sehingga tidak ada dead space.
+    - **Aksi & Solusi**:
+      1. Menerapkan `items-stretch` pada grid container 12-kolom dan `flex flex-col justify-between` di kedua kolom.
+      2. Mendorong kanvas diagram garis ke bagian paling bawah kolom kiri menggunakan `mt-auto`.
+      3. Menyesuaikan proporsi `SVG_H = 205` sehingga bentuk kurva tampil lebih proporsional, lapang, dan bagian bawah diagram garis sejajar rata dengan teks penutup di kolom kanan.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (`npm run build`).
+
 146. **Penyelarasan Posisi Monitoring & Redesain Peta Satelit Seamless Flat [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Posisi judul/info komoditas di kolom kiri diagram monitoring perlu dibuat agak ke bawah agar sejajar dan seimbang dengan 'Proporsi Produksi Nasional'.

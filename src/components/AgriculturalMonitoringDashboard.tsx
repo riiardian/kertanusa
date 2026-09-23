@@ -160,7 +160,7 @@ export default function AgriculturalMonitoringDashboard() {
   const yMax = maxVal + buffer;
 
   const SVG_W = 680;
-  const SVG_H = 190;
+  const SVG_H = 205;
   const PAD_X = 55;
   const PAD_TOP = 34;
   const PAD_BOTTOM = 36;
@@ -237,10 +237,11 @@ export default function AgriculturalMonitoringDashboard() {
       </div>
 
       {/* 2. AREA INTI: LINE CHART & DONUT CHART (CLEAN NATURAL) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
-        <div className="lg:col-span-8 space-y-3 pt-1.5">
+        <div className="lg:col-span-8 flex flex-col justify-between pt-1.5">
+          <div className="space-y-3 mb-4">
           
           {/* Header Komoditas & Angka Produksi Aktif (Proporsional, Ukuran Seimbang) */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -292,8 +293,10 @@ export default function AgriculturalMonitoringDashboard() {
             </span>
           </p>
 
-          {/* Area Kanvas SVG Diagram Garis Berkelanjutan */}
-          <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2">
+          </div>
+
+          {/* Area Kanvas SVG Diagram Garis Berkelanjutan (Sejajar ke Bagian Bawah) */}
+          <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2 mt-auto">
             <svg
               viewBox={`0 0 ${SVG_W} ${SVG_H}`}
               className="w-full h-auto min-w-[540px] overflow-visible"
@@ -432,7 +435,7 @@ export default function AgriculturalMonitoringDashboard() {
         </div>
 
         {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (STATIS / TETAP MENAMPILKAN TOTAL) */}
-        <div className="lg:col-span-4 space-y-4 pt-2 lg:pt-0 lg:border-l lg:border-slate-200/80 lg:pl-8">
+        <div className="lg:col-span-4 flex flex-col justify-between pt-2 lg:pt-0 lg:border-l lg:border-slate-200/80 lg:pl-8">
           <div>
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
@@ -495,7 +498,7 @@ export default function AgriculturalMonitoringDashboard() {
           </div>
 
           {/* Penjelasan Bersih Tanpa Emoji */}
-          <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-500 leading-relaxed">
+          <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-500 leading-relaxed mt-4">
             Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
           </div>
         </div>
