@@ -273,93 +273,45 @@ export default function IndonesiaMap3D({
   }
 
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden text-slate-800">
+    <div className="w-full space-y-2 text-slate-800">
       
-      {/* Top Map Control Bar - Clean Natural White/Green/Blue Style */}
-      <div className="p-4 bg-white border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-        
-        {/* Left: Map Title & Status */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0">
-            <Sprout className="w-5 h-5 text-emerald-600" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm text-slate-900">
-                Peta Citra Satelit Agrometeorologi Nusantara
-              </h3>
-              <span className="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold border border-sky-200">
-                Satelit Alam BMKG
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500">
-              Sebaran titik sawah petani dan pemantauan mikroklimat presisi kepulauan Indonesia
-            </p>
-          </div>
-        </div>
+      {/* Real Satellite Map Area - Clean & Natural (No Enclosing Table/Card) */}
+      <div className="w-full relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs" style={{ height: '480px' }}>
+        <div ref={mapContainerRef} className="w-full h-full z-0"></div>
 
-        {/* Right: Clean Natural Controls (No Navy, No Dark Radar) */}
-        <div className="flex flex-wrap items-center gap-2">
-          
-          {/* Island Filter Tabs */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px]">
-            <button
-              onClick={() => handleFocusRegion('semua')}
-              className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                filterRegion === 'semua'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Semua
-            </button>
-            <button
-              onClick={() => handleFocusRegion('jawa')}
-              className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                filterRegion === 'jawa'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Jawa
-            </button>
-            <button
-              onClick={() => handleFocusRegion('luar-jawa')}
-              className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                filterRegion === 'luar-jawa'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Luar Jawa
-            </button>
-          </div>
-
-          {/* Nyalakan GPS Button - Sky Blue & Natural Emerald Theme */}
+        {/* Island Filter Tabs (Floating Top-Left on Map) */}
+        <div className="absolute left-3.5 top-3.5 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-xs p-1 rounded-xl border border-slate-200 shadow-sm text-[11px]">
           <button
-            onClick={handleTriggerGps}
-            disabled={gpsLoading}
-            className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-sm transition-all text-xs ${
-              myGps
-                ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
-                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20'
+            onClick={() => handleFocusRegion('semua')}
+            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              filterRegion === 'semua'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            {gpsLoading ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Navigation className="w-3.5 h-3.5 text-white" />
-            )}
-            <span>{gpsLoading ? 'Mencari...' : myGps ? '📍 GPS Saya Aktif' : 'Nyalakan GPS'}</span>
+            Semua
           </button>
-
+          <button
+            onClick={() => handleFocusRegion('jawa')}
+            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              filterRegion === 'jawa'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Jawa
+          </button>
+          <button
+            onClick={() => handleFocusRegion('luar-jawa')}
+            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+              filterRegion === 'luar-jawa'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Luar Jawa
+          </button>
         </div>
-
-      </div>
-
-      {/* Real Satellite Map Area */}
-      <div className="w-full relative" style={{ height: '460px' }}>
-        <div ref={mapContainerRef} className="w-full h-full z-0"></div>
 
         {/* Clean Natural Zoom & Reset Controls */}
         <div className="absolute right-3.5 top-3.5 z-20 flex flex-col gap-1.5">
@@ -385,16 +337,6 @@ export default function IndonesiaMap3D({
             <Compass className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Live GPS Active Badge (Natural Clean Style) */}
-        {myGps && (
-          <div className="absolute left-3.5 top-3.5 z-20 pointer-events-none">
-            <div className="px-3 py-1.5 rounded-xl bg-white/95 border border-sky-200 text-sky-900 text-[11px] font-bold shadow-lg flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
-              <span>GPS Anda Terkunci: {myGps.lat.toFixed(4)}, {myGps.lon.toFixed(4)} (±{myGps.accuracy || 8}m)</span>
-            </div>
-          </div>
-        )}
 
         {/* Selected Farmer Telemetry Modal - Natural White & Green-Blue Accents */}
         {selectedFarmer && (
@@ -474,27 +416,10 @@ export default function IndonesiaMap3D({
 
       </div>
 
-      {/* Bottom Summary Bar - Clean Natural Light Slate */}
-      <div className="p-3 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
-        
-        {/* Legends */}
-        <div className="flex flex-wrap items-center gap-4 text-[11px]">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-200"></span>
-            <span className="font-medium text-slate-700">Titik Sawah Riset Petani ({farmers.length} Lokasi)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 ring-2 ring-sky-200"></span>
-            <span className="font-medium text-slate-700">{myGps ? 'Titik Sawah Anda Terkunci' : 'Nyalakan GPS untuk Menandai Lokasi Sawah'}</span>
-          </div>
-        </div>
-
-        {/* Realtime Satellites Sync */}
-        <div className="text-[11px] text-slate-500 font-medium flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Citra Satelit Alam: <strong className="text-slate-800 font-bold">Esri High-Resolution & Agrometeorologi BMKG</strong></span>
-        </div>
-
+      {/* Bottom Clean Flat Legend (Nyatu dengan Background Halaman) */}
+      <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
+        <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-200"></span>
+        <span className="font-medium text-slate-700">titik sebaran sawah petani ({farmers.length} lokasi)</span>
       </div>
 
     </div>

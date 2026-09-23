@@ -1,6 +1,24 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+146. **Penyelarasan Posisi Monitoring & Redesain Peta Satelit Seamless Flat [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Posisi judul/info komoditas di kolom kiri diagram monitoring perlu dibuat agak ke bawah agar sejajar dan seimbang dengan 'Proporsi Produksi Nasional'.
+      - Pada bagian peta sebaran, wadah card/tabel berbingkai tebal harus dihapus agar peta menyatu datar (seamless) dengan background halaman.
+      - Pembersihan teks & kontrol berlebih:
+        1. Hapus badge '1 Lahan Terdaftar' di header section peta.
+        2. Hapus teks 'Peta Citra Satelit Agrometeorologi Nusantara', badge 'Satelit Alam BMKG', dan subteks pemantauan mikroklimat.
+        3. Hapus tombol 'Nyalakan GPS' dan teks 'Nyalakan GPS untuk Menandai Lokasi Sawah'.
+        4. Hapus teks 'Citra Satelit Alam: Esri High-Resolution & Agrometeorologi BMKG'.
+        5. Ganti 'Titik Sawah Riset Petani (1 Lokasi)' menjadi 'titik sebaran sawah petani (1 lokasi)' dengan gaya flat legend.
+    - **Aksi & Solusi**:
+      1. Menambahkan `pt-1.5` dan `sm:items-start` pada kolom kiri `AgriculturalMonitoringDashboard.tsx` sehingga posisinya sejajar presisi dengan 'Proporsi Produksi Nasional'.
+      2. Menghapus frame card/tabel pembungkus di `IndonesiaMap3D.tsx`, menjadikan canvas peta satelit langsung menyatu dengan background halaman.
+      3. Tombol filter kepulauan (Semua, Jawa, Luar Jawa) kini melayang rapi dan elegan di pojok kiri atas peta (*floating pill*).
+      4. Menghapus semua elemen teks & tombol yang diminta, dan menampilkan legend tunggal 'titik sebaran sawah petani (1 lokasi)'.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (`npm run build`).
+
 145. **Eliminasi Baris Keterangan Dinamika Tahunan di Bawah Diagram Garis (Opsi A) [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Baris teks peristiwa/alasan tahunan (2021-2026) di bawah diagram garis mengalami pemotongan teks (*truncated text* `...`) karena sempitnya kolom grid.

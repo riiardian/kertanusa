@@ -223,19 +223,14 @@ export default function HomePage() {
 
         {/* 3. PETA LOKASI SAWAH NUSANTARA 3D */}
         <section className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-emerald-600" />
-                <span>Peta Sebaran Lahan Sawah Terdaftar</span>
-              </h2>
-              <p className="text-xs text-slate-500">
-                Titik lokasi sawah petani Indonesia yang sudah tersambung koordinat GPS
-              </p>
-            </div>
-            <span className="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 self-start sm:self-auto">
-              {petaniList.length} Lahan Terdaftar
-            </span>
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-emerald-600" />
+              <span>Peta Sebaran Lahan Sawah Terdaftar</span>
+            </h2>
+            <p className="text-xs text-slate-500">
+              Titik lokasi sawah petani Indonesia yang sudah tersambung koordinat GPS
+            </p>
           </div>
 
           <IndonesiaMap3D />

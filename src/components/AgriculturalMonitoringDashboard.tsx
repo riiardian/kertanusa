@@ -240,10 +240,10 @@ export default function AgriculturalMonitoringDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
-        <div className="lg:col-span-8 space-y-3">
+        <div className="lg:col-span-8 space-y-3 pt-1.5">
           
           {/* Header Komoditas & Angka Produksi Aktif (Proporsional, Ukuran Seimbang) */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-slate-900">{selected.nama}</span>
