@@ -427,24 +427,7 @@ export default function AgriculturalMonitoringDashboard() {
             </svg>
           </div>
 
-          {/* Keterangan Dinamika Tahunan (Flat Natural Row) */}
-          <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1 text-center">
-            {selected.riwayat.map((r, i) => (
-              <div
-                key={r.tahun}
-                onMouseEnter={() => setHoveredIdx(i)}
-                onMouseLeave={() => setHoveredIdx(null)}
-                className={`py-1.5 px-1 rounded transition-colors cursor-pointer ${
-                  hoveredIdx === i ? 'bg-slate-100 font-bold' : 'text-slate-600'
-                }`}
-              >
-                <div className="text-[11px] font-bold text-slate-800">{r.labelTahun}</div>
-                <div className="text-[10px] text-slate-400 truncate mt-0.5" title={r.keterangan}>
-                  {r.keterangan}
-                </div>
-              </div>
-            ))}
-          </div>
+
 
         </div>
 

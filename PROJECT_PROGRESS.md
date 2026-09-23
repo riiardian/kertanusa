@@ -1,6 +1,16 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+145. **Eliminasi Baris Keterangan Dinamika Tahunan di Bawah Diagram Garis (Opsi A) [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Baris teks peristiwa/alasan tahunan (2021-2026) di bawah diagram garis mengalami pemotongan teks (*truncated text* `...`) karena sempitnya kolom grid.
+      - User memilih Opsi A (menghapus baris teks tersebut) agar diagram garis tampil jauh lebih bersih, flat, dan natural.
+    - **Aksi & Solusi**:
+      1. Menghapus elemen baris keterangan dinamika tahunan di `src/components/AgriculturalMonitoringDashboard.tsx`.
+      2. Tampilan diagram garis SVG kini langsung mengalir bersih tanpa tumpukan teks terpotong di bawahnya.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (`npm run build`).
+
 144. **Pemisahan Fitur Gamifikasi Pertumbuhan Pohon dari Homepage [2026-09-23]**:
     - **Diagnosa Permintaan User**:
       - User meminta agar bagian "Pertumbuhan Tumbuhan" / "Perkembangan Pohon & Streak Rawat Sawah" dihapus dari halaman beranda (`src/app/page.tsx`).
