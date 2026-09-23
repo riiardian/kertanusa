@@ -1,11 +1,10 @@
-﻿'use client';
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
-import CropGamificationTracker from '@/components/CropGamificationTracker';
 import { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { PetaniRecord, WeatherData } from '@/lib/types';
@@ -222,12 +221,7 @@ export default function HomePage() {
           <AgriculturalMonitoringDashboard />
         </section>
 
-        {/* 3. FITUR GAMIFIKASI: STREAK RAWAT SAWAH & POHON TUMBUH BERUBAH BENTUK */}
-        <section>
-          <CropGamificationTracker petaniList={petaniList} />
-        </section>
-
-        {/* 4. PETA LOKASI SAWAH NUSANTARA 3D */}
+        {/* 3. PETA LOKASI SAWAH NUSANTARA 3D */}
         <section className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <div>

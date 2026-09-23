@@ -1,6 +1,17 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+144. **Pemisahan Fitur Gamifikasi Pertumbuhan Pohon dari Homepage [2026-09-23]**:
+    - **Diagnosa Permintaan User**:
+      - User meminta agar bagian "Pertumbuhan Tumbuhan" / "Perkembangan Pohon & Streak Rawat Sawah" dihapus dari halaman beranda (`src/app/page.tsx`).
+      - Fitur ini direncanakan akan dibuatkan halaman tersendiri di masa mendatang (dedicated route/page).
+    - **Aksi & Solusi**:
+      1. Menghapus pemanggilan `<CropGamificationTracker petaniList={petaniList} />` dan import terkait dari `src/app/page.tsx`.
+      2. Mempertahankan file komponen `src/components/CropGamificationTracker.tsx` tetap utuh agar siap digunakan saat halaman tersendiri dibuat.
+      3. Halaman beranda kini mengalir bersih dan natural: Hero Section Cuaca/Sensor -> Monitoring Statistik Panen Nasional (Dashboard BPS) -> Peta Sebaran Lahan Sawah 3D.
+    - **Validasi Build**:
+      - Turbopack build sukses 100% (`npm run build`).
+
 143. **Implementasi Opsi 1: Underline Tabs Komoditas & Penyelarasan Proporsi Angka Metrik [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Segmented control kapsul abu-abu pada pilihan komoditas (Padi, Jagung, Singkong, dll.) terasa kaku dan teksnya rawan terpotong di pojok kanan atas.
