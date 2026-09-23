@@ -160,9 +160,9 @@ export default function AgriculturalMonitoringDashboard() {
   const yMax = maxVal + buffer;
 
   const SVG_W = 680;
-  const SVG_H = 205;
+  const SVG_H = 260;
   const PAD_X = 55;
-  const PAD_TOP = 34;
+  const PAD_TOP = 32;
   const PAD_BOTTOM = 36;
   const PLOT_W = SVG_W - PAD_X * 2;
   const PLOT_H = SVG_H - PAD_TOP - PAD_BOTTOM;
@@ -241,7 +241,7 @@ export default function AgriculturalMonitoringDashboard() {
         
         {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
         <div className="lg:col-span-8 flex flex-col justify-between pt-1.5">
-          <div className="space-y-3 mb-4">
+          <div className="space-y-3 mb-2.5">
           
           {/* Header Komoditas & Angka Produksi Aktif (Proporsional, Ukuran Seimbang) */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">

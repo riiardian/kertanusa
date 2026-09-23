@@ -1,6 +1,19 @@
 # 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+148. **Pembesaran Vertikal Diagram Garis & Peningkatan Proporsi Peta Sawah [2026-09-23]**:
+    - **Diagnosa Masukan User**:
+      - Tabel/box diagram garis di kolom kiri perlu diperbesar ke atas (*lebar ke atas*) agar jarak spasi kosong di bawah teks saran petani tidak terlalu besar/renggang.
+      - Teks legend `titik sebaran sawah petani (1 lokasi)` di bawah peta sebaran dihapus permanen.
+      - Peta sebaran sawah dibuat lebih lebar ke bawah (menambah tinggi kanvas) agar tidak terlihat terlalu lonjong/pipih, dan sudut pojoknya dibuat bentuk kotak natural (`rounded-xl` clean box) tanpa siku-siku tajam.
+    - **Aksi & Solusi**:
+      1. Menambah tinggi SVG kanvas diagram garis (`SVG_H = 260`), sehingga diagram mengembang ke atas secara proporsional dan merapatkan jarak spasi dengan paragraf atas menjadi sangat pas & natural.
+      2. Menghapus teks `titik sebaran sawah petani (1 lokasi)` di bawah peta.
+      3. Menambah tinggi canvas peta Leaflet dari `480px` menjadi `580px` (proporsi lebih seimbang dan luas tanpa lonjong berlebih).
+      4. Menerapkan `rounded-xl` dengan `isolation: isolate` dan `transform: translateZ(0)` pada kontainer dan canvas Leaflet sehingga peta terbingkai rapi sebagai kotak berlekuk halus natural tanpa sudut tajam siku-siku.
+    - **Validasi Build & UI**:
+      - Turbopack build sukses 100% (`npm run build`).
+
 147. **Penyelarasan Presisi Garis Bawah Diagram Fluktuasi dengan Catatan Proporsi Nasional [2026-09-23]**:
     - **Diagnosa Masukan User**:
       - Posisi bagian bawah diagram naik-turun produksi (2021-2026) sebelumnya berhenti lebih tinggi sehingga menyisakan celah kosong (*empty space*) di kolom kiri dibanding teks catatan kaki di kolom kanan (*Padi dan Jagung adalah dua komoditas terbesar...*).

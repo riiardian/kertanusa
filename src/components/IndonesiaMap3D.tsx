@@ -276,8 +276,8 @@ export default function IndonesiaMap3D({
     <div className="w-full space-y-2 text-slate-800">
       
       {/* Real Satellite Map Area - Clean & Natural (No Enclosing Table/Card) */}
-      <div className="w-full relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs" style={{ height: '480px' }}>
-        <div ref={mapContainerRef} className="w-full h-full z-0"></div>
+      <div className="w-full relative rounded-xl overflow-hidden border border-slate-200/80 shadow-xs" style={{ height: '580px', isolation: 'isolate', transform: 'translateZ(0)' }}>
+        <div ref={mapContainerRef} className="w-full h-full z-0 rounded-xl"></div>
 
         {/* Island Filter Tabs (Floating Top-Left on Map) */}
         <div className="absolute left-3.5 top-3.5 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-xs p-1 rounded-xl border border-slate-200 shadow-sm text-[11px]">
@@ -416,11 +416,7 @@ export default function IndonesiaMap3D({
 
       </div>
 
-      {/* Bottom Clean Flat Legend (Nyatu dengan Background Halaman) */}
-      <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
-        <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 ring-2 ring-emerald-200"></span>
-        <span className="font-medium text-slate-700">titik sebaran sawah petani ({farmers.length} lokasi)</span>
-      </div>
+
 
     </div>
   );
