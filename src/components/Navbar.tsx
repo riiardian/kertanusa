@@ -35,9 +35,14 @@ export default function Navbar() {
             <div className="w-8 h-8 rounded-md bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-500 transition-colors">
               <Sprout className="w-4 h-4 text-emerald-100" />
             </div>
-            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-emerald-100 transition-colors">
-              Agro<span className="text-emerald-400">Nusantara</span>
-            </span>
+            <div className="flex flex-col">
+              <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-emerald-100 transition-colors leading-tight">
+                Kerta<span className="text-emerald-400">nusa</span>
+              </span>
+              <span className="text-[9.5px] text-emerald-300/85 font-medium tracking-tight leading-none hidden sm:block">
+                Kreasi Riset Tani Nusantara
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav - Garis Bawah Putih untuk Item Aktif & Hover (Tanpa Background Card) */}

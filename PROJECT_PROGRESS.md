@@ -1,5 +1,17 @@
-# 🌾 AgroNusantara AI (Agroproject) - Project Progress & Changelog
+# 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
+
+149. **Rebranding Nama Aplikasi Jadi Kertanusa (Kreasi Riset Tani Nusantara) & Integrasi Filosofi [2026-09-24]**:
+    - **Diagnosa Masukan User**:
+      - Nama brand 'AgroNusantara' diubah menjadi **Kertanusa** yang merupakan singkatan resmi dari **Kreasi Riset Tani Nusantara**.
+      - Menanamkan filosofi resmi: *"Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat."*
+    - **Aksi & Solusi**:
+      1. **Navbar (src/components/Navbar.tsx)**: Mengubah logo brand menjadi **Kertanusa** dengan sub-label singkatan **Kreasi Riset Tani Nusantara** di bawahnya agar identitas jelas dan profesional.
+      2. **Layout & Meta (src/app/layout.tsx)**: Memperbarui metadata title menjadi *Kertanusa - Kreasi Riset Tani Nusantara | Riset & Inovasi Pertanian Cerdas* dan description yang mencantumkan filosofi. Di footer bawah, mencantumkan hak cipta Kertanusa serta baris filosofi resmi.
+      3. **Hero Section (src/app/page.tsx)**: Menambahkan badge resmi **Kertanusa ? Kreasi Riset Tani Nusantara** di atas judul utama, dan memperbarui kalimat penjelasan utama menjadi filosofi resmi: *"Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat."*
+      4. **Endpoint Cuaca (src/app/api/cuaca/route.ts)**: Menyelaraskan User-Agent HTTP reverse geocoding menjadi Kertanusa-Research/1.0.
+    - **Validasi Build & UI**:
+      - Turbopack build Next.js 16.3.5 sukses 100% tanpa error.
 
 148. **Pembesaran Vertikal Diagram Garis & Peningkatan Proporsi Peta Sawah [2026-09-23]**:
     - **Diagnosa Masukan User**:

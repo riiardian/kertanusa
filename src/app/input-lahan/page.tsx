@@ -180,7 +180,7 @@ export default function InputLahanPage() {
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-slate-900">Lahan & Bibit Berhasil Didaftarkan!</h2>
             <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Bibit <strong>{formData.jenis_tanaman}</strong> milik <strong>{formData.nama_petani}</strong> di <strong>{formData.daerah}</strong> ({formData.lat?.toFixed(4)}, {formData.lon?.toFixed(4)}) telah tersimpan dan <strong>langsung memancar sebagai titik radar aktif di Peta Satelit Nusantara</strong>!
+              Bibit <strong>{formData.jenis_tanaman}</strong> milik <strong>{formData.nama_petani}</strong> di <strong>{formData.daerah}</strong> ({formData.lat?.toFixed(4)}, {formData.lon?.toFixed(4)}) telah tersimpan dan <strong>langsung memancar sebagai titik radar aktif di Peta Satelit Kertanusa</strong>!
             </p>
           </div>
 
@@ -189,14 +189,14 @@ export default function InputLahanPage() {
               href="/"
               className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-md shadow-sky-600/20 flex items-center gap-1.5 transition-colors"
             >
-              <span>🗺️ Lihat Sawah Saya di Peta Nusantara</span>
+              <span>Lihat Sawah Saya di Peta Kertanusa</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
             <a
               href="/monitoring"
               className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-colors"
             >
-              <span>📊 Pantau Telemetri Lahan</span>
+              <span>Pantau Telemetri Lahan</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
             <button

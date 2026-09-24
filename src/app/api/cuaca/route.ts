@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         const geoRes = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14&addressdetails=1`,
           {
-            headers: { 'User-Agent': 'AgroNusantara-Research/1.0' },
+            headers: { 'User-Agent': 'Kertanusa-Research/1.0' },
             next: { revalidate: 86400 }
           }
         );

@@ -6,7 +6,7 @@ import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
 import { useEffect, useState } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Sprout } from 'lucide-react';
 import { PetaniRecord, WeatherData } from '@/lib/types';
 
 export default function HomePage() {
@@ -96,7 +96,7 @@ export default function HomePage() {
         <Image
           src="/hero-pertanian-4k.webp"
           quality={95}
-          alt="Lahan Pertanian Nusantara"
+          alt="Lahan Pertanian Kertanusa"
           fill
           priority
           className="object-cover object-center"
@@ -111,12 +111,17 @@ export default function HomePage() {
           
           {/* Bagian Atas: Judul Sinergi Cerdas Ekosistem Pertanian */}
           <div className="max-w-2xl text-white space-y-3.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold backdrop-blur-xs">
+              <Sprout className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Kertanusa • Kreasi Riset Tani Nusantara</span>
+            </div>
+
             <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] text-white drop-shadow-md">
               Sinergi Cerdas Ekosistem Pertanian
             </h1>
 
             <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-xl drop-shadow">
-              Kelola kesehatan sawah dari bibit hingga panen dengan panduan cuaca harian dan pantauan kesuburan tanah yang saling terhubung.
+              Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat.
             </p>
           </div>
 
