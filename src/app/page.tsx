@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
+import AutonomousFarmlandDrone from '@/components/AutonomousFarmlandDrone';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
 import { useEffect, useState } from 'react';
@@ -232,6 +233,8 @@ export default function HomePage() {
               Titik lokasi sawah petani Indonesia yang sudah tersambung koordinat GPS
             </p>
           </div>
+
+          <AutonomousFarmlandDrone />
 
           <IndonesiaMap3D />
         </section>
