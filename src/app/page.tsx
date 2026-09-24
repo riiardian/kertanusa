@@ -111,13 +111,8 @@ export default function HomePage() {
           
           {/* Bagian Atas: Judul Sinergi Cerdas Ekosistem Pertanian */}
           <div className="max-w-2xl text-white space-y-3.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-semibold backdrop-blur-xs">
-              <Sprout className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Kertanusa • Kreasi Riset Tani Nusantara</span>
-            </div>
-
             <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] text-white drop-shadow-md">
-              Sinergi Cerdas Ekosistem Pertanian
+              Kreasi Riset Tani Nusantara
             </h1>
 
             <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-xl drop-shadow">

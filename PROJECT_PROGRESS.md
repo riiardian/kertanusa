@@ -1,6 +1,20 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+150. **Refine Identitas Brand Hero & Penataan Singkatan Kertanusa [2026-09-24]**:
+    - **Diagnosa Masukan User**:
+      - Singkatan Kreasi Riset Tani Nusantara di bawah logo Navbar dihapus agar logo Navbar tampil ringkas dan bersih.
+      - Bagian badge Kertanusa ? Kreasi Riset Tani Nusantara di atas judul Hero dihapus permanen.
+      - Judul utama Hero yang sebelumnya Sinergi Cerdas Ekosistem Pertanian diganti menjadi kepanjangan Kertanusa: **Kreasi Riset Tani Nusantara**.
+    - **Aksi & Solusi**:
+      1. **Navbar (src/components/Navbar.tsx)**: Mengembalikan logo brand menjadi murni nama **Kertanusa** tanpa sub-label teks panjang di bawahnya.
+      2. **Hero Section (src/app/page.tsx)**:
+         - Menghapus komponen badge pill di atas heading.
+         - Mengubah judul h1 menjadi **Kreasi Riset Tani Nusantara**.
+         - Mempertahankan kalimat filosofi resmi tepat di bawah judul: *Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat.*
+    - **Validasi Build**:
+      - Next.js Turbopack build sukses 100% tanpa error, server berjalan aktif di port 3000.
+
 149. **Rebranding Nama Aplikasi Jadi Kertanusa (Kreasi Riset Tani Nusantara) & Integrasi Filosofi [2026-09-24]**:
     - **Diagnosa Masukan User**:
       - Nama brand 'AgroNusantara' diubah menjadi **Kertanusa** yang merupakan singkatan resmi dari **Kreasi Riset Tani Nusantara**.
