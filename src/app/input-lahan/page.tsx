@@ -268,10 +268,7 @@ export default function InputLahanPage() {
       {/* Header Halaman: Berikan perbedaan jelas antara yang SUDAH input dan BELUM input */}
       {savedData && !isEditing ? (
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold mb-1">
-            <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
-            <span>Lahan Aktif Terdaftar</span>
-          </div>
+          
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Profil Lahan Anda
           </h1>
@@ -346,54 +343,14 @@ export default function InputLahanPage() {
               </div>
             </div>
 
-            {/* Aksi Navigasi Lengkap: Langsung Buka Monitoring, Lihat Peta, & Ubah Data */}
-            <div className="space-y-2.5 pt-2">
+            {/* Aksi Navigasi: Hanya Lihat Peta */}
+            <div className="pt-2">
               <Link
-                href="/monitoring"
+                href="/#peta-sebaran-lahan"
                 className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-sm shadow-xs transition-all duration-200 text-center block cursor-pointer"
               >
-                Buka Pemantauan Iklim & Tanah (Monitoring)
+                Lihat Peta
               </Link>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <Link
-                  href="/#peta-sebaran-lahan"
-                  className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.98] text-slate-800 font-semibold text-xs transition-all duration-200 text-center block cursor-pointer"
-                >
-                  Lihat Peta
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({
-                      nama_petani: savedData.nama_petani || '',
-                      kontak: savedData.kontak || '',
-                      luas_tanah: String(savedData.luas_tanah || ''),
-                      satuan_luas: (savedData.satuan_luas as 'm²' | 'hektar') || 'm²',
-                      daerah: savedData.daerah || '',
-                      lat: savedData.lat ? Number(savedData.lat) : undefined,
-                      lon: savedData.lon ? Number(savedData.lon) : undefined,
-                      akurasi_gps: savedData.akurasi_gps,
-                      jenis_tanaman: savedData.jenis_tanaman || '',
-                      waktu_tanam: savedData.waktu_tanam || new Date().toISOString().split('T')[0],
-                      catatan: savedData.catatan || ''
-                    });
-                    setIsEditing(true);
-                  }}
-                  className="w-full py-2.5 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 active:scale-[0.98] text-slate-700 font-semibold text-xs transition-all duration-200 text-center cursor-pointer"
-                >
-                  Ubah Data
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleDeleteSaved}
-                  className="w-full py-2.5 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 active:scale-[0.98] border border-rose-200 font-semibold text-xs transition-all duration-200 text-center cursor-pointer"
-                >
-                  Hapus Lahan
-                </button>
-              </div>
             </div>
 
           </div>
