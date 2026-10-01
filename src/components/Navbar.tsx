@@ -10,10 +10,9 @@ import {
   LayoutGrid, 
   Activity, 
   CloudSun, 
-  Droplets,
+  TrendingUp,
   PlusCircle, 
   ScanSearch, 
-  TrendingUp, 
   Users, 
   BookOpen, 
   HelpCircle 
@@ -65,7 +64,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Main Floating Navbar Header (Sama Bentuk Kapsul Melayang seperti Menu Hamburger) */}
+      {/* Main Floating Navbar Header (Bentuk Kapsul Melayang) */}
       <header className="fixed top-0 left-0 right-0 z-40 w-full flex justify-center pointer-events-none">
         <div
           className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-32px)] sm:w-[92%] lg:w-[88%] max-w-[1280px] h-[56px] px-4 sm:px-8 translate-y-3 ${
@@ -74,15 +73,20 @@ export default function Navbar() {
               : 'border-slate-100 shadow-sm'
           }`}
         >
-          {/* Left: Brand Logo (Sesuai Gaya Pill Bar) */}
+          {/* Left: Brand Logo & Subtitle */}
           <div className="flex-1 flex justify-start items-center">
-            <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-                <Sprout className="w-4 h-4 text-white stroke-[2.3]" />
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
+                <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
               </div>
-              <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] tracking-[0.05em] uppercase text-[#0A1628]">
-                KERTANUSA
-              </span>
+              <div className="flex flex-col justify-center shrink-0">
+                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                  KERTANUSA
+                </span>
+                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] md:text-[9px] font-extrabold tracking-[0.2em] sm:tracking-[0.24em] uppercase text-[#475569] leading-none mt-0.5">
+                  KREASI RISET TANI NUSANTARA
+                </span>
+              </div>
             </Link>
           </div>
 
@@ -122,18 +126,23 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay & Drawer (Paysaku Clean Natural Style) */}
+      {/* Mobile Menu Overlay & Drawer (Gelap Blur Backdrop + Teks Lengkap) */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-emerald-100/70 backdrop-blur-sm animate-in fade-in duration-200 pointer-events-auto overflow-y-auto">
-          {/* Top Floating Pill Bar (Persis Sama dengan Header Utama) */}
-          <div className="mx-4 mt-3 px-4 h-[56px] bg-white rounded-full border border-slate-100 shadow-sm flex items-center justify-between shrink-0">
-            <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
-                <Sprout className="w-4 h-4 text-white stroke-[2.3]" />
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto overflow-y-auto">
+          {/* Top Floating Pill Bar */}
+          <div className="mx-4 mt-3 px-4 sm:px-6 h-[56px] bg-white rounded-full border border-slate-100 shadow-md flex items-center justify-between shrink-0">
+            <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs shrink-0">
+                <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
               </div>
-              <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] tracking-[0.05em] uppercase text-[#0A1628]">
-                KERTANUSA
-              </span>
+              <div className="flex flex-col justify-center shrink-0">
+                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                  KERTANUSA
+                </span>
+                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#475569] leading-none mt-0.5">
+                  KREASI RISET TANI NUSANTARA
+                </span>
+              </div>
             </Link>
 
             <button
@@ -146,7 +155,7 @@ export default function Navbar() {
           </div>
 
           {/* Main White Card Drawer */}
-          <div className="mx-4 mt-3 mb-6 bg-white rounded-[28px] border border-slate-100 shadow-lg px-6 py-5 flex flex-col">
+          <div className="mx-4 mt-3 mb-6 bg-white rounded-[28px] border border-slate-100 shadow-xl px-6 py-5 flex flex-col">
             <nav className="flex flex-col divide-y divide-slate-100 text-slate-800">
               {/* 1. Beranda */}
               <div className="pb-3">
@@ -176,7 +185,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 3. Group MONITORING */}
+              {/* 3. Group MONITORING (Hanya Iklim & Cuaca + Daya Beli Pasar) */}
               <div className="py-3 space-y-1">
                 <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 pt-0.5 pb-1">
                   <Activity className="w-3.5 h-3.5 text-slate-400 stroke-[2]" />
@@ -197,14 +206,14 @@ export default function Navbar() {
                   </Link>
 
                   <Link
-                    href="/monitoring"
+                    href="/tren-pasar"
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 py-1 transition-colors text-[14px] ${
-                      pathname === '/monitoring' ? 'text-emerald-700 font-bold' : 'text-slate-700 font-medium hover:text-emerald-600'
+                      pathname === '/tren-pasar' ? 'text-emerald-700 font-bold' : 'text-slate-700 font-medium hover:text-emerald-600'
                     }`}
                   >
-                    <Droplets className={`w-4 h-4 stroke-[1.8] ${pathname === '/monitoring' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                    <span>Air & pH Tanah</span>
+                    <TrendingUp className={`w-4 h-4 stroke-[1.8] ${pathname === '/tren-pasar' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <span>Daya Beli Pasar</span>
                   </Link>
                 </div>
               </div>
@@ -223,21 +232,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 5. Daya Beli Pasar */}
-              <div className="py-3">
-                <Link
-                  href="/tren-pasar"
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3.5 py-1 transition-colors ${
-                    pathname === '/tren-pasar' ? 'text-emerald-700 font-bold' : 'text-slate-800 font-semibold hover:text-emerald-600'
-                  }`}
-                >
-                  <TrendingUp className={`w-5 h-5 stroke-[1.8] ${pathname === '/tren-pasar' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                  <span className="text-[15px]">Daya Beli Pasar</span>
-                </Link>
-              </div>
-
-              {/* 6. Riset Petani */}
+              {/* 5. Riset Petani */}
               <div className="py-3">
                 <Link
                   href="/riset-petani"
@@ -251,7 +246,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 7. Dokumentasi */}
+              {/* 6. Dokumentasi */}
               <div className="py-3">
                 <Link
                   href="/#riset"
@@ -263,7 +258,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 8. FAQ */}
+              {/* 7. FAQ */}
               <div className="py-3">
                 <Link
                   href="/#faq"
