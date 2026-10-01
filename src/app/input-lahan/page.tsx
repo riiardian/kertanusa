@@ -388,8 +388,8 @@ export default function InputLahanPage() {
                 Wilayah / Lokasi Lahan <span className="text-rose-500">*</span>
               </label>
               {formData.lat && formData.lon && (
-                <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                  GPS: {formData.lat.toFixed(4)}, {formData.lon.toFixed(4)} ({formData.akurasi_gps ? `±${formData.akurasi_gps}m` : 'Terkunci'})
+                <span className="text-[11px] font-mono text-slate-500 font-normal">
+                  GPS: {Number(formData.lat).toFixed(4)}, {Number(formData.lon).toFixed(4)} ({formData.akurasi_gps ? `±${formData.akurasi_gps}m` : 'Terkunci'})
                 </span>
               )}
             </div>
