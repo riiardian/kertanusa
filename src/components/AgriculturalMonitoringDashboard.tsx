@@ -246,9 +246,11 @@ export default function AgriculturalMonitoringDashboard() {
           {/* Header Komoditas & Angka Produksi Aktif (Proporsional, Ukuran Seimbang) */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <span className="text-lg font-bold text-slate-900">{selected.nama}</span>
-                <span className="text-xs text-slate-500 font-medium">({selected.kategoriLabel})</span>
+                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
+                  {selected.kategoriLabel}
+                </span>
               </div>
               
               {/* Data Mencakup */}
@@ -286,12 +288,17 @@ export default function AgriculturalMonitoringDashboard() {
           </div>
 
           {/* Penjelasan Ringkas & Saran Petani (Natural, Tanpa Kotak Card) */}
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5">
-            {selected.ringkasan}{' '}
-            <span className="text-slate-800">
-              <strong className="text-emerald-800 font-bold">Saran petani:</strong> {selected.saran}
-            </span>
-          </p>
+          <div className="text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5 space-y-2">
+            <p>{selected.ringkasan}</p>
+            <div className="flex items-start gap-2 pt-0.5">
+              <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded shrink-0 mt-0.5">
+                Saran Petani
+              </span>
+              <span className="text-slate-800 font-medium">
+                {selected.saran}
+              </span>
+            </div>
+          </div>
 
           </div>
 
@@ -498,8 +505,13 @@ export default function AgriculturalMonitoringDashboard() {
           </div>
 
           {/* Penjelasan Bersih Tanpa Emoji */}
-          <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-500 leading-relaxed mt-4">
-            Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
+          <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-600 leading-relaxed mt-4 flex items-start gap-2">
+            <span className="text-[9.5px] font-bold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+              Fakta Pangan
+            </span>
+            <span>
+              Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
+            </span>
           </div>
         </div>
 

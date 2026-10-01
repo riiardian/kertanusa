@@ -1,6 +1,41 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+153. **Optimasi Fokus Gambar Hero Pertanian pada Tampilan Mobile [2026-09-30]**:
+    - **Diagnosa Masukan User**:
+      - Pada tampilan layar HP (mobile), gambar banner hero pertanian 4K (`hero-pertanian-4k.webp`) terpotong di tengah (*object-center*) sehingga hanya menampilkan ayam-ayam di pematang sawah, sementara sosok petani bertopi caping yang berada di sisi kanan gambar terpotong ke luar layar.
+    - **Aksi & Solusi**:
+      1. **CSS Responsive Image Anchor (`src/app/globals.css` & `src/app/page.tsx`)**:
+         - Menambahkan kelas khusus `.hero-banner-image`.
+         - Pada layar HP (`< 768px`), titik fokus gambar diarahkan ke koordinat horizontal 74% (`object-position: 74% center !important`), tepat di mana sosok petani berdiri tegak memandang sawah.
+         - Pada layar desktop (`>= 768px`), titik fokus tetap berada di tengah (`object-position: center center`) sehingga lanskap penuh (traktor, ayam, petani, dan lumbung) terlihat seimbang.
+    - **Validasi Build**:
+      - Next.js Turbopack build sukses 100% tanpa error (`Compiled successfully in 433ms`).
+
+152. **Implementasi Hybrid Layout Peta: Google Maps Mobile Bottom Card & Desktop Side Popup [2026-09-30]**:
+    - **Diagnosa Masukan User**:
+      - Pada layar mobile (HP) yang berukuran sempit (~360px), kartu informasi yang berada di samping pin terpotong di tepi kanan layar dan metrik suhu terpotong keluar container.
+      - User memilih solusi standar industri Google Maps: pada HP tampil sebagai **Floating Bottom Sheet** (melayang di bawah peta), sedangkan di Desktop tetap berupa **Side Popup** di sebelah kanan pin.
+    - **Aksi & Solusi**:
+      1. **Mobile Bottom Sheet (src/components/IndonesiaMap3D.tsx)**:
+         - Di layar HP (`< 768px`), kartu informasi tampil melayang di bagian bawah peta (`bottom-2.5 left-2.5 right-2.5`) dengan lebar penuh yang proporsional.
+         - Seluruh informasi (Nama Petani, Daerah, Komoditas, Panen, Luas, Fase) dan 3 metrik telemetri solid (Kelembapan, pH, Suhu) tampil 100% utuh tanpa ada teks yang terpotong.
+         - Kamera saat klik pin di mobile otomatis terbang dengan sedikit offset ke utara (`renderLat - 0.0035`), sehingga titik pin merah tetap terlihat jelas di area atas peta dan tidak tertutup kartu bawah.
+         - Tombol gembok proteksi scroll disembunyikan sementara saat kartu aktif agar tidak bertumpuk.
+      2. **Desktop Side Popup (src/app/globals.css)**:
+         - Pada layar desktop (`>= 768px`), popup Leaflet tetap menempel di sebelah kanan titik pin (`offset: [205, 160]`) dengan panah penunjuk kiri yang presisi.
+         - Ditambahkan media query CSS (`@media (max-width: 767px)`) untuk menyembunyikan popup samping Leaflet di layar HP agar tidak ada elemen yang meluap ke luar container.
+      3. **Penyelesaian Bug Event Bubbling & Race Condition**:
+         - Ditemukan penyebab tabel sempat tidak muncul: klik pada marker pin sempat merambat (*bubbling*) ke listener peta (`map.on('click')`) serta listener internal `popupclose` yang tidak sengaja mereset state `selectedFarmer` kembali ke `null` secara instan.
+         - Diperbaiki dengan menghentikan propagasi event (`L.DomEvent.stopPropagation(e)`) pada marker click dan menghapus listener `popupclose` yang agresif, sehingga state pemilihan petani stabil 100%.
+
+      4. **Pembersihan Tab Tooltip Kecil di Atas Pin**:
+         - Menghapus tooltip hover kecil (`bindTooltip`) yang sebelumnya muncul menempel di atas pin saat ditekan/di-hover.
+         - Tampilan peta kini bersih tanpa duplikasi informasi; hanya kartu/tabel informasi lengkap yang tampil saat titik lahan diklik.
+
+      5. **Auto-Dismiss & Navigasi Terpadu**:
+         - Menekan tombol tutup `X`, mengklik area kosong peta satelit, ataupun menekan tombol navigasi pulau (Semua/Jawa/Luar Jawa) dan Kompas langsung menutup kartu secara mulus.
+
 151. **Implementasi Animasi 3D Farmland & Autonomous Agro-Drone Patrol [2026-09-24]**:
     - **Diagnosa Masukan User**:
       - User menginginkan animasi 3D sawah dengan drone yang bergerak sendiri secara otonom/hidup (tanpa tombol kontrol manual).
@@ -270,3 +305,77 @@ ext build), working tree clean, dan verified di browser.
     - **Navigasi Garis Bawah Putih**: Menghilangkan efek background card/kotak pada menu. Tautan aktif (Beranda) kini ditandai dengan garis putih (order-b-2 border-white), dan tautan lain memunculkan garis putih saat kursor diarahkan (*hover*).
     - **Sanitasi**: Build sukses (
 ext build), working tree clean, dan verified di browser.
+
+138. **Redesain Halaman Input Lahan (Clean, Natural, Minimalis Berbasis Tone Beranda) [2026-09-30]**:
+    - **Filosofi Desain**: Menghilangkan seluruh elemen berlebihan (AI slop, nomor langkah kaku, dark boxes kontras, dan card bertumpuk). Mengadopsi bahasa visual beranda yang clean, flat, natural, dan proporsional.
+    - **Header Halaman**: Badge pill hijau herbal (Sprout + Registrasi Lahan Pertanian), tipografi judul tebal dengan breathing room leluasa, dan deskripsi ringkas 1 kalimat.
+    - **Form Input Terstruktur (Grid 8 Kolom)**:
+      - Profil Pemilik Lahan: Nama petani (wajib) dan WhatsApp (opsional).
+      - Lokasi & Titik GPS: Tombol satu sentuhan deteksi satelit GPS, koordinat lat/lon flat, dan preset daerah cepat (Brebes, Tabanan, Gowa, dsb).
+      - Detail Budidaya: Pilihan komoditas, luas tanah (m² / hektar), tanggal mulai tanam, dan catatan operasional opsional.
+      - Tombol aksi simpan solid emerald yang tegas dan clean.
+    - **Sidebar Ringkasan Live (Grid 4 Kolom - Sticky)**: Menampilkan live preview komoditas budidaya, estimasi tanggal panen kalender, proyeksi tonase panen otomatis berdasarkan luas lahan, serta karakteristik mikroklimat tanah wilayah.
+    - **Tampilan Sukses Minimalis**: State konfirmasi pendaftaran tersimpan rapi dengan tautan kembali ke Peta Beranda, Dashboard Monitoring, atau input lahan lain.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree clean.
+
+139. **Penyempurnaan Form Input Lahan Menjadi Fungsional, Clean & Zero-Filler (Gaya AeroFlazz) [2026-09-30]**:
+    - **Eliminasi Elemen Dekoratif & AI Slop**: Menghapus seluruh ornamen pengisi ruang (badge pill 'Registrasi Lahan Pertanian' + ikon tumbuhan, ikon-ikon kecil di setiap label formulir, serta sidebar mikroklimat/pH yang hanya berfungsi mengisi ruang desktop).
+    - **Fungsionalitas & Kegunaan Murni**: Menghadirkan tombol 'Kembali ke Beranda' yang praktis, judul formulir yang ringkas dan tegas, serta tata letak form tunggal (single-card terpusat max-w-2xl).
+    - **Struktur Form Ringkas & Natural**:
+      - Nama Petani (wajib) & No. WhatsApp (opsional) dengan placeholder natural.
+      - Lokasi / Wilayah dengan tombol 'Ambil GPS' satu sentuhan dan pilihan cepat wilayah.
+      - Jenis Tanaman, Luas Lahan (m² / Hektar), Tanggal Mulai Tanam, dan Catatan Lahan opsional.
+      - Tombol 'Simpan Data Lahan' solid emerald yang bersih.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+140. **Penyempurnaan Form Input Lahan Sesuai Evaluasi User (Zero-AI-Slop, Text Bebas Tanaman, & Data Sheet Sukses) [2026-09-30]**:
+    - **Validasi Koordinat GPS**: Memverifikasi koordinat 1.3056, 124.9189 (Minahasa/Tomohon, Sulawesi Utara) pada peta sebaran dan mekanisme sensor GPS browser (navigator.geolocation) terbukti 100% valid dan akurat (WGS84).
+    - **Hapus Tombol Kembali**: Menghapus tautan 'Kembali ke Beranda' agar tampilan langsung fokus ke judul 'Input Data Lahan'.
+    - **Input Bebas Jenis Tanaman**: Mengganti select dropdown menjadi text input bebas dilengkapi datalist saran komoditas (user bebas mengetik varietas apa pun seperti Padi Inpari, Cabai Rawit, Kopi, dsb).
+    - **Pembersihan Kolom**: Menghapus input nomor telepon/WhatsApp dan catatan lahan sehingga formulir sangat ringkas, padat, dan cepat diisi.
+    - **Rombak Total Tampilan Sukses (No AI Slop)**: Menghapus kartu kosong ikon centang mengambang. Menggantinya dengan status bar rapi, lembar rincian data resmi terstruktur (tabel key-value berisi nama, wilayah, koordinat GPS, tanaman, luas, tanggal), tombol aksi tegas, serta tabel daftar lahan terdaftar terbaru langsung dari database.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+141. **Integrasi Animasi Lottie Farmers, Toast AeroFlazz Hijau, & Finalisasi Input Manual [2026-09-30]**:
+    - **Hapus Tabel Lahan Terdaftar Terbaru**: Menghapus tabel riwayat lahan dari halaman input-lahan sehingga fokus tampilan tetap bersih dan minimalis.
+    - **Input Manual 100% Jenis Tanaman**: Menghapus seluruh elemen datalist dan icon dropdown panah, sehingga kolom tanaman murni input teks bebas tanpa popup browser.
+    - **Animasi Lottie Farmers**: Menghadirkan animasi Lottie (public/Farmers.json) di bagian atas kartu konfirmasi rincian lahan terdaftar.
+    - **Toast Notifikasi Gaya AeroFlazz Hijau**: Mengubah banner notifikasi sukses menjadi gaya toast pill mengambang AeroFlazz (background hijau tua #064e3b, teks putih 13px, ikon lingkaran centang emerald).
+    - **Tombol Full-Width & Hapus Aksi Cadangan**: Menghapus tombol '+ Input Lahan Lain', menyisakan satu tombol panjang penuh 'Lihat di Peta Beranda' tanpa ikon panah eksternal.
+    - **Pembersihan Elemen Sukses**: Menghapus teks badge 'Aktif di Radar Peta' serta menyembunyikan header 'Input Data Lahan' saat berada di tampilan sukses agar transisi pendaftaran terasa bersih dan tuntas.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree clean.
+
+142. **Penyempurnaan Form Input Lahan (Default Kosong, Chevron Rapi, Lottie Loading Overlay & Toast Dinamis) [2026-09-30]**:
+    - **Inisialisasi Wilayah & Koordinat Bersih (Default Kosong)**: Kolom input wilayah dan teks GPS kini kosong secara bawaan (tidak langsung berisi Brebes). Data wilayah dan koordinat baru akan terisi jika user menekan tombol 'Ambil GPS' atau memilih salah satu 'Pilihan cepat'.
+    - **Penyelarasan Icon Chevron Dropdown Luas**: Mengganti dropdown bawaan OS dengan wrapper custom berposisi presisi (appearance-none, pr-8, dan ChevronDown terpusat di kanan tanpa mepet ke tepi border).
+    - **Animasi Loading Lottie (loading.json)**: Mengintegrasikan animasi loading (public/loading.json) ke dalam modal overlay transisi saat data sedang disimpan ke server.
+    - **Rincian Data Sukses Polos**: Menghapus badge hijau transparan pada komoditas tanaman di ringkasan sukses, menampilkannya sebagai teks solid yang serasi dengan data lainnya.
+    - **Perbesar Animasi Farmers**: Memperbesar ukuran animasi Lottie Farmers (public/Farmers.json) menjadi w-52 h-52 / sm:w-64 sm:h-64 agar proporsinya seimbang dan nyaman dilihat.
+    - **Toast Notifikasi Hijau Dinamis**: Notifikasi sukses kini memiliki animasi masuk (slide-down/fade-in) dan otomatis menghilang secara halus (slide-up/fade-out) setelah 3.8 detik.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+143. **Diagnosa & Solusi Keamanan Geolocation HP (W3C Secure Context / HTTPS Requirement) [2026-09-30]**:
+    - **Akar Masalah Error GPS di HP**: Pada tangkapan layar HP terlihat tanda peringatan ⚠️ dan URL 'http://10.73.242.95:3000' (HTTP biasa via IP lokal). Standar keamanan peramban seluler modern (Chromium/Android) secara ketat menolak API Geolocation pada koneksi HTTP (Secure Context Violation).
+    - **Pesan Panduan Cerdas**: Menyesuaikan pesan penolakan GPS agar menjelaskan secara spesifik bahwa pembatasan tersebut berasal dari browser HP karena koneksi HTTP (bukan karena sensor GPS fisik mati).
+    - **UX Responsif Pilihan Cepat**: Menekan tombol wilayah 'Pilihan cepat' (Brebes, Malang, Cianjur, dsb) kini otomatis mereset pesan peringatan GPS dan langsung mengisikan koordinat serta nama wilayah secara instan.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+144. **Implementasi Seamless IP Geolocation Fallback & Optimalisasi Mobile Placeholder [2026-09-30]**:
+    - **Fallback Geolocation Otomatis**: Saat formulir dibuka di HP melalui koneksi IP lokal HTTP (di mana browser seluler memblokir sensor GPS perangkat keras), tombol 'Ambil GPS' kini otomatis beralih ke deteksi geolokasi berbasis jaringan/IP publik (ipwho.is) tanpa memunculkan kotak error.
+    - **Deteksi Koordinat Otomatis di HP**: Nama kota/wilayah dan koordinat satelit langsung terisi secara otomatis dan status GPS terkunci sukses.
+    - **Perapian Placeholder Mobile**: Memperpendek teks placeholder wilayah menjadi 'Ketik wilayah (contoh: Brebes)' agar tidak terpotong pada layar HP sempit.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+145. **Restorasi Pure Hardware GPS Satelit & Eliminasi Estimasi IP Gateway [2026-09-30]**:
+    - **Penyebab 'Jakarta, Java'**: Mengeliminasi deteksi geolokasi berbasis IP ISP seluler yang mengarah ke data center gateway provider di Jakarta, karena tidak akurat untuk pemetaan lahan riil.
+    - **Murni Sensor Satelit Presisi Tinggi**: Mengembalikan pembacaan GPS 100% langsung ke sensor fisik perangkat keras HP (navigator.geolocation dengan enableHighAccuracy: true dan maximumAge: 0).
+    - **Reverse Geocoding Akurat**: Menggunakan reverse geocoding OpenStreetMap Nominatim di server (/api/cuaca) yang memetakan latitude/longitude langsung ke tingkat kelurahan/kecamatan/kota asli.
+    - **Panduan Pengujian HTTP Lokal HP**: Menyertakan instruksi singkat chrome://flags (Insecure origins treated as secure) agar sensor GPS satelit asli di HP langsung dapat diuji pada lingkungan pengembangan lokal.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+146. **Penyempurnaan Loading Overlay Murni, Floating Toast AeroFlazz, Ukuran Farmers, & Direct Anchor Map [2026-09-30]**:
+    - **Loading Overlay Murni (Tanpa Card/Teks)**: Menghapus kotak putih dan teks pada saat menyimpan. Animasi Lottie (loading.json) kini melayang langsung di tengah layar dengan latar belakang blur halus (backdrop-blur-md) yang modern dan bersih.
+    - **Notifikasi Toast Melayang (Floating Fixed) Gaya AeroFlazz**: Toast kini berposisi fixed di atas (top-20 / top-24) melayang di atas konten sehingga tidak lagi menggeser posisi kartu rincian data ke bawah. Animasi masuk (slide-down/fade-in) muncul halus 100ms setelah halaman sukses termuat, bertahan 3.8 detik, lalu bertransisi keluar ke atas secara mulus.
+    - **Perbesar Animasi Lottie Farmers**: Memperbesar ukuran animasi Lottie petani (public/Farmers.json) menjadi w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 agar tampil proporsional, jelas, dan memikat di layar kartu rincian.
+    - **Direct Link Peta Sebaran Lahan**: Menambahkan anchor id 'peta-sebaran-lahan' (dengan scroll offset navbar scroll-mt-24 sm:scroll-mt-28) pada section peta di halaman beranda. Tombol 'Lihat di Peta Beranda' kini otomatis mengarahkan dan melakukan smooth-scroll langsung ke area peta sebaran lahan sawah, bukan berhenti di hero section.
+    - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.

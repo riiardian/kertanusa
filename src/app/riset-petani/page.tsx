@@ -42,6 +42,26 @@ export default function RisetPetaniPage() {
       const data = await res.json();
       if (data.success) {
         setPetaniList(prev => prev.filter(p => p.id !== id));
+
+        // Bersihkan localStorage jika petani yang dihapus adalah lahan aktif pengguna
+        if (typeof window !== 'undefined') {
+          const storedId = localStorage.getItem('kertanusa_active_farmer_id');
+          const storedData = localStorage.getItem('kertanusa_active_farmer_data');
+          let isMatch = storedId === id;
+          if (!isMatch && storedData) {
+            try {
+              const parsed = JSON.parse(storedData);
+              if (parsed.id === id || (parsed.nama_petani && parsed.nama_petani.trim().toLowerCase() === nama.trim().toLowerCase())) {
+                isMatch = true;
+              }
+            } catch (err) {}
+          }
+          if (isMatch) {
+            localStorage.removeItem('kertanusa_active_farmer_id');
+            localStorage.removeItem('kertanusa_active_farmer_data');
+          }
+        }
+
         setToast(`Data petani ${nama} berhasil dihapus.`);
         setTimeout(() => setToast(null), 3000);
       }
@@ -69,7 +89,7 @@ export default function RisetPetaniPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-6 pb-12">
       
       {/* Toast */}
       {toast && (

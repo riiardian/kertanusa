@@ -55,6 +55,15 @@ export interface WeatherData {
   lon?: number;
   prakiraan_7hari: Array<{
     hari: string;
+    tanggal?: string;
+    suhu: number;
+    kondisi: string;
+    curah_hujan: number;
+    icon: string;
+  }>;
+  prakiraan_14hari?: Array<{
+    hari: string;
+    tanggal?: string;
     suhu: number;
     kondisi: string;
     curah_hujan: number;

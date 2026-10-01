@@ -2,13 +2,43 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sprout, BarChart3, ScanSearch, Users, Menu, X, CloudSun, PlusCircle } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const isHome = pathname === '/';
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    let ticking = false;
+
+    const updateScroll = () => {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      setIsScrolled(scrollY > 20);
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    };
+
+    updateScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    setIsScrolled(scrollY > 20);
+  }, [pathname]);
 
   const navItems = [
     { href: '/', label: 'Beranda', icon: Sprout },
@@ -20,111 +50,97 @@ export default function Navbar() {
   ];
 
   return (
-    <header
-      className={`${
-        isHome
-          ? 'absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/80 via-slate-950/30 to-transparent text-white'
-          : 'sticky top-0 z-50 bg-[#0B1A13] border-b border-emerald-950 text-white'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          
-          {/* Brand Logo (Tulisan AI Tani dihapus) */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-md bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:bg-emerald-500 transition-colors">
-              <Sprout className="w-4 h-4 text-emerald-100" />
+    <header className="fixed top-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none">
+      <div
+        className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-2xl transition-all duration-300 w-[calc(100%-28px)] sm:w-[92%] lg:w-[88%] max-w-[1280px] h-[52px] sm:h-[58px] px-3.5 sm:px-8 translate-y-2 sm:translate-y-3 ${
+          isScrolled
+            ? 'border-slate-300/80 shadow-[0_10px_30px_rgba(0,0,0,0.08)]'
+            : 'border-slate-200/80 shadow-[0_4px_18px_rgba(0,0,0,0.05)]'
+        }`}
+      >
+        {/* Left: Brand Logo */}
+        <div className="flex-1 flex justify-start items-center">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
+              <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
             </div>
-            <span className="font-bold text-base sm:text-lg tracking-tight text-white group-hover:text-emerald-100 transition-colors">
-              Kerta<span className="text-emerald-400">nusa</span>
-            </span>
+            <div className="flex flex-col justify-center shrink-0">
+              <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                KERTANUSA
+              </span>
+              <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] md:text-[9px] font-extrabold tracking-[0.2em] sm:tracking-[0.24em] uppercase text-[#475569] leading-none mt-0.5">
+                KREASI RISET TANI NUSANTARA
+              </span>
+            </div>
           </Link>
-
-          {/* Desktop Nav - Garis Bawah Putih untuk Item Aktif & Hover (Tanpa Background Card) */}
-          <nav className="hidden lg:flex items-center gap-4">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`py-1.5 px-1 text-xs font-semibold transition-all border-b-2 ${
-                    isActive
-                      ? 'border-white text-white font-bold'
-                      : 'border-transparent text-slate-200 hover:text-white hover:border-white'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right Action & Live Satellite Status */}
-          <div className="hidden md:flex items-center gap-3">
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/40 border border-white/15 text-[11px] text-slate-200 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span>Satelit Terhubung</span>
-            </div>
-
-            <Link
-              href="/input-lahan"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors border border-emerald-500/40 shadow-xs"
-            >
-              <PlusCircle className="w-3.5 h-3.5 text-emerald-100" />
-              <span>Daftar Lahan Baru</span>
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex lg:hidden">
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-md text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none"
-              aria-label="Toggle Menu"
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
         </div>
-      </div>
 
-      {/* Mobile Drawer */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-slate-950/95 px-4 pt-2 pb-4 space-y-1 shadow-lg">
+        {/* Center: Desktop Nav Links */}
+        <nav className="hidden lg:flex items-center gap-6 lg:gap-7 justify-center shrink-0">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-md text-sm font-semibold transition-colors ${
-                  isActive
-                    ? 'text-white font-bold border-b border-white'
-                    : 'text-slate-200 hover:text-white'
+                className={`text-[13.5px] font-medium transition-colors py-1 ${
+                  isActive ? 'text-[#0A1628] font-bold' : 'text-[#64748B] hover:text-[#1E293B]'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className="w-4 h-4 text-emerald-400" />
-                  <span>{item.label}</span>
-                </div>
+                {item.label}
               </Link>
             );
           })}
-          <div className="pt-2 border-t border-white/10 mt-2">
-            <Link
-              href="/input-lahan"
-              onClick={() => setMobileOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-xs transition-colors"
-            >
-              <PlusCircle className="w-4 h-4 text-emerald-100" />
-              <span>Daftar Lahan Baru</span>
-            </Link>
-          </div>
+        </nav>
+
+        {/* Right: Counterbalance Spacer */}
+        <div className="flex-1 hidden lg:flex justify-end items-center">
+          {/* Spacer penyeimbang tengah */}
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="flex lg:hidden">
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-1.5 text-[#1E293B] hover:bg-slate-100 rounded-full focus:outline-none transition-colors"
+            aria-label="Toggle Menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer (Card Melayang Putih Kompak Pas Sudut) */}
+      {mobileOpen && (
+        <>
+          <div
+            className="lg:hidden fixed inset-0 bg-slate-900/30 backdrop-blur-xs -z-10 pointer-events-auto"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div
+            className="lg:hidden pointer-events-auto absolute left-3.5 right-3.5 bg-white border border-slate-100 px-5 pt-3 pb-5 shadow-2xl text-slate-700 rounded-2xl max-w-[1280px] mx-auto flex flex-col z-50 animate-in fade-in slide-in-from-top-2 duration-200 top-[62px]"
+          >
+            <nav className="flex flex-col text-[13.5px]">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 py-2.5 border-b border-slate-100 font-medium transition-colors ${
+                      isActive ? 'text-[#0A1628] font-bold' : 'text-[#64748B] hover:text-[#1E293B]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 text-slate-400" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </>
       )}
     </header>
   );

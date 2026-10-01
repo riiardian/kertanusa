@@ -47,7 +47,7 @@ export default function WeatherTrendsCharts({ weather }: WeatherTrendsChartsProp
   const pinPos = Math.max(4, Math.min(96, kelembapan));
 
   // Data 7 Hari Curah Hujan Simpel
-  const forecast7Days = weather?.prakiraan_7hari || [
+  const forecast7Days = (weather?.prakiraan_7hari || [
     { hari: 'Hari Ini', suhu: 34, kondisi: 'Cerah Terik', curah_hujan: 0, icon: 'sun' },
     { hari: 'Senin', suhu: 33, kondisi: 'Berawan Tebal', curah_hujan: 0, icon: 'cloud-sun' },
     { hari: 'Selasa', suhu: 33, kondisi: 'Hujan Ringan', curah_hujan: 0.2, icon: 'cloud-rain' },
@@ -55,7 +55,7 @@ export default function WeatherTrendsCharts({ weather }: WeatherTrendsChartsProp
     { hari: 'Kamis', suhu: 33, kondisi: 'Cerah Berawan', curah_hujan: 0, icon: 'sun' },
     { hari: 'Jumat', suhu: 32, kondisi: 'Hujan Sedang', curah_hujan: 1.2, icon: 'cloud-rain' },
     { hari: 'Sabtu', suhu: 32, kondisi: 'Hujan Ringan', curah_hujan: 0.4, icon: 'cloud-rain' },
-  ];
+  ]).slice(0, 7);
 
   return (
     <div className="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden">

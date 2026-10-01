@@ -31,7 +31,7 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
   const phTanah = profile.ph_rata_rata;
 
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,direct_radiation,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,direct_radiation,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=14&timezone=auto`;
     const res = await fetch(url, { cache: 'no-store' });
     
     if (res.ok) {
@@ -71,13 +71,16 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
       if (radiasiSurya < 350) potensiPompaSurya = 'Rendah';
       else if (radiasiSurya < 650) potensiPompaSurya = 'Sedang';
 
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
       const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      const prakiraan7Hari = (daily.time || []).slice(0, 7).map((tStr: string, idx: number) => {
+      const prakiraan14Hari = (daily.time || []).slice(0, 14).map((tStr: string, idx: number) => {
         const d = new Date(tStr);
         const code = daily.weather_code?.[idx] ?? 1;
         const w = getWeatherConditionText(code, 1);
+        const tanggalStr = `${d.getDate()} ${monthNames[d.getMonth()]}`;
         return {
           hari: idx === 0 ? 'Hari Ini' : days[d.getDay()],
+          tanggal: tanggalStr,
           suhu: Math.round(daily.temperature_2m_max?.[idx] ?? suhu),
           kondisi: w.kondisi,
           curah_hujan: Math.round((daily.precipitation_sum?.[idx] ?? 0) * 10) / 10,
@@ -104,7 +107,8 @@ export async function getLiveWeatherData(lat: number, lon: number, namaDaerah?: 
         sumber_data: 'Live Satelit Cuaca BMKG & Open-Meteo (GPS)',
         lat,
         lon,
-        prakiraan_7hari: prakiraan7Hari
+        prakiraan_7hari: prakiraan14Hari,
+        prakiraan_14hari: prakiraan14Hari
       };
     }
   } catch (err) {
@@ -144,14 +148,19 @@ export function getFallbackWeatherData(daerah: string): WeatherData {
   if (radiasiSurya < 400) potensiPompaSurya = 'Rendah';
   else if (radiasiSurya < 700) potensiPompaSurya = 'Sedang';
 
-  const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-  const todayIdx = new Date().getDay();
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const today = new Date();
 
-  const prakiraan7Hari = Array.from({ length: 7 }).map((_, i) => {
-    const dayName = days[(todayIdx + i) % 7];
+  const prakiraan14Hari = Array.from({ length: 14 }).map((_, i) => {
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + i);
+    const dayName = days[targetDate.getDay()];
+    const tanggalStr = `${targetDate.getDate()} ${monthNames[targetDate.getMonth()]}`;
     const isRain = i % 3 === 1;
     return {
       hari: i === 0 ? 'Hari Ini' : dayName,
+      tanggal: tanggalStr,
       suhu: Math.round(suhuNow + (i % 2 === 0 ? 1 : -1)),
       kondisi: isRain ? 'Hujan Ringan' : (i % 2 === 0 ? 'Cerah Berawan' : 'Cerah Terik'),
       curah_hujan: isRain ? 18.5 : 2.0,
@@ -178,6 +187,7 @@ export function getFallbackWeatherData(daerah: string): WeatherData {
     sumber_data: 'Dataset Mikroklimat Regional (Offline Fallback)',
     lat: profile.lat,
     lon: profile.lon,
-    prakiraan_7hari: prakiraan7Hari
+    prakiraan_7hari: prakiraan14Hari,
+        prakiraan_14hari: prakiraan14Hari
   };
 }

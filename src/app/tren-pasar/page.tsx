@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { 
@@ -18,7 +18,7 @@ export default function TrenPasarPage() {
   const maxPrice = Math.max(...currentTrend.historis_bulanan.map(h => h.harga));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-8 pb-12">
       
       {/* Header */}
       <div className="space-y-1">
@@ -35,7 +35,7 @@ export default function TrenPasarPage() {
       </div>
 
       {/* Commodity Selector Tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
         {COMMODITY_TRENDS.map((item) => {
           const isSelected = selectedKomoditas === item.komoditas;
           return (
@@ -151,7 +151,7 @@ export default function TrenPasarPage() {
               </div>
 
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5">
-                <span className="text-xs font-bold text-emerald-900">💡 Rekomendasi Waktu Tanam Cerdas:</span>
+                <span className="text-xs font-bold text-emerald-900">ðŸ’¡ Rekomendasi Waktu Tanam Cerdas:</span>
                 <p className="text-xs text-emerald-950 font-medium leading-relaxed mt-1">
                   {currentTrend.rekomendasi_waktu_tanam}
                 </p>
@@ -182,7 +182,7 @@ export default function TrenPasarPage() {
             {/* Input Luas */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-slate-700">
-                Luas Lahan Anda (m²):
+                Luas Lahan Anda (mÂ²):
               </label>
               <div className="flex gap-2">
                 <input
@@ -201,7 +201,7 @@ export default function TrenPasarPage() {
                       onClick={() => setCalcLuas(v)}
                       className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-semibold text-slate-700"
                     >
-                      {v >= 10000 ? `${v/10000}ha` : `${v}m²`}
+                      {v >= 10000 ? `${v/10000}ha` : `${v}mÂ²`}
                     </button>
                   ))}
                 </div>
@@ -241,7 +241,7 @@ export default function TrenPasarPage() {
             </div>
 
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-[11px] text-amber-900 leading-relaxed">
-              📌 <em>Catatan: Angka di atas dihitung dengan asumsi pemeliharaan sesuai rekomendasi pupuk presisi dan panen pada periode puncak permintaan.</em>
+              ðŸ“Œ <em>Catatan: Angka di atas dihitung dengan asumsi pemeliharaan sesuai rekomendasi pupuk presisi dan panen pada periode puncak permintaan.</em>
             </div>
 
           </div>

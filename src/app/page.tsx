@@ -3,15 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
-import AutonomousFarmlandDrone from '@/components/AutonomousFarmlandDrone';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
 import { useEffect, useState } from 'react';
-import { MapPin, Sprout } from 'lucide-react';
-import { PetaniRecord, WeatherData } from '@/lib/types';
+import { MapPin } from 'lucide-react';
+import { WeatherData } from '@/lib/types';
 
 export default function HomePage() {
-  const [petaniList, setPetaniList] = useState<PetaniRecord[]>([]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,32 +19,16 @@ export default function HomePage() {
   useEffect(() => {
     async function initData() {
       try {
-        const resPetani = await fetch('/api/petani', { cache: 'no-store' });
-        const dataP = await resPetani.json();
-        
-        let targetDaerah = 'Brebes, Jawa Tengah';
-        let targetLat: number | undefined;
-        let targetLon: number | undefined;
+        const targetDaerah = 'Brebes, Jawa Tengah';
+        const targetLat = -6.8703;
+        const targetLon = 109.0435;
+        setLocationName(targetDaerah);
 
-        if (dataP.success && dataP.data && dataP.data.length > 0) {
-          setPetaniList(dataP.data);
-          // Jika sudah ada lahan petani terdaftar, gunakan lokasi lahan petani pertama
-          const first = dataP.data[0];
-          targetDaerah = first.daerah;
-          targetLat = first.lat;
-          targetLon = first.lon;
-          setLocationName(targetDaerah);
-        }
-
-        const weatherUrl = (targetLat && targetLon) 
-          ? `/api/cuaca?lat=${targetLat}&lon=${targetLon}` 
-          : `/api/cuaca?daerah=${encodeURIComponent(targetDaerah)}`;
-
+        const weatherUrl = `/api/cuaca?lat=${targetLat}&lon=${targetLon}`;
         const resWeather = await fetch(weatherUrl, { cache: 'no-store' });
         const dataW = await resWeather.json();
         if (dataW.success) {
           setWeather(dataW.data);
-          if (dataW.daerah) setLocationName(dataW.daerah);
         }
       } catch (e) {
         console.error(e);
@@ -56,26 +38,6 @@ export default function HomePage() {
     }
     initData();
   }, []);
-
-  // Handler ganti sawah terdaftar
-  const handleSelectPetaniLocation = async (daerah: string, lat?: number, lon?: number) => {
-    try {
-      setLoading(true);
-      const url = (lat && lon) 
-        ? `/api/cuaca?lat=${lat}&lon=${lon}` 
-        : `/api/cuaca?daerah=${encodeURIComponent(daerah)}`;
-      const res = await fetch(url, { cache: 'no-store' });
-      const json = await res.json();
-      if (json.success && json.data) {
-        setWeather(json.data);
-        setLocationName(daerah);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Label cerdas waktu & cuaca
   const getCuacaLabel = () => {
@@ -100,7 +62,7 @@ export default function HomePage() {
           alt="Lahan Pertanian Kertanusa"
           fill
           priority
-          className="object-cover object-center"
+          className="hero-banner-image"
           sizes="100vw"
         />
 
@@ -111,43 +73,23 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between pt-24 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24">
           
           {/* Bagian Atas: Judul Sinergi Cerdas Ekosistem Pertanian */}
-          <div className="max-w-2xl text-white space-y-3.5">
+          <div className="max-w-3xl text-white space-y-3.5">
             <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] text-white drop-shadow-md">
-              Kreasi Riset Tani Nusantara
+              Revolusi Cerdas Ekosistem Pertanian Nusantara
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-normal max-w-xl drop-shadow">
-              Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat.
+            <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
+              Mengintegrasikan pemantauan geospasial, kecerdasan buatan, dan riset presisi untuk mengawal kedaulatan pangan Indonesia.
             </p>
           </div>
 
           {/* Bagian Bawah: Pantauan Sawah Dinaikkan Sedikit agar Aman dari Tepi Bawah Layar */}
           <div className="max-w-3xl text-white pt-5 border-t border-white/20">
             
-            {/* Baris Informasi Lokasi Pantauan */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div className="flex items-center gap-2 text-sm sm:text-base text-emerald-300 font-semibold drop-shadow">
-                <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Pantauan Sawah: <strong className="text-white font-bold text-base sm:text-lg">{locationName}</strong></span>
-              </div>
-
-              {/* Pilihan cepat ganti lahan jika ada lebih dari 1 sawah */}
-              {petaniList.length > 1 && (
-                <select
-                  onChange={(e) => {
-                    const p = petaniList.find(item => item.id === e.target.value);
-                    if (p) handleSelectPetaniLocation(p.daerah, p.lat, p.lon);
-                  }}
-                  className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-white/25 text-white focus:outline-none cursor-pointer"
-                  title="Ganti lahan sawah yang dipantau"
-                >
-                  {petaniList.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-slate-900 text-white">
-                      {p.nama_petani} ({p.daerah})
-                    </option>
-                  ))}
-                </select>
-              )}
+            {/* Baris Informasi Lokasi Pantauan (Clean tanpa dropdown bapak rio) */}
+            <div className="flex items-center gap-2 text-sm sm:text-base text-emerald-300 font-semibold drop-shadow mb-4">
+              <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Pantauan Sawah: <strong className="text-white font-bold text-base sm:text-lg">{locationName}</strong></span>
             </div>
 
             {/* Baris 4 Indikator Lottie (Berukuran Besar, Realtime Siang/Malam) */}
@@ -161,7 +103,7 @@ export default function HomePage() {
                 <div className="min-w-0">
                   <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Suhu Sawah</span>
                   <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-1">
-                    {weather ? `${weather.suhu}°C` : '24.0°C'}
+                    {weather ? `${weather.suhu}°C` : '29.5°C'}
                   </span>
                 </div>
               </div>
@@ -174,7 +116,7 @@ export default function HomePage() {
                 <div className="min-w-0">
                   <span className="text-xs sm:text-sm text-slate-300 font-medium block leading-tight">Kelembapan Tanah</span>
                   <span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none block mt-1">
-                    {weather ? `${weather.kelembapan_tanah}%` : '55%'}
+                    {weather ? `${weather.kelembapan_tanah}%` : '58%'}
                   </span>
                 </div>
               </div>
@@ -189,7 +131,7 @@ export default function HomePage() {
                     {getCuacaLabel()}
                   </span>
                   <span className="text-lg sm:text-xl font-black text-white block leading-tight mt-1 break-words">
-                    {weather?.kondisi || (new Date().getHours() < 6 || new Date().getHours() >= 18 ? 'Malam Cerah' : 'Pagi Cerah')}
+                    {weather?.kondisi || (new Date().getHours() < 6 || new Date().getHours() >= 18 ? 'Malam Cerah' : 'Cerah Berawan')}
                   </span>
                 </div>
               </div>
@@ -223,7 +165,7 @@ export default function HomePage() {
         </section>
 
         {/* 3. PETA LOKASI SAWAH NUSANTARA 3D */}
-        <section className="space-y-3">
+        <section id="peta-sebaran-lahan" className="space-y-3 scroll-mt-24 sm:scroll-mt-28">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-emerald-600" />
@@ -234,8 +176,6 @@ export default function HomePage() {
             </p>
           </div>
 
-          <AutonomousFarmlandDrone />
-
           <IndonesiaMap3D />
         </section>
 
@@ -243,5 +183,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-

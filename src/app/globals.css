@@ -1,6 +1,10 @@
 @import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
+/* Satellite Map Theme: Dark Ocean Canvas (Prevents White Flashes during Zoom Out) */
+.leaflet-container {
+  background: #081a28 !important;
+}
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
@@ -11,6 +15,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Formal & Natural Editorial Typography for Hero Titles */
@@ -20,8 +26,8 @@ body {
 
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
@@ -34,11 +40,20 @@ body {
   background: #94a3b8;
 }
 
-/* Radar Beacon Animations for Map - Natural Clean Style */
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Hardware-Accelerated Radar Beacon */
 @keyframes radarPing {
-  0% { transform: scale(0.8); opacity: 0.8; }
-  70% { transform: scale(1.6); opacity: 0; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0% { transform: scale3d(0.8, 0.8, 1); opacity: 0.8; }
+  70% { transform: scale3d(1.6, 1.6, 1); opacity: 0; }
+  100% { transform: scale3d(1.6, 1.6, 1); opacity: 0; }
 }
 
 .radar-ping-farmer {
@@ -47,12 +62,171 @@ body {
   border-radius: 9999px;
   background-color: rgba(16, 185, 129, 0.5);
   animation: radarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
 }
 
-.radar-ping-user {
-  position: absolute;
-  inset: -4px;
-  border-radius: 9999px;
-  background-color: rgba(2, 132, 199, 0.6);
-  animation: radarPing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+/* Animated Google-Style Map Pin - Pure GPU Transform */
+@keyframes pinBob {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes pinShadowPulse {
+  0%, 100% {
+    transform: scale3d(1, 1, 1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale3d(0.7, 0.7, 1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes pinRadarWave {
+  0% {
+    transform: scale3d(0.5, 0.5, 1);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale3d(2.1, 2.1, 1);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale3d(2.4, 2.4, 1);
+    opacity: 0;
+  }
+}
+
+/* Telemetry Network Lines across Nusantara (Clean, Ultra-Fast & Zero Drop-Shadow) */
+@keyframes networkDataFlow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.telemetry-network-line {
+  stroke-dasharray: 4, 8;
+  animation: networkDataFlow 2s linear infinite;
+  will-change: stroke-dashoffset;
+}
+
+/* Custom Leaflet Farmer Hover Tooltip */
+.farmer-hover-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.farmer-hover-tooltip.leaflet-tooltip-top:before {
+  border-top-color: #ffffff !important;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+}
+
+
+/* Custom Leaflet Farmer Detail Popup (Anchored directly near farmland pinpoint) */
+.farmer-detail-popup {
+  margin-bottom: 6px !important;
+}
+
+.farmer-detail-popup .leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.16), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.farmer-detail-popup .leaflet-popup-content {
+  margin: 12px 14px !important;
+  width: 290px !important;
+  max-width: 310px !important;
+  font-family: inherit !important;
+  line-height: 1.4 !important;
+}
+
+@media (max-width: 640px) {
+  .farmer-detail-popup .leaflet-popup-content {
+    width: 250px !important;
+    max-width: 270px !important;
+    margin: 10px 12px !important;
+  }
+}
+
+/* Left-pointing tip directed straight to the pin on the left */
+.farmer-detail-popup .leaflet-popup-tip-container {
+  width: 14px !important;
+  height: 28px !important;
+  position: absolute !important;
+  left: -14px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  margin-top: -14px !important;
+  margin-left: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+.farmer-detail-popup .leaflet-popup-tip {
+  background: #ffffff !important;
+  border-left: 1px solid #cbd5e1 !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  border-top: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  padding: 0 !important;
+  margin: 7px 0 0 7px !important;
+  transform: rotate(45deg) !important;
+}
+
+.farmer-detail-popup a.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+  color: #94a3b8 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.farmer-detail-popup a.leaflet-popup-close-button:hover {
+  color: #0f172a !important;
+  background: #f1f5f9 !important;
+}
+
+
+/* On Mobile screens (< 768px), hide Leaflet side popup to prevent overflow, mobile uses Google Maps bottom sheet */
+@media (max-width: 767px) {
+  .farmer-detail-popup {
+    display: none !important;
+  }
+}
+
+
+/* Hero Banner Image Mobile Responsive Focus (Focus on standing farmer on mobile) */
+.hero-banner-image {
+  object-fit: cover !important;
+  object-position: 74% center !important;
+}
+
+@media (min-width: 768px) {
+  .hero-banner-image {
+    object-position: center center !important;
+  }
 }

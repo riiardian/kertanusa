@@ -81,7 +81,7 @@ export default function ScanAiPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-8 pb-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16 space-y-8 pb-12">
       
       {/* Header */}
       <div className="space-y-1 text-center sm:text-left">

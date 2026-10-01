@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -133,7 +133,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
             </div>
             <div>
               <h4 className="font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-1.5">
-                <span>🎉 Selamat Pak Tani! Tanaman Anda Siap Dipanen Hari Ini!</span>
+                <span>ðŸŽ‰ Selamat Pak Tani! Tanaman Anda Siap Dipanen Hari Ini!</span>
               </h4>
               <p className="text-xs text-slate-900/90 font-medium">
                 {currentPlant.jenis_tanaman} telah mencapai usia {currentAge} hari dengan kematangan sempurna 100%. Waktunya panen raya!
@@ -175,7 +175,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
                 Streak Rawat
               </span>
               <span className="text-base font-extrabold text-slate-900 leading-none">
-                {streakDays} Hari 🔥
+                {streakDays} Hari ðŸ”¥
               </span>
             </div>
           </div>
@@ -349,7 +349,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
                 onClick={() => setSimulatedDayOffset(65)}
                 className="px-2 py-0.5 rounded bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer shadow-xs"
               >
-                Hari 100 (Panen 🎉)
+                Hari 100 (Panen ðŸŽ‰)
               </button>
             </div>
           </div>
@@ -385,7 +385,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
             <div className="flex justify-between text-[11px] text-slate-500 pt-0.5">
               <span>Hari 1: Mulai Tanam</span>
               <span className="font-semibold text-slate-800">
-                {isSiapPanen ? '✨ Siap Dipanen Hari Ini!' : `Tersisa ±${daysLeft} Hari Lagi`}
+                {isSiapPanen ? 'âœ¨ Siap Dipanen Hari Ini!' : `Tersisa Â±${daysLeft} Hari Lagi`}
               </span>
             </div>
           </div>
@@ -429,7 +429,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
                       : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'
                   }`}
                 >
-                  {tasksDone.siram ? '✓ Selesai' : 'Selesai Siram'}
+                  {tasksDone.siram ? 'âœ“ Selesai' : 'Selesai Siram'}
                 </button>
               </div>
 
@@ -458,7 +458,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
                       : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'
                   }`}
                 >
-                  {tasksDone.pupuk ? '✓ Selesai' : 'Selesai Dipupuk'}
+                  {tasksDone.pupuk ? 'âœ“ Selesai' : 'Selesai Dipupuk'}
                 </button>
               </div>
 
@@ -487,7 +487,7 @@ export default function CropGamificationTracker({ petaniList = [] }: CropGamific
                       : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'
                   }`}
                 >
-                  {tasksDone.cekHama ? '✓ Selesai' : 'Selesai Dicek'}
+                  {tasksDone.cekHama ? 'âœ“ Selesai' : 'Selesai Dicek'}
                 </button>
               </div>
 
