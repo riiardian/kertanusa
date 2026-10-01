@@ -635,7 +635,7 @@ export default function MonitoringPage() {
       </div>
 
       {/* 5. PANEL PANDUAN PERAWATAN SAWAH & TANAMAN (SEGMENTED TABS) */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-xs space-y-4 sm:space-y-5">
         
         {/* Header & Segmented Controller */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
@@ -644,42 +644,42 @@ export default function MonitoringPage() {
             <p className="text-xs text-slate-500 mt-0.5">Petunjuk praktis lapangan berdasarkan kondisi cuaca dan tanah hari ini.</p>
           </div>
 
-          {/* Segmented Controller Tab Buttons */}
-          <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/80 self-start sm:self-auto">
+          {/* Segmented Controller Tab Buttons (Full width & spacious on mobile) */}
+          <div className="w-full sm:w-auto grid grid-cols-3 p-1 bg-slate-100 rounded-xl border border-slate-200/80 gap-1">
             <button
               onClick={() => setActiveTab('semprot')}
-              className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-1.5 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer text-center ${
                 activeTab === 'semprot'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Clock className="w-3.5 h-3.5 text-slate-500" />
-              <span>Jadwal Semprot</span>
+              <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <span className="truncate">Jadwal Semprot</span>
             </button>
 
             <button
               onClick={() => setActiveTab('irigasi')}
-              className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-1.5 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer text-center ${
                 activeTab === 'irigasi'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Droplets className="w-3.5 h-3.5 text-blue-600" />
-              <span>Air Sawah & Pupuk</span>
+              <Droplets className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span className="truncate">Air & Pupuk</span>
             </button>
 
             <button
               onClick={() => setActiveTab('siklus')}
-              className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-1.5 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 cursor-pointer text-center ${
                 activeTab === 'siklus'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Usia & Pertumbuhan</span>
+              <Sprout className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="truncate">Usia & Tumbuh</span>
             </button>
           </div>
         </div>
@@ -687,16 +687,16 @@ export default function MonitoringPage() {
         {/* TAB 1: JADWAL SEMPROT OBAT */}
         {activeTab === 'semprot' && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            {/* Operational Banner Tanpa Badge */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500">Status Semprot:</span>
-                  <strong className="text-xs sm:text-sm text-slate-900">{sprayAdvisor.status}</strong>
+            {/* Operational Banner */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 pb-2.5 border-b border-slate-200/70">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] text-slate-500 font-medium block">Status Semprot</span>
+                  <strong className="text-xs sm:text-sm text-slate-900 block font-bold">{sprayAdvisor.status}</strong>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-slate-500">Waktu Semprot Terbaik:</span>
-                  <strong className="text-slate-900">{sprayAdvisor.timeWindow}</strong>
+                <div className="space-y-0.5">
+                  <span className="text-[11px] text-slate-500 font-medium block">Waktu Semprot Terbaik</span>
+                  <strong className="text-xs sm:text-sm text-slate-900 block font-bold">{sprayAdvisor.timeWindow}</strong>
                 </div>
               </div>
               <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
@@ -704,43 +704,43 @@ export default function MonitoringPage() {
               </p>
             </div>
 
-            {/* Grid 2 Kartu Pendukung Tanpa Badge */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl border border-slate-200 space-y-2">
+            {/* Grid 2 Kartu Pendukung */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+              <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                    <Wind className="w-3.5 h-3.5 text-slate-500" />
+                    <Wind className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                     Kondisi Angin & Cuaca
                   </span>
                   <span className="text-[11px] text-slate-400">BMKG Live</span>
                 </div>
-                <div className="space-y-1.5 pt-1 text-slate-600">
-                  <div className="flex justify-between">
+                <div className="space-y-2 pt-1 text-slate-600">
+                  <div className="flex justify-between items-center py-0.5">
                     <span>Kecepatan Angin:</span>
-                    <strong className="text-slate-900">{weather.kecepatan_angin || 8} km/jam</strong>
+                    <strong className="text-slate-900 font-semibold">{weather.kecepatan_angin || 8} km/jam</strong>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center py-0.5">
                     <span>Suhu Udara:</span>
-                    <strong className="text-slate-900">{weather.suhu}°C</strong>
+                    <strong className="text-slate-900 font-semibold">{weather.suhu}°C</strong>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center py-0.5">
                     <span>Kelembapan Udara:</span>
-                    <strong className="text-slate-900">{weather.kelembapan_udara}%</strong>
+                    <strong className="text-slate-900 font-semibold">{weather.kelembapan_udara}%</strong>
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-100">
+                <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-100 leading-relaxed">
                   Angin tenang di bawah 12 km/jam aman untuk semprot tanpa takut obat melayang ke luar petak sawah.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-2">
                   <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-slate-500" />
+                    <Activity className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                     Risiko Jamur & Penyakit Daun
                   </span>
                   <span className="font-bold text-slate-900 text-xs">
-                    {fungalRisk.level} (Skor {fungalRisk.score}/100)
+                    {fungalRisk.level}
                   </span>
                 </div>
                 <p className="text-slate-600 text-xs leading-relaxed pt-1">
@@ -832,16 +832,16 @@ export default function MonitoringPage() {
         {/* TAB 3: USIA & PERTUMBUHAN */}
         {activeTab === 'siklus' && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            {/* Operational Banner Tanpa Badge */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500">Tahapan Tanaman Saat Ini:</span>
-                  <strong className="text-slate-900 text-xs sm:text-sm">{gddTracker.phase}</strong>
+            {/* Operational Banner */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 pb-2.5 border-b border-slate-200/70">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] text-slate-500 font-medium block">Tahapan Tanaman Saat Ini</span>
+                  <strong className="text-xs sm:text-sm text-slate-900 block font-bold">{gddTracker.phase}</strong>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-slate-500">Umur Tanaman:</span>
-                  <strong className="text-slate-900">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] text-slate-500 font-medium block">Umur Tanaman</span>
+                  <strong className="text-xs sm:text-sm text-slate-900 block font-bold">
                     {gddTracker.days} HST (Hari Setelah Tanam)
                   </strong>
                 </div>
@@ -851,54 +851,108 @@ export default function MonitoringPage() {
               </p>
             </div>
 
-            {/* Tahapan Siklus Tanam Ringkas & Rapi Tanpa Badge */}
-            <div className="p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
-              <div className="font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center justify-between">
-                <span>Tahapan Perkembangan Tanaman</span>
-                <span className="text-slate-500 font-normal">Komoditas: <strong>{activePetani.jenis_tanaman}</strong></span>
+            {/* Tahapan Siklus Tanam Ringkas & Rapi */}
+            <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+              <div className="border-b border-slate-100 pb-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span className="font-bold text-slate-900 text-xs sm:text-sm">Tahapan Perkembangan Tanaman</span>
+                <span className="text-slate-500 font-normal text-xs">Komoditas: <strong className="text-slate-800">{activePetani.jenis_tanaman}</strong></span>
               </div>
 
               <div className="divide-y divide-slate-100 text-xs">
-                <div className={`py-2.5 flex items-center justify-between ${gddTracker.stageIndex === 0 ? 'font-bold text-slate-900 bg-slate-50 -mx-2 px-2 rounded' : 'text-slate-600'}`}>
-                  <span className="flex items-center gap-2">
-                    <span>1. Awal Tanam & Tumbuh Akar</span>
-                    {gddTracker.stageIndex === 0 && <span className="text-[11px] text-emerald-800 font-bold">(Tahap Sekarang)</span>}
+                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                  gddTracker.stageIndex === 0 
+                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                    <span className="text-xs sm:text-sm leading-snug">1. Awal Tanam & Tumbuh Akar</span>
+                    {gddTracker.stageIndex === 0 && (
+                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                        Tahap Sekarang
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                    HST 1 – 20
                   </span>
-                  <span className="font-mono text-[11px]">HST 1 – 20</span>
                 </div>
-                <div className={`py-2.5 flex items-center justify-between ${gddTracker.stageIndex === 1 ? 'font-bold text-slate-900 bg-slate-50 -mx-2 px-2 rounded' : 'text-slate-600'}`}>
-                  <span className="flex items-center gap-2">
-                    <span>2. Pembentukan Daun & Anakan</span>
-                    {gddTracker.stageIndex === 1 && <span className="text-[11px] text-emerald-800 font-bold">(Tahap Sekarang)</span>}
+
+                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                  gddTracker.stageIndex === 1 
+                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                    <span className="text-xs sm:text-sm leading-snug">2. Pembentukan Daun & Anakan</span>
+                    {gddTracker.stageIndex === 1 && (
+                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                        Tahap Sekarang
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                    HST 21 – 50
                   </span>
-                  <span className="font-mono text-[11px]">HST 21 – 50</span>
                 </div>
-                <div className={`py-2.5 flex items-center justify-between ${gddTracker.stageIndex === 2 ? 'font-bold text-slate-900 bg-slate-50 -mx-2 px-2 rounded' : 'text-slate-600'}`}>
-                  <span className="flex items-center gap-2">
-                    <span>3. Bunting / Keluar Malai Bunga</span>
-                    {gddTracker.stageIndex === 2 && <span className="text-[11px] text-emerald-800 font-bold">(Tahap Sekarang)</span>}
+
+                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                  gddTracker.stageIndex === 2 
+                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                    <span className="text-xs sm:text-sm leading-snug">3. Bunting / Keluar Malai Bunga</span>
+                    {gddTracker.stageIndex === 2 && (
+                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                        Tahap Sekarang
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                    HST 51 – 75
                   </span>
-                  <span className="font-mono text-[11px]">HST 51 – 75</span>
                 </div>
-                <div className={`py-2.5 flex items-center justify-between ${gddTracker.stageIndex === 3 ? 'font-bold text-slate-900 bg-slate-50 -mx-2 px-2 rounded' : 'text-slate-600'}`}>
-                  <span className="flex items-center gap-2">
-                    <span>4. Pengisian Bulir Padi / Buah</span>
-                    {gddTracker.stageIndex === 3 && <span className="text-[11px] text-emerald-800 font-bold">(Tahap Sekarang)</span>}
+
+                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                  gddTracker.stageIndex === 3 
+                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                    <span className="text-xs sm:text-sm leading-snug">4. Pengisian Bulir Padi / Buah</span>
+                    {gddTracker.stageIndex === 3 && (
+                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                        Tahap Sekarang
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                    HST 76 – 95
                   </span>
-                  <span className="font-mono text-[11px]">HST 76 – 95</span>
                 </div>
-                <div className={`py-2.5 flex items-center justify-between ${gddTracker.stageIndex === 4 ? 'font-bold text-slate-900 bg-slate-50 -mx-2 px-2 rounded' : 'text-slate-600'}`}>
-                  <span className="flex items-center gap-2">
-                    <span>5. Padi Menguning & Siap Panen</span>
-                    {gddTracker.stageIndex === 4 && <span className="text-[11px] text-emerald-800 font-bold">(Tahap Sekarang)</span>}
+
+                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                  gddTracker.stageIndex === 4 
+                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                    <span className="text-xs sm:text-sm leading-snug">5. Padi Menguning & Siap Panen</span>
+                    {gddTracker.stageIndex === 4 && (
+                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                        Tahap Sekarang
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                    HST 96+
                   </span>
-                  <span className="font-mono text-[11px]">HST 96+</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-500">
-                <span>Mulai Tanam: <strong className="text-slate-700">{activePetani.waktu_tanam}</strong></span>
-                <span>Perkiraan Panen: <strong className="text-slate-700">{activePetani.estimasi_panen}</strong></span>
+              <div className="pt-2.5 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500">
+                <span>Mulai Tanam: <strong className="text-slate-800 font-semibold">{activePetani.waktu_tanam}</strong></span>
+                <span>Perkiraan Panen: <strong className="text-slate-800 font-semibold">{activePetani.estimasi_panen}</strong></span>
               </div>
             </div>
           </div>
