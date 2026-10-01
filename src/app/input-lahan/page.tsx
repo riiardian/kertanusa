@@ -181,7 +181,7 @@ export default function InputLahanPage() {
       (err) => {
         setGpsStatus('error');
         if (err.code === 1) {
-          setGpsErrorMsg('Akses GPS satelit ditolak browser HP karena koneksi HTTP (bukan HTTPS). Buka chrome://flags di HP dan aktifkan "Insecure origins treated as secure" untuk http://10.73.242.95:3000, atau gunakan Pilihan Cepat di bawah.');
+          setGpsErrorMsg('Akses GPS ditolak peramban. Silakan izinkan akses lokasi (GPS) pada pengaturan browser HP Anda.');
         } else if (err.code === 2) {
           setGpsErrorMsg('Sinyal satelit GPS tidak terdeteksi. Pastikan fitur lokasi HP Anda aktif.');
         } else {
@@ -381,15 +381,15 @@ export default function InputLahanPage() {
             />
           </div>
 
-          {/* Wilayah / Lokasi & Tombol GPS (Awalnya Kosong) */}
+          {/* Wilayah / Lokasi & Tombol GPS (Hanya via GPS, Input Manual Diblok) */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-semibold text-slate-700">
                 Wilayah / Lokasi Lahan <span className="text-rose-500">*</span>
               </label>
               {formData.lat && formData.lon && (
-                <span className="text-[11px] text-slate-500 font-mono">
-                  GPS: {formData.lat.toFixed(4)}, {formData.lon.toFixed(4)}
+                <span className="text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  GPS: {formData.lat.toFixed(4)}, {formData.lon.toFixed(4)} ({formData.akurasi_gps ? `±${formData.akurasi_gps}m` : 'Terkunci'})
                 </span>
               )}
             </div>
@@ -398,56 +398,31 @@ export default function InputLahanPage() {
               <input
                 type="text"
                 required
+                readOnly
                 value={formData.daerah}
-                onChange={(e) => setFormData({ ...formData, daerah: e.target.value })}
-                placeholder="Ketik wilayah (contoh: Brebes)"
-                className="flex-1 px-3.5 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 text-sm outline-none transition-all duration-200 font-medium text-slate-900 placeholder:text-slate-400"
+                placeholder="Klik tombol Ambil GPS untuk mengunci lokasi lahan"
+                className="flex-1 px-3.5 py-2.5 rounded-lg border border-slate-300 bg-slate-50 text-slate-800 text-sm outline-none cursor-not-allowed select-none font-medium placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-sm"
               />
               <button
                 type="button"
                 onClick={handleActivateGps}
                 disabled={gpsStatus === 'loading'}
-                className="px-3.5 py-2.5 rounded-lg border border-slate-300 hover:bg-slate-50 active:scale-95 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer shrink-0"
+                className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer shrink-0 disabled:opacity-60 shadow-xs"
               >
                 {gpsStatus === 'loading' ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-600" />
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
                 ) : (
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                  <MapPin className="w-3.5 h-3.5 text-white" />
                 )}
                 <span>{gpsStatus === 'loading' ? 'Mendeteksi...' : 'Ambil GPS'}</span>
               </button>
             </div>
 
             {gpsStatus === 'error' && (
-              <p className="text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
+              <p className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
                 {gpsErrorMsg}
               </p>
             )}
-
-            {/* Pilihan Cepat Wilayah */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-              <span className="text-[11px] text-slate-400">Pilihan cepat:</span>
-              {REGIONS.slice(0, 5).map((r) => (
-                <button
-                  type="button"
-                  key={r.id}
-                  onClick={() => {
-                    setFormData(prev => ({
-                      ...prev,
-                      daerah: r.nama,
-                      lat: r.lat,
-                      lon: r.lon,
-                      akurasi_gps: 10
-                    }));
-                    setGpsStatus('idle');
-                    setGpsErrorMsg('');
-                  }}
-                  className="px-2.5 py-1 rounded-md text-[11px] bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium transition-all duration-150 cursor-pointer"
-                >
-                  {r.nama.split(',')[0]}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Jenis Tanaman (Input Bebas Manual 100% Tanpa Dropdown) */}
