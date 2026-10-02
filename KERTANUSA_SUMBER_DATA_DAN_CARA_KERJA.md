@@ -186,11 +186,20 @@ Cara kerjanya: foto daun dipecah dan dicek pola, warna, dan teksturnya di setiap
 
 ---
 
-### 7. Komoditas Apa yang Aman Ditanam Sekarang?
+### 7. Bagaimana Sistem Menentukan Komoditas dan Bibit Unggul yang Paling Cocok untuk Wilayah Petani?
 
-**Sistem membaca:** data produksi nasional 5 tahun terakhir dari BPS, indeks kesejahteraan petani (NTP), dan fluktuasi harga pasar dari Bapanas.
+**Sistem membaca:** data tren harga pasar Bapanas, musim puncak permintaan, ketinggian lahan (mdpl), jenis tanah & pH, tipe pengairan (irigasi teknis/tadah hujan/rawa), serta musim berjalan (rendengan/gadu).
 
-Cara sistem menilainya sederhana: komoditas yang bagus untuk ditanam adalah yang punya tren produksi stabil, NTP-nya di atas 100 (artinya petani masih untung), dan pasar penyerapannya jelas. Kalau ketiga syarat itu terpenuhi, sistem memberi label **"Aman Ditanam"**. Kalau harganya sering anjlok saat musim panen raya karena semua petani menanam serentak, sistem memberi catatan peringatan.
+Cara sistem memutuskan varietas bibit terbaik:
+1. **Analisis Risiko Lingkungan & Hama Musiman:**
+   - Jika menanam di musim hujan pada lahan irigasi dataran rendah: sistem memprioritaskan bibit yang kebal terhadap Hawar Daun Bakteri (Kresek) dan jamur blast (contoh: **Inpari 32 HDB**).
+   - Jika lahan sering tergenang banjir atau petani ingin menghemat biaya pupuk: sistem merekomendasikan varietas **Inpari 42 Agritan GSR (Green Super Rice)** yang tahan rendaman 14 hari dan hemat pupuk hingga 25%.
+   - Jika menanam di musim kemarau di wilayah endemik hama: sistem memilih varietas yang tahan Wereng Batang Coklat (WBC) biotipe 1, 2, 3 dan berumur sangat genjah (contoh: **Inpari 33**).
+   - Jika lahan berupa tadah hujan atau tanah masam ber-pH rendah (<5.5): sistem memilih varietas gogo yang toleran kekeringan dan tahan keracunan aluminium (contoh: **Inpago 8**).
+   - Jika lahan berupa rawa lebak atau pasang surut: sistem memilih varietas toleran genangan air asam dan zat besi tinggi (contoh: **Inpara 3**).
+   - Jika berada di dataran sedang-tinggi dengan air pegunungan jernih: sistem memberikan opsi varietas beras premium beraroma wangi (contoh: **Menthik Wangi / Pandan Wangi**) untuk margin keuntungan restoran hotel.
+2. **Kesesuaian Daya Beli Pasar:**
+   Bibit yang dipilih harus memiliki daya serap pasar yang tinggi di penggilingan padi nasional dan pasar induk grosir, sehingga hasil panen tidak mengalami diskon harga atau ditolak pedagang saat panen raya.
 
 ---
 
