@@ -30,6 +30,8 @@ export default function InputLahanPage() {
   const [success, setSuccess] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Cek apakah user sudah pernah mendaftarkan lahan sebelumnya dan validasi dengan database
   useEffect(() => {
@@ -81,9 +83,9 @@ export default function InputLahanPage() {
     checkActiveFarmer();
   }, []);
 
-  async function handleDeleteSaved() {
+    async function executeDeleteSaved() {
     if (!savedData) return;
-    if (!confirm(`Yakin ingin menghapus data lahan "${savedData.nama_petani}"? Profil lahan akan dihapus dan Anda dapat mendaftarkan lahan baru.`)) return;
+    setIsDeleting(true);
 
     try {
       if (savedData.id) {
@@ -91,27 +93,29 @@ export default function InputLahanPage() {
       }
     } catch (e) {
       console.error('Gagal menghapus data di server:', e);
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('kertanusa_active_farmer_id');
+        localStorage.removeItem('kertanusa_active_farmer_data');
+      }
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setSavedData(null);
+      setIsEditing(false);
+      setFormData({
+        nama_petani: '',
+        kontak: '',
+        luas_tanah: '',
+        satuan_luas: 'm²',
+        daerah: '',
+        lat: undefined,
+        lon: undefined,
+        akurasi_gps: undefined,
+        jenis_tanaman: '',
+        waktu_tanam: new Date().toISOString().split('T')[0],
+        catatan: ''
+      });
     }
-
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('kertanusa_active_farmer_id');
-      localStorage.removeItem('kertanusa_active_farmer_data');
-    }
-    setSavedData(null);
-    setIsEditing(false);
-    setFormData({
-      nama_petani: '',
-      kontak: '',
-      luas_tanah: '',
-      satuan_luas: 'm²',
-      daerah: '',
-      lat: undefined,
-      lon: undefined,
-      akurasi_gps: undefined,
-      jenis_tanaman: '',
-      waktu_tanam: new Date().toISOString().split('T')[0],
-      catatan: ''
-    });
   }
 
   // Animasi Toast dinamis gaya AeroFlazz (muncul halus slide-down, stay 3.5 detik, exit slide-up mulus)
@@ -354,7 +358,7 @@ export default function InputLahanPage() {
 
               <button
                 type="button"
-                onClick={handleDeleteSaved}
+                onClick={() => setShowDeleteModal(true)}
                 className="w-full py-2.5 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 active:scale-[0.98] border border-rose-200 font-semibold text-xs transition-all duration-200 text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5 text-rose-500" />
@@ -518,7 +522,54 @@ export default function InputLahanPage() {
 
         </form>
       )}
+      {/* Modal Konfirmasi Hapus Data Lahan (Custom, Modern & Clean) */}
+      {showDeleteModal && savedData && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isDeleting) setShowDeleteModal(false);
+          }}
+        >
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-xs">
+              <Trash2 className="w-6 h-6 text-rose-600" />
+            </div>
 
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-slate-900">Hapus Profil Lahan?</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Data lahan atas nama <span className="font-semibold text-slate-800">&ldquo;{savedData.nama_petani}&rdquo;</span> akan dihapus dari sistem. Anda dapat mendaftarkan profil lahan baru setelahnya.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95 font-semibold text-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={executeDeleteSaved}
+                disabled={isDeleting}
+                className="w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Menghapus...</span>
+                  </>
+                ) : (
+                  <span>Ya, Hapus</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
