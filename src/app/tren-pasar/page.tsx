@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { COMMODITY_TRENDS, calculateProfitProjection } from '@/lib/market_demand';
+import { COMMODITY_TRENDS, CommodityCategory, calculateProfitProjection } from '@/lib/market_demand';
 import { 
   recommendBestSeeds, 
   LandConditionInput 
@@ -31,6 +31,16 @@ const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   created_at: new Date().toISOString()
 };
 
+// Semua kategori yang tersedia
+const ALL_CATEGORIES: CommodityCategory[] = [
+  'Tanaman Pangan',
+  'Sayuran',
+  'Buah-Buahan',
+  'Rempah & Bumbu',
+  'Perkebunan',
+  'Tanaman Obat'
+];
+
 // Deteksi kategori komoditas benih dari nama komoditas
 function getSeedKomoditasKey(komoditasName: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur' {
   const lower = (komoditasName || '').toLowerCase();
@@ -51,11 +61,42 @@ function matchCommodityToTrend(cropName: string): string {
   if (lower.includes('jeruk') || lower.includes('citrus') || lower.includes('keprok') || lower.includes('siam')) return 'Jeruk (Siam / Keprok)';
   if (lower.includes('cokelat') || lower.includes('coklat') || lower.includes('kakao') || lower.includes('cocoa')) return 'Cokelat / Kakao';
   if (lower.includes('anggur') || lower.includes('grape')) return 'Anggur';
+  if (lower.includes('bawang putih') || lower.includes('garlic')) return 'Bawang Putih';
   if (lower.includes('bawang')) return 'Bawang Merah';
+  if (lower.includes('cabai merah besar') || lower.includes('cabe merah besar')) return 'Cabai Merah Besar';
   if (lower.includes('cabai') || lower.includes('cabe') || lower.includes('chili') || lower.includes('lombok')) return 'Cabai Rawit Merah';
   if (lower.includes('jagung')) return 'Jagung Manis';
   if (lower.includes('tomat')) return 'Tomat Sayur';
   if (lower.includes('padi') || lower.includes('beras') || lower.includes('gabah')) return 'Padi Sawah';
+  if (lower.includes('singkong') || lower.includes('ubi kayu')) return 'Ubi Kayu / Singkong';
+  if (lower.includes('ubi jalar')) return 'Ubi Jalar';
+  if (lower.includes('kedelai')) return 'Kedelai';
+  if (lower.includes('kacang tanah')) return 'Kacang Tanah';
+  if (lower.includes('kentang')) return 'Kentang';
+  if (lower.includes('wortel')) return 'Wortel';
+  if (lower.includes('kubis') || lower.includes('kol')) return 'Kubis / Kol';
+  if (lower.includes('buncis')) return 'Buncis';
+  if (lower.includes('kangkung')) return 'Kangkung';
+  if (lower.includes('bayam')) return 'Bayam';
+  if (lower.includes('terong')) return 'Terong';
+  if (lower.includes('timun') || lower.includes('mentimun')) return 'Timun / Mentimun';
+  if (lower.includes('pisang')) return 'Pisang';
+  if (lower.includes('mangga')) return 'Mangga';
+  if (lower.includes('semangka')) return 'Semangka';
+  if (lower.includes('melon')) return 'Melon';
+  if (lower.includes('pepaya')) return 'Pepaya';
+  if (lower.includes('jambu biji') || lower.includes('jambu')) return 'Jambu Biji';
+  if (lower.includes('jahe')) return 'Jahe Merah';
+  if (lower.includes('kunyit')) return 'Kunyit';
+  if (lower.includes('kencur')) return 'Kencur';
+  if (lower.includes('lengkuas')) return 'Lengkuas';
+  if (lower.includes('sawit') || lower.includes('kelapa sawit')) return 'Kelapa Sawit';
+  if (lower.includes('kopi arabika') || lower.includes('arabika')) return 'Kopi Arabika';
+  if (lower.includes('kopi robusta') || lower.includes('robusta')) return 'Kopi Robusta';
+  if (lower.includes('karet')) return 'Karet';
+  if (lower.includes('tembakau')) return 'Tembakau';
+  if (lower.includes('lidah buaya') || lower.includes('aloe')) return 'Lidah Buaya';
+  if (lower.includes('temulawak')) return 'Temulawak';
   return 'Bawang Merah';
 }
 
@@ -128,7 +169,11 @@ export default function TrenPasarPage() {
     return matchCommodityToTrend(activePetani.jenis_tanaman);
   });
 
-  // Hitung Hari Setelah Tanam (HST) persis format monitoring iklim
+  // State untuk filter UI komoditas
+  const [activeCategory, setActiveCategory] = useState<CommodityCategory | 'Semua'>('Semua');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Hitung Hari Setelah Tanam (HST)
   const daysPassed = useMemo(() => {
     const plantDateStr = activePetani?.waktu_tanam;
     if (!plantDateStr) return 1;
@@ -198,15 +243,11 @@ export default function TrenPasarPage() {
 
     initFarmerData();
 
-    const handleSync = () => {
-      initFarmerData();
-    };
-
+    const handleSync = () => { initFarmerData(); };
     if (typeof window !== 'undefined') {
       window.addEventListener('storage', handleSync);
       window.addEventListener('focus', handleSync);
     }
-
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('storage', handleSync);
@@ -224,6 +265,16 @@ export default function TrenPasarPage() {
       ? Number(activePetani.luas_tanah) * 10000
       : Number(activePetani.luas_tanah);
   }, [activePetani]);
+
+  // Filter komoditas berdasarkan kategori & search
+  const filteredCommodities = useMemo(() => {
+    return COMMODITY_TRENDS.filter(item => {
+      const matchCat = activeCategory === 'Semua' || item.kategori === activeCategory;
+      const matchSearch = searchQuery === '' || 
+        item.komoditas.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCat && matchSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   const seedKomoditasKey = useMemo(() => getSeedKomoditasKey(selectedKomoditas), [selectedKomoditas]);
   const condition = useMemo(() => deriveLandCondition(activePetani, seedKomoditasKey), [activePetani, seedKomoditasKey]);
@@ -244,10 +295,19 @@ export default function TrenPasarPage() {
   const bestSeed = recommendation.varietasTerbaik;
   const altSeeds = recommendation.varietasAlternatif;
 
+  // Jumlah komoditas per kategori
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { 'Semua': COMMODITY_TRENDS.length };
+    ALL_CATEGORIES.forEach(cat => {
+      counts[cat] = COMMODITY_TRENDS.filter(c => c.kategori === cat).length;
+    });
+    return counts;
+  }, []);
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16 space-y-6 text-slate-800">
       
-      {/* 1. HEADER HALAMAN (CLEAN & NATURAL KONSISTEN) */}
+      {/* 1. HEADER */}
       <div className="space-y-1">
         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
           Daya Beli Pasar & Rekomendasi Bibit
@@ -257,7 +317,7 @@ export default function TrenPasarPage() {
         </p>
       </div>
 
-      {/* 2. KARTU RINCIAN LAHAN (PERSIS 100% MONITORING IKLIM SESUAI SCREENSHOT) */}
+      {/* 2. KARTU RINCIAN LAHAN (IDENTIK MONITORING IKLIM) */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900">
@@ -270,7 +330,6 @@ export default function TrenPasarPage() {
           </p>
         </div>
 
-        {/* Tabel Ringkas Key-Value Rapi */}
         <div className="divide-y divide-slate-100 text-xs sm:text-sm">
           <div className="py-2.5 flex justify-between items-center">
             <span className="text-slate-500 font-medium">Nama Pemilik / Petani</span>
@@ -307,49 +366,133 @@ export default function TrenPasarPage() {
         </div>
       </div>
 
-      {/* 3. PILIHAN KOMODITAS PERTANIAN (CLEAN TABS ALIGNED WITH BERANDA) */}
-      <div className="space-y-2.5">
+      {/* 3. PILIHAN KOMODITAS PERTANIAN - KATEGORI + SEARCH */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Pilihan Komoditas Pertanian & Perkebunan</h3>
-            <p className="text-xs text-slate-500">Pangan pokok, bumbu, hortikultura buah, dan perkebunan bernilai ekonomi tinggi</p>
+            <h3 className="text-sm font-bold text-slate-900">Pilih Komoditas Pertanian</h3>
+            <p className="text-xs text-slate-500">{COMMODITY_TRENDS.length} komoditas tersedia · Pangan, sayuran, buah, rempah, perkebunan, obat</p>
           </div>
           <span className="text-[11px] text-slate-400 hidden sm:inline">Harga acuan Bapanas & Pasar Induk</span>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {COMMODITY_TRENDS.map((item) => {
-            const isSelected = selectedKomoditas === item.komoditas;
-            const isUserCrop = isUserLahan && userMatchedCommodity === item.komoditas;
+        {/* Search Bar */}
+        <div className="relative">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Cari komoditas... (contoh: pisang, kopi, jahe)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all bg-white text-slate-800 placeholder-slate-400"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Kategori Filter Tabs */}
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          <button
+            type="button"
+            onClick={() => { setActiveCategory('Semua'); setSearchQuery(''); }}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+              activeCategory === 'Semua'
+                ? 'bg-slate-800 text-white'
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            Semua <span className="opacity-70">({categoryCounts['Semua']})</span>
+          </button>
+          {ALL_CATEGORIES.map(cat => {
+            const catIcons: Record<string, string> = {
+              'Tanaman Pangan': '🌾',
+              'Sayuran': '🥬',
+              'Buah-Buahan': '🍎',
+              'Rempah & Bumbu': '🌿',
+              'Perkebunan': '🌴',
+              'Tanaman Obat': '🌱'
+            };
             return (
               <button
-                key={item.komoditas}
+                key={cat}
                 type="button"
-                onClick={() => setSelectedKomoditas(item.komoditas)}
-                className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
-                  isSelected
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                onClick={() => { setActiveCategory(cat); setSearchQuery(''); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                  activeCategory === cat
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <span>{item.komoditas}</span>
-                {isUserCrop && (
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${
-                    isSelected ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                  }`}>
-                    Lahan Anda
-                  </span>
-                )}
-                <span className={`text-[10.5px] font-mono ${isSelected ? 'text-emerald-100' : 'text-slate-500'}`}>
-                  Rp {item.harga_saat_ini.toLocaleString('id-ID')}
-                </span>
+                <span>{catIcons[cat]}</span>
+                <span>{cat}</span>
+                <span className="opacity-70">({categoryCounts[cat]})</span>
               </button>
             );
           })}
         </div>
+
+        {/* Grid Komoditas */}
+        {filteredCommodities.length === 0 ? (
+          <div className="py-8 text-center text-slate-400 text-sm">
+            <span className="text-2xl block mb-2">🔍</span>
+            Tidak ditemukan komoditas &quot;{searchQuery}&quot;
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            {filteredCommodities.map((item) => {
+              const isSelected = selectedKomoditas === item.komoditas;
+              const isUserCrop = isUserLahan && userMatchedCommodity === item.komoditas;
+              return (
+                <button
+                  key={item.komoditas}
+                  type="button"
+                  onClick={() => setSelectedKomoditas(item.komoditas)}
+                  className={`p-3 rounded-lg text-left transition-all cursor-pointer relative ${
+                    isSelected
+                      ? 'bg-emerald-700 text-white shadow-sm ring-1 ring-emerald-600'
+                      : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  {isUserCrop && !isSelected && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500" />
+                  )}
+                  <span className="text-base block mb-1 leading-none">{item.icon}</span>
+                  <span className={`text-[11px] font-bold block leading-tight ${isSelected ? 'text-white' : 'text-slate-800'}`}>
+                    {item.komoditas}
+                  </span>
+                  <span className={`text-[10px] mt-0.5 block font-mono ${isSelected ? 'text-emerald-100' : 'text-slate-500'}`}>
+                    Rp {item.harga_saat_ini.toLocaleString('id-ID')}/kg
+                  </span>
+                  <span className={`text-[10px] mt-0.5 block ${isSelected ? 'text-emerald-200' : 'text-slate-400'}`}>
+                    {item.tren_mingguan === 'Naik' ? '↑' : item.tren_mingguan === 'Turun' ? '↓' : '→'} {item.persentase_tren}%
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Komoditas terpilih saat ini */}
+        <div className="flex items-center gap-2 pt-1 text-xs text-slate-500">
+          <span className="text-lg">{currentTrend.icon}</span>
+          <span>Dipilih:</span>
+          <span className="font-semibold text-slate-800">{currentTrend.komoditas}</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600 border border-slate-200">{currentTrend.kategori}</span>
+        </div>
       </div>
 
-      {/* 4. MODUL REKOMENDASI VARIETAS BENIH (BERSIH, TANPA AI SLOP) */}
+      {/* 4. REKOMENDASI VARIETAS BENIH */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div>
@@ -365,7 +508,6 @@ export default function TrenPasarPage() {
           </span>
         </div>
 
-        {/* Grid 2 Kartu: Varietas Pilihan Utama & Varietas Alternatif */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
           
           {/* Kartu Varietas Utama */}
@@ -388,7 +530,6 @@ export default function TrenPasarPage() {
               </p>
             </div>
 
-            {/* Spek Agronomi Rapi */}
             <div className="divide-y divide-slate-100 text-xs pt-1">
               <div className="py-1.5 flex justify-between">
                 <span className="text-slate-500">Potensi Panen</span>
@@ -465,21 +606,26 @@ export default function TrenPasarPage() {
                 </div>
               </>
             ) : (
-              <p className="text-xs text-slate-400 italic py-6 text-center">
-                Belum ada varietas alternatif tambahan untuk komoditas ini.
-              </p>
+              <div className="py-6 text-center space-y-2">
+                <p className="text-xs text-slate-400 italic">
+                  Belum ada data varietas resmi untuk komoditas ini dalam database sistem.
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Gunakan data harga pasar & simulasi keuntungan di bawah sebagai referensi.
+                </p>
+              </div>
             )}
           </div>
 
         </div>
       </div>
 
-      {/* 5. MODUL GRAFIK TREN HARGA BULANAN & KALENDER MUSIM */}
+      {/* 5. GRAFIK TREN HARGA BULANAN */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div>
             <h2 className="text-base font-bold text-slate-900">
-              Tren Harga Bulanan: {currentTrend.komoditas}
+              Tren Harga Bulanan: {currentTrend.icon} {currentTrend.komoditas}
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Rata-rata harga acuan pasar nasional sepanjang tahun (Rp / kg)
@@ -494,7 +640,7 @@ export default function TrenPasarPage() {
           </div>
         </div>
 
-        {/* Diagram Batang Bulanan Clean */}
+        {/* Diagram Batang Bulanan */}
         <div className="space-y-3 pt-2">
           <div className="h-48 flex items-end justify-between gap-1.5 sm:gap-2">
             {currentTrend.historis_bulanan.map((hist, idx) => {
@@ -534,7 +680,7 @@ export default function TrenPasarPage() {
           </div>
         </div>
 
-        {/* 2 Catatan Musim & Waktu Tanam Sederhana */}
+        {/* Catatan Musim & Waktu Tanam */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
           <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
             <span className="font-bold text-slate-900 block">Periode Puncak Permintaan:</span>
@@ -552,7 +698,7 @@ export default function TrenPasarPage() {
         </div>
       </div>
 
-      {/* 6. MODUL SIMULASI KEUNTUNGAN PANEN */}
+      {/* 6. SIMULASI HASIL & OMSET PANEN */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900">
@@ -605,7 +751,7 @@ export default function TrenPasarPage() {
           </div>
         </div>
 
-        {/* Rincian Finansial Bersih */}
+        {/* Rincian Finansial */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
             <div className="flex justify-between">
