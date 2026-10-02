@@ -31,8 +31,265 @@ const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   created_at: new Date().toISOString()
 };
 
+interface CropGrowthStage {
+  title: string;
+  hstRange: string;
+  minHst: number;
+  maxHst: number;
+  warning: string;
+}
+
+function getCropStages(cropName: string): CropGrowthStage[] {
+  const c = (cropName || '').toLowerCase();
+
+  // Cabai / Cabe / Lombok
+  if (c.includes('cabai') || c.includes('cabe') || c.includes('chili') || c.includes('lombok')) {
+    return [
+      {
+        title: 'Awal Tanam & Adaptasi Akar',
+        hstRange: 'HST 1 – 20',
+        minHst: 1,
+        maxHst: 20,
+        warning: 'Bibit cabai masih adaptasi dengan tanah bedengan. Jaga kelembapan tanah tetap gembur dan siram teratur pagi atau sore agar bibit tidak layu stres.'
+      },
+      {
+        title: 'Pertumbuhan Daun & Percabangan',
+        hstRange: 'HST 21 – 45',
+        minHst: 21,
+        maxHst: 45,
+        warning: 'Cabang utama dan tunas samping mulai tumbuh rimbun. Pasang ajir bambu penyangga dan berikan pupuk susulan NPK seimbang untuk memperkokoh batang.'
+      },
+      {
+        title: 'Pembungaan & Bakal Buah Pertama',
+        hstRange: 'HST 46 – 65',
+        minHst: 46,
+        maxHst: 65,
+        warning: 'Cabai mulai berbunga lebat dan muncul pentil buah. Cukupi unsur Fosfat & Kalium, hindari genangan air berlebih di parit agar bunga tidak rontok.'
+      },
+      {
+        title: 'Pembesaran Buah Cabai',
+        hstRange: 'HST 66 – 80',
+        minHst: 66,
+        maxHst: 80,
+        warning: 'Buah cabai memanjang dan berisi padat. Semprot kalsium untuk mencegah penyakit busuk pantat buah dan pasang perangkap lalat buah jika diperlukan.'
+      },
+      {
+        title: 'Pematangan Buah & Panen Petik',
+        hstRange: 'HST 81+',
+        minHst: 81,
+        maxHst: 999,
+        warning: 'Cabai mulai memerah tua merata dan siap dipetik berkala. Lakukan pemetikan pada pagi hari saat embun sudah kering agar buah tahan lama disimpan.'
+      }
+    ];
+  }
+
+  // Bawang Merah
+  if (c.includes('bawang')) {
+    return [
+      {
+        title: 'Pertunasan & Akar Umbi',
+        hstRange: 'HST 1 – 12',
+        minHst: 1,
+        maxHst: 12,
+        warning: 'Tunas daun menyembul dari umbi bibit. Jaga tanah lembap merata, hindari genangan air di parit bedengan agar umbi bibit tidak busuk.'
+      },
+      {
+        title: 'Pertumbuhan Vegetatif Daun',
+        hstRange: 'HST 13 – 30',
+        minHst: 13,
+        maxHst: 30,
+        warning: 'Daun bawang tumbuh tegak dan rumpun bertambah. Waktu tepat pemupukan susulan pertama untuk mempercepat pembentukan anakan daun.'
+      },
+      {
+        title: 'Pembentukan & Pembesaran Umbi',
+        hstRange: 'HST 31 – 45',
+        minHst: 31,
+        maxHst: 45,
+        warning: 'Pangkal batang mulai menggembung menjadi umbi merah. Berikan pupuk tinggi Kalium (KNO3 Putih) dan kurangi frekuensi siram berlebih.'
+      },
+      {
+        title: 'Pematangan Umbi & Pengisian',
+        hstRange: 'HST 46 – 55',
+        minHst: 46,
+        maxHst: 55,
+        warning: 'Umbi bawang membesar padat dan warna ungu merah semakin pekat. Jaga parit bedengan tetap kering agar kualitas umbi maksimal.'
+      },
+      {
+        title: 'Daun Rebah & Siap Panen',
+        hstRange: 'HST 56+',
+        minHst: 56,
+        maxHst: 999,
+        warning: 'Sekitar 60%–70% daun sudah rebah lemas dan leher umbi mengecil. Hentikan penyiraman 3 hari sebelum panen cabut umbi.'
+      }
+    ];
+  }
+
+  // Jagung
+  if (c.includes('jagung')) {
+    return [
+      {
+        title: 'Perkecambahan & Pertumbuhan Bibit',
+        hstRange: 'HST 1 – 15',
+        minHst: 1,
+        maxHst: 15,
+        warning: 'Bibit jagung bertunas dengan daun awal. Jaga tanah tetap lembap dan bersihkan rumput liar di sekitar lubang tanam.'
+      },
+      {
+        title: 'Pertumbuhan Vegetatif Cepat',
+        hstRange: 'HST 16 – 35',
+        minHst: 16,
+        maxHst: 35,
+        warning: 'Batang jagung meninggi pesat. Lakukan pembumbunan tanah di sekitar pangkal batang dan berikan pupuk susulan NPK.'
+      },
+      {
+        title: 'Bunga Jantan & Rambut Tongkol',
+        hstRange: 'HST 36 – 55',
+        minHst: 36,
+        maxHst: 55,
+        warning: 'Bunga jantan mekar di pucuk dan rambut tongkol keluar. Ini masa kritis air, pastikan tanah tidak kekeringan saat proses penyerbukan.'
+      },
+      {
+        title: 'Pengisian Biji Tongkol Jagung',
+        hstRange: 'HST 56 – 70',
+        minHst: 56,
+        maxHst: 70,
+        warning: 'Biji jagung sedang terisi cairan manis atau pati. Cukupi nutrisi agar butiran jagung terisi rapat dan padat hingga ujung tongkol.'
+      },
+      {
+        title: 'Tongkol Padat & Siap Panen',
+        hstRange: 'HST 71+',
+        minHst: 71,
+        maxHst: 999,
+        warning: 'Rambut tongkol sudah berwarna cokelat kering. Petik tongkol pagi hari untuk mempertahankan kesegaran dan rasa manis maksimal.'
+      }
+    ];
+  }
+
+  // Tomat
+  if (c.includes('tomat')) {
+    return [
+      {
+        title: 'Adaptasi Bibit & Tumbuh Akar',
+        hstRange: 'HST 1 – 18',
+        minHst: 1,
+        maxHst: 18,
+        warning: 'Bibit tomat baru dipindah ke bedengan. Jaga kelembapan tanah, pasang ajir bambu sejak dini agar tidak merusak perakaran nantinya.'
+      },
+      {
+        title: 'Pertumbuhan Vegetatif & Ranting',
+        hstRange: 'HST 19 – 35',
+        minHst: 19,
+        maxHst: 35,
+        warning: 'Batang bercabang aktif. Lakukan perempelan tunas air (wiwil) yang tidak produktif dan berikan pupuk susulan NPK seimbang.'
+      },
+      {
+        title: 'Pembungaan & Bakal Pentil Buah',
+        hstRange: 'HST 36 – 50',
+        minHst: 36,
+        maxHst: 50,
+        warning: 'Bunga kuning mekar dan terbentuk pentil buah. Semprot kalsium-boron untuk mencegah kerontokan bunga dan busuk ujung pantat buah.'
+      },
+      {
+        title: 'Pembesaran Buah Tomat',
+        hstRange: 'HST 51 – 65',
+        minHst: 51,
+        maxHst: 65,
+        warning: 'Buah tomat membesar hijau segar. Jaga penyiraman stabil dan merata agar kulit buah tomat tidak retak atau pecah.'
+      },
+      {
+        title: 'Pematangan Buah & Panen Petik',
+        hstRange: 'HST 66+',
+        minHst: 66,
+        maxHst: 999,
+        warning: 'Buah mulai bersemu kemerahan merata. Petik bertahap setiap 2–3 hari sekali pada pagi atau sore hari.'
+      }
+    ];
+  }
+
+  // Standar Padi Sawah
+  if (c.includes('padi') || c.includes('gabah')) {
+    return [
+      {
+        title: 'Awal Tanam & Tumbuh Akar',
+        hstRange: 'HST 1 – 20',
+        minHst: 1,
+        maxHst: 20,
+        warning: 'Akar bibit baru mulai menancap ke tanah sawah. Jaga air sawah macak-macak tipis agar bibit tidak hanyut dan cepat berdiri tegak.'
+      },
+      {
+        title: 'Pembentukan Daun & Anakan',
+        hstRange: 'HST 21 – 50',
+        minHst: 21,
+        maxHst: 50,
+        warning: 'Tanaman giat membentuk anakan rumpun baru. Waktu tepat pemupukan susulan pertama agar anakan produktif bertambah banyak.'
+      },
+      {
+        title: 'Bunting & Keluar Malai Bunga',
+        hstRange: 'HST 51 – 75',
+        minHst: 51,
+        maxHst: 75,
+        warning: 'Tanaman sedang bunting atau mulai keluar malai bunga. Jaga pasokan air sawah cukup dan jangan sampai kekeringan agar bulir padi tidak hampa.'
+      },
+      {
+        title: 'Pengisian Bulir Padi',
+        hstRange: 'HST 76 – 95',
+        minHst: 76,
+        maxHst: 95,
+        warning: 'Bulir sedang terisi cairan sari pati makanan. Berikan pupuk kalium dan jaga air sawah mengalir dangkal agar bulir padi padat bernas.'
+      },
+      {
+        title: 'Padi Menguning & Siap Panen',
+        hstRange: 'HST 96+',
+        minHst: 96,
+        maxHst: 999,
+        warning: 'Bulir padi sudah menguning tua merata (85%+). Keringkan saluran parit sawah 7–10 hari sebelum panen agar tanah padat saat pemotongan.'
+      }
+    ];
+  }
+
+  // Tanaman Umum Lainnya
+  return [
+    {
+      title: 'Awal Tanam & Tumbuh Akar',
+      hstRange: 'HST 1 – 20',
+      minHst: 1,
+      maxHst: 20,
+      warning: 'Akar bibit baru menancap ke tanah. Jaga kelembapan tanah tetap stabil agar tanaman lekas tumbuh subur dan kokoh berdiri.'
+    },
+    {
+      title: 'Pertumbuhan Vegetatif & Daun',
+      hstRange: 'HST 21 – 45',
+      minHst: 21,
+      maxHst: 45,
+      warning: 'Tanaman sedang giat membentuk percabangan dan daun baru. Waktu tepat pemupukan susulan pertama untuk memacu pertumbuhan.'
+    },
+    {
+      title: 'Pembungaan & Bakal Buah / Umbi',
+      hstRange: 'HST 46 – 65',
+      minHst: 46,
+      maxHst: 65,
+      warning: 'Tanaman mulai berbunga atau membentuk bakal buah/umbi. Cukupi pasokan unsur Fosfat dan Kalium serta jaga air tanah stabil.'
+    },
+    {
+      title: 'Pembesaran Buah / Pengisian Hasil',
+      hstRange: 'HST 66 – 80',
+      minHst: 66,
+      maxHst: 80,
+      warning: 'Hasil panen sedang dalam fase pembesaran dan pemadatan isi. Lindungi tanaman dari serangan hama perusak buah.'
+    },
+    {
+      title: 'Pematangan Hasil & Siap Panen',
+      hstRange: 'HST 81+',
+      minHst: 81,
+      maxHst: 999,
+      warning: 'Tanaman telah memasuki fase masak fisiologis penuh dan siap dipanen untuk mendapatkan kualitas hasil terbaik.'
+    }
+  ];
+}
+
 export default function MonitoringPage() {
   const [activeTab, setActiveTab] = useState<'semprot' | 'irigasi' | 'siklus'>('semprot');
+
   const [activePetani, setActivePetani] = useState<PetaniRecord>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('kertanusa_active_farmer_data');
@@ -44,6 +301,19 @@ export default function MonitoringPage() {
     }
     return DEFAULT_BENCHMARK_FARMER;
   });
+
+  const isPadi = useMemo(() => {
+    const c = (activePetani?.jenis_tanaman || '').toLowerCase();
+    return c.includes('padi') || c.includes('gabah');
+  }, [activePetani?.jenis_tanaman]);
+
+  const lahanTerm = useMemo(() => {
+    return isPadi ? 'sawah' : 'lahan';
+  }, [isPadi]);
+
+  const cropStages = useMemo(() => {
+    return getCropStages(activePetani?.jenis_tanaman || '');
+  }, [activePetani?.jenis_tanaman]);
 
   const [isUserLahan, setIsUserLahan] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -292,7 +562,7 @@ export default function MonitoringPage() {
         canSpray: false,
         status: 'Tunda Semprot (Angin Kencang)',
         timeWindow: 'Tunggu Angin Reda',
-        reason: `Angin di sawah bertiup kencang (${wind} km/jam). Obat semprot akan kabur terbawa angin ke luar petak sawah dan terbuang sia-sia.`
+        reason: `Angin di ${lahanTerm} bertiup kencang (${wind} km/jam). Obat semprot akan kabur terbawa angin ke luar area ${lahanTerm} dan terbuang sia-sia.`
       };
     }
     if (temp > 32) {
@@ -309,7 +579,7 @@ export default function MonitoringPage() {
       timeWindow: 'Pagi (06.30 – 08.30) atau Sore (15.30 – 17.30 WIB)',
       reason: 'Angin tenang dan daun masih berembun segar. Butiran obat semprot atau pupuk daun akan menempel lekat dan meresap maksimal.'
     };
-  }, [weather]);
+  }, [weather, lahanTerm]);
 
   // 4. Panduan Tebar Pupuk (Anti-Hanyut)
   const leachingAdvisor = useMemo(() => {
@@ -320,27 +590,25 @@ export default function MonitoringPage() {
     if (soilMoisture > 80 || rain > 12) {
       return {
         status: 'Tunda Nabur Pupuk',
-        advice: 'Sawah sedang tergenang atau hujan lebat. Tunda menebar pupuk agar butiran pupuk tidak hanyut terbawa aliran air parit.'
+        advice: `${isPadi ? 'Sawah' : 'Lahan'} sedang tergenang atau hujan lebat. Tunda menebar pupuk agar butiran pupuk tidak hanyut terbawa aliran air parit.`
       };
     } else if (soilMoisture < 45) {
       return {
-        status: 'Airkan Sawah Sedikit Dahulu',
-        advice: 'Tanah sawah agak kering dan merekah. Alirkan sedikit air irigasi sebelum pupuk ditabur agar butiran pupuk mudah larut.'
+        status: isPadi ? 'Airkan Sawah Sedikit Dahulu' : 'Siram Lahan Sedikit Dahulu',
+        advice: `Tanah ${lahanTerm} agak kering dan merekah. Alirkan sedikit air sebelum pupuk ditabur agar butiran pupuk mudah larut.`
       };
     } else {
       return {
         status: 'Aman untuk Tabur Pupuk',
-        advice: 'Kebasahan tanah pas lembap macak-macak. Butiran pupuk tabur (NPK / Urea) cepat larut merata dan langsung dimakan akar tanaman.'
+        advice: isPadi
+          ? 'Kebasahan tanah pas lembap macak-macak. Butiran pupuk tabur (NPK / Urea) cepat larut merata dan langsung dimakan akar tanaman.'
+          : 'Kebasahan tanah pas gembur lembap. Butiran pupuk tabur (NPK / Urea) cepat larut merata dan langsung diserap perakaran tanaman.'
       };
     }
-  }, [weather]);
+  }, [weather, isPadi, lahanTerm]);
 
   // 5. Tahapan Usia & Perkembangan Tanaman (HST = Hari Setelah Tanam)
   const gddTracker = useMemo(() => {
-    const avgTemp = weather?.suhu ?? 28;
-    const baseTemp = 10;
-    const dailyGDD = Math.max(0, avgTemp - baseTemp);
-
     let plantDateStr = activePetani?.waktu_tanam;
     let daysPassed = 1;
 
@@ -351,45 +619,25 @@ export default function MonitoringPage() {
       daysPassed = diff;
     }
 
-    const totalGDD = Math.round(daysPassed * dailyGDD);
-
-    if (totalGDD < 250) {
-      return {
-        stageIndex: 0,
-        days: daysPassed,
-        phase: 'Awal Tanam (Tumbuh Akar)',
-        warning: 'Akar bibit baru mulai menancap ke tanah. Jaga air sawah macak-macak tipis agar bibit tidak hanyut dan cepat berdiri tegak.'
-      };
-    } else if (totalGDD < 650) {
-      return {
-        stageIndex: 1,
-        days: daysPassed,
-        phase: 'Pertumbuhan Anakan & Daun',
-        warning: 'Tanaman sedang giat membentuk anakan batang baru dan daun rimbun. Waktu tepat pemupukan susulan pertama agar anakan bertambah banyak.'
-      };
-    } else if (totalGDD < 1050) {
-      return {
-        stageIndex: 2,
-        days: daysPassed,
-        phase: 'Bunting / Keluar Bunga',
-        warning: 'Tanaman sedang bunting atau mulai keluar malai bunga. Jaga pasokan air sawah cukup dan jangan sampai kekeringan agar bulir padi tidak hampa.'
-      };
-    } else if (totalGDD < 1450) {
-      return {
-        stageIndex: 3,
-        days: daysPassed,
-        phase: 'Pengisian Bulir Padi / Buah',
-        warning: 'Bulir sedang terisi cairan sari makanan. Berikan pupuk buah/kalium dan cukupi air agar bulir padi padat berisi dan bernas.'
-      };
-    } else {
-      return {
-        stageIndex: 4,
-        days: daysPassed,
-        phase: 'Padi Menguning & Siap Panen',
-        warning: 'Bulir padi sudah menguning tua merata. Keringkan air parit sawah 7–10 hari sebelum panen agar tanah padat dan pemotongan lancar.'
-      };
+    const stages = cropStages;
+    let stageIndex = 0;
+    for (let i = 0; i < stages.length; i++) {
+      if (daysPassed >= stages[i].minHst && daysPassed <= stages[i].maxHst) {
+        stageIndex = i;
+        break;
+      }
+      if (i === stages.length - 1 && daysPassed >= stages[i].minHst) {
+        stageIndex = i;
+      }
     }
-  }, [weather, activePetani]);
+
+    return {
+      stageIndex,
+      days: daysPassed,
+      phase: stages[stageIndex].title,
+      warning: stages[stageIndex].warning
+    };
+  }, [activePetani?.waktu_tanam, cropStages]);
 
   // 6. Kebutuhan Kapur Pertanian (Dolomit) jika Tanah Asam
   const dolomitCalc = useMemo(() => {
@@ -416,10 +664,10 @@ export default function MonitoringPage() {
       {/* 1. HEADER HALAMAN (CLEAN & NATURAL) */}
       <div className="space-y-1">
         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-          Pantauan Cuaca & Kondisi Sawah
+          Pantauan Cuaca & Kondisi {isUserLahan && !isPadi ? 'Lahan' : 'Sawah'}
         </h1>
         <p className="text-xs sm:text-sm text-slate-500">
-          Informasi cuaca harian, kondisi tanah sawah, dan panduan praktis perawatan tanaman.
+          Informasi cuaca harian, kondisi tanah {isUserLahan && !isPadi ? 'lahan' : 'sawah'}, dan panduan praktis perawatan tanaman.
         </p>
       </div>
 
@@ -447,7 +695,7 @@ export default function MonitoringPage() {
             <span className="text-slate-900 font-semibold">{activePetani.daerah || currentCoords?.label || '-'}</span>
           </div>
           <div className="py-2.5 flex justify-between items-center">
-            <span className="text-slate-500 font-medium">Titik Lokasi Sawah (GPS)</span>
+            <span className="text-slate-500 font-medium">Titik Lokasi {isPadi ? 'Sawah' : 'Lahan'} (GPS)</span>
             <span className="text-slate-900 font-mono font-semibold">
               {currentCoords ? `${currentCoords.lat.toFixed(5)}, ${currentCoords.lon.toFixed(5)}` : '-'}
             </span>
@@ -629,7 +877,7 @@ export default function MonitoringPage() {
         {/* Header & Segmented Controller */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Panduan Perawatan Sawah & Tanaman</h3>
+            <h3 className="text-base font-bold text-slate-900">Panduan Perawatan {isPadi ? 'Sawah' : 'Lahan'} & Tanaman</h3>
             <p className="text-xs text-slate-500 mt-0.5">Petunjuk praktis lapangan berdasarkan kondisi cuaca dan tanah hari ini.</p>
           </div>
 
@@ -718,7 +966,7 @@ export default function MonitoringPage() {
                   </div>
                 </div>
                 <p className="text-[11px] text-slate-500 pt-2 border-t border-slate-100 leading-relaxed">
-                  Angin tenang di bawah 12 km/jam aman untuk semprot tanpa takut obat melayang ke luar petak sawah.
+                  Angin tenang di bawah 12 km/jam aman untuk semprot tanpa takut obat melayang ke luar area {lahanTerm}.
                 </p>
               </div>
 
@@ -747,7 +995,7 @@ export default function MonitoringPage() {
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500">Kondisi Air Sawah:</span>
+                  <span className="text-xs text-slate-500">Kondisi Air {isPadi ? 'Sawah' : 'Tanah'}:</span>
                   <strong className="text-xs sm:text-sm text-slate-900">
                     {weather.status_tanah} ({weather.kelembapan_tanah}%)
                   </strong>
@@ -761,10 +1009,12 @@ export default function MonitoringPage() {
               </div>
               <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
                 {weather.status_tanah === 'Kering'
-                  ? 'Tanah sawah mulai mengering. Segera alirkan air irigasi secukupnya ke parit sawah agar tanaman tidak layu.'
+                  ? `Tanah ${lahanTerm} mulai mengering. Segera alirkan air irigasi secukupnya ke parit agar tanaman tidak layu.`
                   : weather.status_tanah === 'Jenuh Air'
-                  ? 'Tanah sawah terlalu becek dan tergenang. Buka saluran parit pembuangan agar akar tanaman tidak terendam dan membusuk.'
-                  : 'Kandungan air tanah sangat pas (macak-macak). Akar tanaman leluasa bernapas dan menyerap pupuk.'}
+                  ? `Tanah ${lahanTerm} terlalu becek dan tergenang. Buka saluran parit pembuangan agar akar tanaman tidak terendam dan membusuk.`
+                  : isPadi
+                  ? 'Kandungan air tanah sangat pas (macak-macak). Akar tanaman leluasa bernapas dan menyerap pupuk.'
+                  : 'Kandungan air tanah sangat pas gembur. Akar tanaman leluasa bernapas dan menyerap nutrisi pupuk.'}
               </p>
             </div>
 
@@ -784,7 +1034,7 @@ export default function MonitoringPage() {
                   {leachingAdvisor.advice}
                 </p>
                 <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                  Hindari tabur pupuk saat air sawah mengalir deras agar pupuk tidak terbuang sia-sia.
+                  Hindari tabur pupuk saat air {lahanTerm} mengalir deras agar pupuk tidak terbuang sia-sia.
                 </div>
               </div>
 
@@ -801,16 +1051,16 @@ export default function MonitoringPage() {
                     <p className="font-semibold text-slate-900">
                       Kebutuhan Kapur Pertanian:{' '}
                       <strong className="text-slate-900">
-                        {dolomitCalc.kgTotal.toLocaleString('id-ID')} kg ({dolomitCalc.sacks} karung @50kg)
+                        {dolomitCalc.kgTotal.toLocaleString('id-ID')} kg ({dolomitCalc.sacks} karung isi 50 kg)
                       </strong>
                     </p>
                     <p className="text-slate-500 text-[11px]">
-                      Untuk sawah seluas {dolomitCalc.luasM2.toLocaleString('id-ID')} m², taburkan kapur dolomit agar tanah tidak masam. Tanah masam membuat pupuk mahal mengendap dan tidak bisa dimakan tanaman.
+                      Untuk {lahanTerm} seluas {dolomitCalc.luasM2.toLocaleString('id-ID')} m², taburkan kapur dolomit agar tanah tidak masam. Tanah masam membuat pupuk mahal mengendap dan tidak bisa dimakan tanaman.
                     </p>
                   </div>
                 ) : (
                   <p className="text-slate-600 text-xs leading-relaxed pt-1">
-                    Tanah sawah subur dan tidak masam (pH netral). Pupuk kimia maupun organik dapat langsung diserap lancar oleh perakaran tanaman tanpa butuh kapur.
+                    Tanah {lahanTerm} subur dan tidak masam (pH netral). Pupuk kimia maupun organik dapat langsung diserap lancar oleh perakaran tanaman tanpa butuh kapur.
                   </p>
                 )}
               </div>
@@ -848,95 +1098,25 @@ export default function MonitoringPage() {
               </div>
 
               <div className="divide-y divide-slate-100 text-xs">
-                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
-                  gddTracker.stageIndex === 0 
-                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}>
-                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
-                    <span className="text-xs sm:text-sm leading-snug">1. Awal Tanam & Tumbuh Akar</span>
-                    {gddTracker.stageIndex === 0 && (
-                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
-                        Tahap Sekarang
-                      </span>
-                    )}
+                {cropStages.map((stg, idx) => (
+                  <div key={idx} className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
+                    gddTracker.stageIndex === idx 
+                      ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}>
+                    <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
+                      <span className="text-xs sm:text-sm leading-snug">{idx + 1}. {stg.title}</span>
+                      {gddTracker.stageIndex === idx && (
+                        <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
+                          Tahap Sekarang
+                        </span>
+                      )}
+                    </div>
+                    <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
+                      {stg.hstRange}
+                    </span>
                   </div>
-                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
-                    HST 1 – 20
-                  </span>
-                </div>
-
-                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
-                  gddTracker.stageIndex === 1 
-                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}>
-                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
-                    <span className="text-xs sm:text-sm leading-snug">2. Pembentukan Daun & Anakan</span>
-                    {gddTracker.stageIndex === 1 && (
-                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
-                        Tahap Sekarang
-                      </span>
-                    )}
-                  </div>
-                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
-                    HST 21 – 50
-                  </span>
-                </div>
-
-                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
-                  gddTracker.stageIndex === 2 
-                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}>
-                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
-                    <span className="text-xs sm:text-sm leading-snug">3. Bunting / Keluar Malai Bunga</span>
-                    {gddTracker.stageIndex === 2 && (
-                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
-                        Tahap Sekarang
-                      </span>
-                    )}
-                  </div>
-                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
-                    HST 51 – 75
-                  </span>
-                </div>
-
-                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
-                  gddTracker.stageIndex === 3 
-                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}>
-                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
-                    <span className="text-xs sm:text-sm leading-snug">4. Pengisian Bulir Padi / Buah</span>
-                    {gddTracker.stageIndex === 3 && (
-                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
-                        Tahap Sekarang
-                      </span>
-                    )}
-                  </div>
-                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
-                    HST 76 – 95
-                  </span>
-                </div>
-
-                <div className={`py-2.5 sm:py-3 px-2 sm:px-2.5 rounded-lg flex items-center justify-between gap-2 transition-all ${
-                  gddTracker.stageIndex === 4 
-                    ? 'font-bold text-slate-900 bg-slate-100/90 -mx-1 sm:-mx-2' 
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}>
-                  <div className="flex flex-wrap items-center gap-1.5 min-w-0 pr-1">
-                    <span className="text-xs sm:text-sm leading-snug">5. Padi Menguning & Siap Panen</span>
-                    {gddTracker.stageIndex === 4 && (
-                      <span className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded shrink-0">
-                        Tahap Sekarang
-                      </span>
-                    )}
-                  </div>
-                  <span className="font-mono text-[11px] sm:text-xs text-slate-500 font-semibold shrink-0 bg-white/90 sm:bg-transparent px-1.5 py-0.5 sm:p-0 rounded border sm:border-0 border-slate-200/60">
-                    HST 96+
-                  </span>
-                </div>
+                ))}
               </div>
 
               <div className="pt-2.5 sm:pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500">
