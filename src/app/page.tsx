@@ -19,15 +19,73 @@ export default function HomePage() {
   useEffect(() => {
     async function initData() {
       try {
-        const targetDaerah = 'Brebes, Jawa Tengah';
-        const targetLat = -6.8703;
-        const targetLon = 109.0435;
+        let targetDaerah = 'Brebes, Jawa Tengah';
+        let targetLat = -6.8703;
+        let targetLon = 109.0435;
+
+        // 1. Baca data lahan aktif dari localStorage
+        if (typeof window !== 'undefined') {
+          const storedData = localStorage.getItem('kertanusa_active_farmer_data');
+          const storedId = localStorage.getItem('kertanusa_active_farmer_id');
+
+          let parsed: any = null;
+          if (storedData) {
+            try {
+              parsed = JSON.parse(storedData);
+            } catch {
+              parsed = null;
+            }
+          }
+
+          if (parsed && parsed.daerah) {
+            targetDaerah = parsed.daerah;
+            if (parsed.lat !== undefined && parsed.lon !== undefined) {
+              targetLat = Number(parsed.lat);
+              targetLon = Number(parsed.lon);
+            }
+          }
+
+          // Sinkronisasi/validasi dengan database API Petani
+          if (storedId || parsed?.id) {
+            try {
+              const resPetani = await fetch('/api/petani', { cache: 'no-store' });
+              const jsonPetani = await resPetani.json();
+              if (jsonPetani.success && Array.isArray(jsonPetani.data)) {
+                const match = jsonPetani.data.find((p: any) =>
+                  (storedId && p.id === storedId) ||
+                  (parsed?.id && p.id === parsed.id) ||
+                  (parsed?.nama_petani && p.nama_petani.trim().toLowerCase() === parsed.nama_petani.trim().toLowerCase())
+                );
+
+                if (match) {
+                  if (match.daerah) targetDaerah = match.daerah;
+                  if (match.lat !== undefined && match.lon !== undefined) {
+                    targetLat = Number(match.lat);
+                    targetLon = Number(match.lon);
+                  }
+                  localStorage.setItem('kertanusa_active_farmer_id', match.id);
+                  localStorage.setItem('kertanusa_active_farmer_data', JSON.stringify(match));
+                } else if (!parsed) {
+                  localStorage.removeItem('kertanusa_active_farmer_id');
+                  localStorage.removeItem('kertanusa_active_farmer_data');
+                  targetDaerah = 'Brebes, Jawa Tengah';
+                  targetLat = -6.8703;
+                  targetLon = 109.0435;
+                }
+              }
+            } catch (err) {
+              console.warn('Gagal sinkron /api/petani di homepage:', err);
+            }
+          }
+        }
+
         setLocationName(targetDaerah);
 
-        const weatherUrl = `/api/cuaca?lat=${targetLat}&lon=${targetLon}`;
+        // 2. Ambil data cuaca realtime sesuai koordinat lahan aktif
+        const weatherUrl = `/api/cuaca?lat=${targetLat}&lon=${targetLon}&daerah=${encodeURIComponent(targetDaerah)}`;
         const resWeather = await fetch(weatherUrl, { cache: 'no-store' });
         const dataW = await resWeather.json();
-        if (dataW.success) {
+        if (dataW.success && dataW.data) {
           setWeather(dataW.data);
         }
       } catch (e) {
@@ -36,7 +94,25 @@ export default function HomePage() {
         setLoading(false);
       }
     }
+
     initData();
+
+    // Dengarkan event storage & focus agar jika data diinput/diubah di halaman lain langsung terupdate
+    const handleSync = () => {
+      initData();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleSync);
+      window.addEventListener('focus', handleSync);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', handleSync);
+        window.removeEventListener('focus', handleSync);
+      }
+    };
   }, []);
 
   // Label cerdas waktu & cuaca
