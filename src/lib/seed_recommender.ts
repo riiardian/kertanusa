@@ -1,8 +1,8 @@
 export interface SeedVariety {
   id: string;
   nama_varietas: string;
-  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat';
-  pemulia_resmi: string; // BRIN / Balitpa / Cap Panah Merah / East West Seed, etc.
+  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur';
+  pemulia_resmi: string; // BRIN / Balitpa / Balitjestro / Puslitkoka / East West Seed, etc.
   potensi_hasil: string; // e.g. '8.5 - 10.5 Ton/Ha'
   rata_rata_hasil: string; // e.g. '7.2 Ton/Ha'
   umur_panen: string; // e.g. '112 - 118 Hari'
@@ -32,7 +32,7 @@ export interface SeedVariety {
 
 export interface LandConditionInput {
   daerahNama?: string;
-  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat';
+  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur';
   ketinggian: 'rendah' | 'sedang' | 'tinggi'; // rendah: 0-400 mdpl, sedang: 400-700 mdpl, tinggi: >700 mdpl
   tipe_lahan: 'irigasi_teknis' | 'tadah_hujan' | 'rawa_pasangsurut' | 'lahan_kering';
   musim: 'hujan' | 'kemarau' | 'pancaroba';
@@ -333,6 +333,156 @@ export const MASTER_VARIETIES: SeedVariety[] = [
     kategori_pasar: 'Pasar Umum / Massal',
     estimasi_harga_jual: 'Rp 7.500 - 12.000 / kg',
     daya_serap_pasar: 'Sangat Tinggi'
+  },
+
+  // ==================== JERUK ====================
+  {
+    id: 'jeruk-keprok-batu55',
+    nama_varietas: 'Jeruk Keprok Batu 55',
+    komoditas: 'Jeruk',
+    pemulia_resmi: 'Balitjestro Kementan RI',
+    potensi_hasil: '25 - 35 Ton/Ha',
+    rata_rata_hasil: '28 Ton/Ha',
+    umur_panen: 'Mulai berbuah 2.5 - 3 Tahun',
+    tekstur_atau_kualitas: 'Daging Buah Oranye Segar, Bulir Air Melimpah, Rasa Manis Segar (Brix 11-13%)',
+    ketinggian_cocok: ['sedang', 'tinggi'],
+    tipe_lahan_cocok: ['irigasi_teknis', 'lahan_kering'],
+    musim_optimal: ['kemarau', 'pancaroba'],
+    rentang_ph_optimal: [5.5, 6.8],
+    ketahanan_hama_penyakit: [
+      'Bebas Penyakit CVPD (Citrus Vein Phloem Degeneration)',
+      'Toleran Hama Kutu Loncat Diaphorina citri',
+      'Toleran Jamur Embun Tepung'
+    ],
+    keunggulan_utama: 'Varietas jeruk keprok unggulan nasional bersertifikasi bebas virus, kulit mudah dikupas, dan digemari pasar buah meja keluarga.',
+    alasan_rekomendasi: 'Pilihan terbaik untuk perkebunan jeruk di dataran sedang hingga tinggi dengan permintaan pasar modern konsisten.',
+    kategori_pasar: 'Segmen Premium / Restoran',
+    estimasi_harga_jual: 'Rp 18.000 - 26.000 / kg',
+    daya_serap_pasar: 'Sangat Tinggi'
+  },
+  {
+    id: 'jeruk-siam-madu',
+    nama_varietas: 'Jeruk Siam Madu Kintamani / Pontianak',
+    komoditas: 'Jeruk',
+    pemulia_resmi: 'Balai Penelitian Tanaman Buah Tropika (Balitbu)',
+    potensi_hasil: '20 - 30 Ton/Ha',
+    rata_rata_hasil: '24 Ton/Ha',
+    umur_panen: 'Mulai berbuah 2 - 2.5 Tahun',
+    tekstur_atau_kualitas: 'Rasa Manis Dominan Madu, Kulit Tipis Mengkilap, Kadar Air Tinggi',
+    ketinggian_cocok: ['rendah', 'sedang'],
+    tipe_lahan_cocok: ['irigasi_teknis', 'tadah_hujan'],
+    musim_optimal: ['kemarau', 'hujan'],
+    rentang_ph_optimal: [5.5, 7.0],
+    ketahanan_hama_penyakit: [
+      'Adaptif Lahan Dataran Rendah Beriklim Hangat',
+      'Tahan Kekeringan Sedang',
+      'Toleran Hama Kutu Daun'
+    ],
+    keunggulan_utama: 'Produksi buah sangat lebat sepanjang tahun dan daya serap pasar grosir tradisional maupun industri jus sangat masif.',
+    alasan_rekomendasi: 'Paling menguntungkan untuk kebun komersial skala besar di dataran rendah beririgasi lancar.',
+    kategori_pasar: 'Pasar Umum / Massal',
+    estimasi_harga_jual: 'Rp 12.000 - 18.000 / kg',
+    daya_serap_pasar: 'Sangat Tinggi'
+  },
+
+  // ==================== COKELAT / KAKAO ====================
+  {
+    id: 'kakao-mcc-02',
+    nama_varietas: 'Kakao Klon MCC 02 (Klon Masamba 45)',
+    komoditas: 'Cokelat / Kakao',
+    pemulia_resmi: 'Pusat Penelitian Kopi dan Kakao Indonesia (Puslitkoka)',
+    potensi_hasil: '2.5 - 3.2 Ton Biji Kering/Ha/Tahun',
+    rata_rata_hasil: '2.4 Ton/Ha',
+    umur_panen: 'Mulai berbuah 18 - 24 Bulan (Sambung Pucuk)',
+    tekstur_atau_kualitas: 'Ukuran Biji Besar (Berat per 100 biji: 125-140 gram), Kadar Lemak 52-54%',
+    ketinggian_cocok: ['rendah', 'sedang'],
+    tipe_lahan_cocok: ['irigasi_teknis', 'tadah_hujan', 'lahan_kering'],
+    musim_optimal: ['hujan', 'pancaroba'],
+    rentang_ph_optimal: [5.5, 6.8],
+    ketahanan_hama_penyakit: [
+      'Tahan Penyakit VSD (Vascular Streak Dieback)',
+      'Tahan Busuk Buah Phytophthora palmivora',
+      'Toleran Penggerek Buah Kakao (PBK)'
+    ],
+    keunggulan_utama: 'Klon kakao paling populer di Nusantara saat ini karena tahan penyakit mati pucuk (VSD) dan bobot biji sangat padat bernilai ekspor.',
+    alasan_rekomendasi: 'Sangat ideal untuk revitalisasi kebun cokelat skala kecil maupun perkebunan besar dengan margin penjualan biji kering optimal.',
+    kategori_pasar: 'Grosir Luar Pulau / Ekspor',
+    estimasi_harga_jual: 'Rp 75.000 - 95.000 / kg (Biji Kering)',
+    daya_serap_pasar: 'Sangat Tinggi'
+  },
+  {
+    id: 'kakao-sulawesi-01',
+    nama_varietas: 'Kakao Klon Sulawesi 01',
+    komoditas: 'Cokelat / Kakao',
+    pemulia_resmi: 'Dinas Perkebunan & Puslitkoka',
+    potensi_hasil: '2.0 - 2.8 Ton Biji Kering/Ha/Tahun',
+    rata_rata_hasil: '2.1 Ton/Ha',
+    umur_panen: 'Mulai berbuah 2 Tahun',
+    tekstur_atau_kualitas: 'Cita Rasa Cokelat Kuat (Rich Aroma), Biji Seragam',
+    ketinggian_cocok: ['rendah', 'sedang'],
+    tipe_lahan_cocok: ['tadah_hujan', 'lahan_kering'],
+    musim_optimal: ['pancaroba', 'kemarau'],
+    rentang_ph_optimal: [5.6, 7.0],
+    ketahanan_hama_penyakit: [
+      'Kuat Menghadapi Kemarau Panjang',
+      'Toleran Hama Kepik Penghisap Buah (Helopeltis sp)',
+      'Batang Sambungan Cepat Kokoh'
+    ],
+    keunggulan_utama: 'Toleran cuaca kering dan cocok ditanam di wilayah bertanah kering atau berbukit.',
+    alasan_rekomendasi: 'Varietas alternatif terbaik jika lahan sering mengalami periode kering atau pasokan air terbatas.',
+    kategori_pasar: 'Industri Olahan',
+    estimasi_harga_jual: 'Rp 70.000 - 85.000 / kg (Biji Kering)',
+    daya_serap_pasar: 'Tinggi'
+  },
+
+  // ==================== ANGGUR ====================
+  {
+    id: 'anggur-jupiter',
+    nama_varietas: 'Anggur Meja Jupiter (Seedless / Non-Biji)',
+    komoditas: 'Anggur',
+    pemulia_resmi: 'University of Arkansas (Diadaptasi Riset Pertanian Nasional)',
+    potensi_hasil: '15 - 20 Ton/Ha (Greenhouse Paranet/Plastik UV)',
+    rata_rata_hasil: '16 Ton/Ha',
+    umur_panen: '95 - 105 Hari Pasca Pangkas Pembuahan',
+    tekstur_atau_kualitas: 'Buah Manis Beraroma Permen Karet (Muscat), Tanpa Biji, Kulit Tipis Renyah',
+    ketinggian_cocok: ['rendah', 'sedang', 'tinggi'],
+    tipe_lahan_cocok: ['irigasi_teknis', 'lahan_kering'],
+    musim_optimal: ['kemarau', 'pancaroba'],
+    rentang_ph_optimal: [6.0, 7.2],
+    ketahanan_hama_penyakit: [
+      'Tahan Iklim Tropis Panas Dataran Rendah',
+      'Cepat Beradaptasi Media Tanam Porus',
+      'Toleran Jamur Daun jika Dilindungi Plastik UV'
+    ],
+    keunggulan_utama: 'Varietas anggur paling genjah dan mudah berbuah di Indonesia, rasa manis disukai anak-anak dan pembeli pasar buah premium.',
+    alasan_rekomendasi: 'Sangat direkomendasikan untuk kebun intensif modern, greenhouse agrivoltaik, atau lahan produktif perkotaan bernilai ekonomis tinggi.',
+    kategori_pasar: 'Segmen Premium / Restoran',
+    estimasi_harga_jual: 'Rp 65.000 - 90.000 / kg',
+    daya_serap_pasar: 'Sangat Tinggi'
+  },
+  {
+    id: 'anggur-transfiguration',
+    nama_varietas: 'Anggur Transfiguration (Beri Jumbo)',
+    komoditas: 'Anggur',
+    pemulia_resmi: 'V.N. Krainov (Diuji & Beradaptasi Kebun Riset Tropika)',
+    potensi_hasil: '18 - 25 Ton/Ha',
+    rata_rata_hasil: '18 Ton/Ha',
+    umur_panen: '110 - 120 Hari Pasca Pangkas',
+    tekstur_atau_kualitas: "Beri Lonjong Raksasa (12-18 gr/butir), Warna Merah Muda Gradasi Emas, Daging Padat Renyah (Crunchy)",
+    ketinggian_cocok: ['rendah', 'sedang'],
+    tipe_lahan_cocok: ['irigasi_teknis'],
+    musim_optimal: ['kemarau'],
+    rentang_ph_optimal: [6.0, 7.0],
+    ketahanan_hama_penyakit: [
+      'Tandan Buah Raksasa (Mencapai 1 - 2.5 kg per dompol)',
+      'Vigor Tanaman Sangat Kuat',
+      'Toleran Panas Terik'
+    ],
+    keunggulan_utama: 'Tampilan tandan buah sangat mewah dan memukau, menjadi primadona agrowisata petik buah langsung dengan harga jual premium.',
+    alasan_rekomendasi: 'Varietas komersial dengan nilai estetika dan tonase per pohon tertinggi untuk pengelola kebun modern.',
+    kategori_pasar: 'Segmen Premium / Restoran',
+    estimasi_harga_jual: 'Rp 60.000 - 85.000 / kg',
+    daya_serap_pasar: 'Tinggi'
   }
 ];
 

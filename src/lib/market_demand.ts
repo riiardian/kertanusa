@@ -120,6 +120,78 @@ export const COMMODITY_TRENDS: MarketCommodityTrend[] = [
       { bulan: 'Nov', harga: 7350, indeks_daya_beli: 90 },
       { bulan: 'Des', harga: 7550, indeks_daya_beli: 95 }
     ]
+  },
+  {
+    komoditas: 'Jeruk (Siam / Keprok)',
+    harga_saat_ini: 16500,
+    tren_mingguan: 'Naik',
+    persentase_tren: 4.8,
+    musim_puncak: 'Juni - Agustus (Musim Kemarau/Manis Optimal) & Imlek/Tahun Baru',
+    bulan_harga_tertinggi: ['Juni', 'Juli', 'Agustus', 'Januari'],
+    alasan_permintaan: 'Konsumsi buah segar harian keluarga perkotaan, industri perasan sari buah, dan pasokan ritel modern supermarket stabil tinggi.',
+    rekomendasi_waktu_tanam: 'Pemupukan NPK berimbang dan pengairan teratur di musim kemarau untuk memaksimalkan kadar kemanisan (brix) dan ukuran buah seragam.',
+    historis_bulanan: [
+      { bulan: 'Jan', harga: 18000, indeks_daya_beli: 90 },
+      { bulan: 'Feb', harga: 16000, indeks_daya_beli: 80 },
+      { bulan: 'Mar', harga: 14500, indeks_daya_beli: 72 },
+      { bulan: 'Apr', harga: 15000, indeks_daya_beli: 75 },
+      { bulan: 'Mei', harga: 16000, indeks_daya_beli: 80 },
+      { bulan: 'Jun', harga: 18500, indeks_daya_beli: 92 },
+      { bulan: 'Jul', harga: 19500, indeks_daya_beli: 98 },
+      { bulan: 'Ags', harga: 19000, indeks_daya_beli: 95 },
+      { bulan: 'Sep', harga: 16500, indeks_daya_beli: 82 },
+      { bulan: 'Okt', harga: 15000, indeks_daya_beli: 74 },
+      { bulan: 'Nov', harga: 16000, indeks_daya_beli: 80 },
+      { bulan: 'Des', harga: 17500, indeks_daya_beli: 88 }
+    ]
+  },
+  {
+    komoditas: 'Cokelat / Kakao',
+    harga_saat_ini: 82000,
+    tren_mingguan: 'Naik',
+    persentase_tren: 12.3,
+    musim_puncak: 'Sepanjang Tahun (Defisit Pasokan Global & Industri Ekspor)',
+    bulan_harga_tertinggi: ['Maret', 'April', 'September', 'Oktober', 'November'],
+    alasan_permintaan: 'Penurunan panen kakao global di Afrika Barat memicu perebutan pasokan biji kakao fermentasi berkualitas tinggi oleh pabrik pengolahan cokelat dunia.',
+    rekomendasi_waktu_tanam: 'Tanam bibit klon sambung pucuk unggul toleran VSD (Vascular Streak Dieback) serta lakukan pemangkasan sanitasi berkala pasca-panen.',
+    historis_bulanan: [
+      { bulan: 'Jan', harga: 72000, indeks_daya_beli: 82 },
+      { bulan: 'Feb', harga: 75000, indeks_daya_beli: 85 },
+      { bulan: 'Mar', harga: 84000, indeks_daya_beli: 94 },
+      { bulan: 'Apr', harga: 88000, indeks_daya_beli: 98 },
+      { bulan: 'Mei', harga: 78000, indeks_daya_beli: 88 },
+      { bulan: 'Jun', harga: 76000, indeks_daya_beli: 86 },
+      { bulan: 'Jul', harga: 79000, indeks_daya_beli: 90 },
+      { bulan: 'Ags', harga: 81000, indeks_daya_beli: 92 },
+      { bulan: 'Sep', harga: 86000, indeks_daya_beli: 96 },
+      { bulan: 'Okt', harga: 89000, indeks_daya_beli: 100 },
+      { bulan: 'Nov', harga: 85000, indeks_daya_beli: 95 },
+      { bulan: 'Des', harga: 82000, indeks_daya_beli: 93 }
+    ]
+  },
+  {
+    komoditas: 'Anggur',
+    harga_saat_ini: 65000,
+    tren_mingguan: 'Stabil',
+    persentase_tren: 3.5,
+    musim_puncak: 'Juni - Oktober (Kemarau Terik / Manis Maksimal) & Libur Akhir Tahun',
+    bulan_harga_tertinggi: ['Juni', 'Juli', 'Agustus', 'September', 'Desember'],
+    alasan_permintaan: 'Pasar anggur meja segar petik langsung kebun dan pasar buah premium perkotaan menawarkan margin keuntungan tinggi dengan kepastian pembeli tetap.',
+    rekomendasi_waktu_tanam: 'Budidayakan dengan naungan atap plastik UV dan lakukan pemangkasan pembuahan teratur di awal musim kemarau saat fotosintesis maksimal.',
+    historis_bulanan: [
+      { bulan: 'Jan', harga: 58000, indeks_daya_beli: 75 },
+      { bulan: 'Feb', harga: 55000, indeks_daya_beli: 70 },
+      { bulan: 'Mar', harga: 60000, indeks_daya_beli: 78 },
+      { bulan: 'Apr', harga: 62000, indeks_daya_beli: 80 },
+      { bulan: 'Mei', harga: 65000, indeks_daya_beli: 84 },
+      { bulan: 'Jun', harga: 72000, indeks_daya_beli: 92 },
+      { bulan: 'Jul', harga: 75000, indeks_daya_beli: 98 },
+      { bulan: 'Ags', harga: 74000, indeks_daya_beli: 96 },
+      { bulan: 'Sep', harga: 70000, indeks_daya_beli: 90 },
+      { bulan: 'Okt', harga: 68000, indeks_daya_beli: 88 },
+      { bulan: 'Nov', harga: 64000, indeks_daya_beli: 82 },
+      { bulan: 'Des', harga: 72000, indeks_daya_beli: 94 }
+    ]
   }
 ];
 
@@ -134,7 +206,13 @@ export function calculateProfitProjection(luasM2: number, komoditas: string) {
     'Jagung': { kg: 1.8, biayaPerM2: 8000, hargaDefault: 9500 },
     'Padi Sawah': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 },
     'Padi Sawah (Ciherang/Inpari)': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 },
-    'Padi': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 }
+    'Padi': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 },
+    'Jeruk (Siam / Keprok)': { kg: 1.5, biayaPerM2: 7000, hargaDefault: 16500 },
+    'Jeruk': { kg: 1.5, biayaPerM2: 7000, hargaDefault: 16500 },
+    'Cokelat / Kakao': { kg: 0.25, biayaPerM2: 5000, hargaDefault: 82000 },
+    'Cokelat': { kg: 0.25, biayaPerM2: 5000, hargaDefault: 82000 },
+    'Kakao': { kg: 0.25, biayaPerM2: 5000, hargaDefault: 82000 },
+    'Anggur': { kg: 1.2, biayaPerM2: 28000, hargaDefault: 65000 }
   };
 
   const item = yieldPerM2[komoditas] || yieldPerM2['Bawang Merah'] || yieldPerM2['Cabai Rawit Merah'];
