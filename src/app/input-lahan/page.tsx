@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { RefreshCw, MapPin, Check, ChevronDown } from 'lucide-react';
+import { RefreshCw, MapPin, Check, ChevronDown, Trash2 } from 'lucide-react';
 import { REGIONS } from '@/lib/agro_regions';
 import LottieAnimation from '@/components/LottieAnimation';
 import loadingAnimation from '../../../public/loading.json';
@@ -343,14 +343,23 @@ export default function InputLahanPage() {
               </div>
             </div>
 
-            {/* Aksi Navigasi: Hanya Lihat Peta */}
-            <div className="pt-2">
+            {/* Aksi Navigasi: Lihat Peta & Hapus Data */}
+            <div className="space-y-2 pt-2">
               <Link
                 href="/#peta-sebaran-lahan"
                 className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-sm shadow-xs transition-all duration-200 text-center block cursor-pointer"
               >
                 Lihat Peta
               </Link>
+
+              <button
+                type="button"
+                onClick={handleDeleteSaved}
+                className="w-full py-2.5 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 active:scale-[0.98] border border-rose-200 font-semibold text-xs transition-all duration-200 text-center cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                <span>Hapus Data</span>
+              </button>
             </div>
 
           </div>
