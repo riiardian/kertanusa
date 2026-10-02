@@ -370,7 +370,7 @@ export default function AgriculturalMonitoringDashboard() {
                   strokeLinejoin="round"
                 />
 
-                {/* Hit Areas Vertikal Penuh & Titik Vertex Tiap Tahun */}
+                {/* Titik Vertex Tiap Tahun & Area Hover/Klik Khusus di Lingkaran Titik */}
                 {points.map((p, idx) => {
                   const isHovered = hoveredIdx === idx;
                   const isPinned = pinnedIdx === idx;
@@ -378,28 +378,8 @@ export default function AgriculturalMonitoringDashboard() {
                   const isUp = p.status === 'naik';
                   const isDown = p.status === 'turun';
 
-                  // Lebar slice zona interaksi vertikal agar transisi kursor antar tahun mulus tanpa jeda
-                  const sliceW = PLOT_W / (points.length - 1);
-                  const sliceX = p.x - sliceW / 2;
-
                   return (
                     <g key={p.tahun}>
-                      {/* Zona Sentuh/Hover Vertikal Penuh (Mencegah kursor lepas atau patah-patah) */}
-                      <rect
-                        x={sliceX}
-                        y={0}
-                        width={sliceW}
-                        height={SVG_H}
-                        fill="transparent"
-                        className="cursor-pointer"
-                        onMouseEnter={() => setHoveredIdx(idx)}
-                        onMouseLeave={() => setHoveredIdx(null)}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPinnedIdx(pinnedIdx === idx ? null : idx);
-                        }}
-                      />
-
                       {/* Garis Bantu Vertikal saat aktif */}
                       {isSelectedOrHovered && (
                         <line
@@ -425,6 +405,21 @@ export default function AgriculturalMonitoringDashboard() {
                           className="animate-pulse pointer-events-none"
                         />
                       )}
+
+                      {/* Area Sentuh/Hover Tepat di Bagian Bulet-Bulet (Radius 14px) */}
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r={14}
+                        fill="transparent"
+                        className="cursor-pointer"
+                        onMouseEnter={() => setHoveredIdx(idx)}
+                        onMouseLeave={() => setHoveredIdx(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPinnedIdx(pinnedIdx === idx ? null : idx);
+                        }}
+                      />
 
                       {/* Circle Dot Titik Data */}
                       <circle
@@ -495,98 +490,71 @@ export default function AgriculturalMonitoringDashboard() {
                 })}
               </svg>
 
-              {/* Popup Tabel Kecil Informasi Penjelasan Kenaikan / Penurunan (SELALU DI ATAS TITIK, TIDAK PERNAH DI BAWAH) */}
+              {/* Popup Ringkas Langsung ke Inti: Hanya Penyebab Kenaikan / Penurunan (Selalu di Atas Titik) */}
               {tooltipPoint && (
                 <div
                   style={{
                     left: `${(tooltipPoint.x / SVG_W) * 100}%`,
                     top: `${(tooltipPoint.y / SVG_H) * 100}%`,
-                    transform: tooltipPoint.x < 140
-                      ? 'translate(-10%, calc(-100% - 16px))'
-                      : tooltipPoint.x > SVG_W - 140
-                      ? 'translate(-90%, calc(-100% - 16px))'
-                      : 'translate(-50%, calc(-100% - 16px))'
+                    transform: tooltipPoint.x < 130
+                      ? 'translate(-10%, calc(-100% - 14px))'
+                      : tooltipPoint.x > SVG_W - 130
+                      ? 'translate(-90%, calc(-100% - 14px))'
+                      : 'translate(-50%, calc(-100% - 14px))'
                   }}
-                  className={`absolute z-30 w-72 sm:w-80 transition-opacity duration-150 ${
+                  className={`absolute z-30 w-64 sm:w-72 transition-opacity duration-150 ${
                     pinnedIdx !== null ? 'pointer-events-auto' : 'pointer-events-none'
                   }`}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="bg-white border border-slate-200/95 rounded-xl shadow-2xl p-3 text-xs text-slate-800 space-y-2">
-                    {/* Header Tooltip */}
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-extrabold text-slate-900 text-sm">
-                          Tahun {tooltipPoint.labelTahun}
-                        </span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
-                          {tooltipPoint.tipe === 'target' 
-                            ? 'Target Nasional' 
-                            : tooltipPoint.tipe === 'estimasi' 
-                            ? 'Estimasi BPS' 
-                            : 'Realisasi BPS'}
-                        </span>
-                      </div>
+                  <div className="bg-white border border-slate-200/95 rounded-xl shadow-xl p-3 text-xs text-slate-800 space-y-1.5">
+                    {/* Header Ringkas: Judul Penyebab + Tombol Tutup Saat Di-klik */}
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                      <span className={`text-[11px] font-bold flex items-center gap-1 ${
+                        tooltipPoint.status === 'naik'
+                          ? 'text-emerald-700'
+                          : tooltipPoint.status === 'turun'
+                          ? 'text-rose-700'
+                          : 'text-slate-700'
+                      }`}>
+                        {tooltipPoint.status === 'naik' ? (
+                          <>
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            Penyebab Kenaikan:
+                          </>
+                        ) : tooltipPoint.status === 'turun' ? (
+                          <>
+                            <TrendingDown className="w-3.5 h-3.5" />
+                            Penyebab Penurunan:
+                          </>
+                        ) : (
+                          'Kondisi Produksi:'
+                        )}
+                      </span>
+
                       {pinnedIdx !== null && (
                         <button 
                           onClick={() => setPinnedIdx(null)}
-                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1 py-0.5 rounded hover:bg-slate-100 transition-colors pointer-events-auto"
-                          title="Tutup Tabel"
+                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors pointer-events-auto"
+                          title="Tutup"
                         >
                           ✕
                         </button>
                       )}
                     </div>
 
-                    {/* Tabel Kecil Informasi Singkat */}
-                    <table className="w-full text-xs border-collapse">
-                      <tbody>
-                        <tr className="border-b border-slate-100">
-                          <td className="py-1 text-slate-500 font-medium">Produksi</td>
-                          <td className="py-1 text-right font-bold text-slate-900">
-                            {tooltipPoint.produksi} Juta Ton
-                          </td>
-                        </tr>
-                        <tr className="border-b border-slate-100">
-                          <td className="py-1 text-slate-500 font-medium">Perubahan</td>
-                          <td className="py-1 text-right font-bold">
-                            {tooltipPoint.perubahanPersen > 0 ? (
-                              <span className="text-emerald-700 flex items-center justify-end gap-0.5 font-bold">
-                                <TrendingUp className="w-3 h-3" /> +{tooltipPoint.perubahanPersen}% (Naik)
-                              </span>
-                            ) : tooltipPoint.perubahanPersen < 0 ? (
-                              <span className="text-rose-700 flex items-center justify-end gap-0.5 font-bold">
-                                <TrendingDown className="w-3 h-3" /> {tooltipPoint.perubahanPersen}% (Turun)
-                              </span>
-                            ) : (
-                              <span className="text-slate-500 font-semibold">0% (Tahun Basis)</span>
-                            )}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colSpan={2} className="pt-2">
-                            <span className="block font-semibold text-slate-800 text-[11px] mb-1">
-                              {tooltipPoint.status === 'naik' 
-                                ? 'Penyebab Kenaikan Produksi:' 
-                                : tooltipPoint.status === 'turun' 
-                                ? 'Penyebab Penurunan Produksi:' 
-                                : 'Kondisi Produksi:'}
-                            </span>
-                            <p className="text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100 font-medium">
-                              {tooltipPoint.keterangan}
-                            </p>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    {/* Penjelasan Langsung ke Intinya */}
+                    <p className="text-[11.5px] text-slate-600 leading-relaxed font-medium">
+                      {tooltipPoint.keterangan}
+                    </p>
                   </div>
 
-                  {/* Panah Indikator ke Titik Lingkaran di Bawah Tooltip */}
+                  {/* Panah Indikator ke Titik Lingkaran */}
                   <div 
                     style={{
-                      left: tooltipPoint.x < 140 
+                      left: tooltipPoint.x < 130 
                         ? '10%' 
-                        : tooltipPoint.x > SVG_W - 140 
+                        : tooltipPoint.x > SVG_W - 130 
                         ? '90%' 
                         : '50%'
                     }}
