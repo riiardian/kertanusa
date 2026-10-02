@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, MapPin } from 'lucide-react';
+import { TrendingUp, TrendingDown, MapPin, Info } from 'lucide-react';
 
 interface YearlyPoint {
   tahun: number;
@@ -147,6 +147,7 @@ const DATA_KOMODITAS: CommodityCategory[] = [
 export default function AgriculturalMonitoringDashboard() {
   const [selectedId, setSelectedId] = useState('padi');
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
 
   const selected = DATA_KOMODITAS.find((item) => item.id === selectedId) || DATA_KOMODITAS[0];
 
@@ -190,7 +191,9 @@ export default function AgriculturalMonitoringDashboard() {
     return { ...item, length, offset };
   });
 
-  const activePoint = hoveredIdx !== null ? points[hoveredIdx] : points[points.length - 1];
+  const activeTooltipIdx = hoveredIdx !== null ? hoveredIdx : pinnedIdx;
+  const activePoint = activeTooltipIdx !== null ? points[activeTooltipIdx] : points[points.length - 1];
+  const tooltipPoint = activeTooltipIdx !== null ? points[activeTooltipIdx] : null;
 
   return (
     <div className="w-full space-y-6">
@@ -222,6 +225,7 @@ export default function AgriculturalMonitoringDashboard() {
                 onClick={() => {
                   setSelectedId(k.id);
                   setHoveredIdx(null);
+                  setPinnedIdx(null);
                 }}
                 className={`pb-2.5 text-xs sm:text-sm transition-all shrink-0 cursor-pointer border-b-2 ${
                   isSelected
@@ -268,22 +272,28 @@ export default function AgriculturalMonitoringDashboard() {
             </div>
 
             {/* Info Tahun Aktif: Ukuran Teks Seimbang (text-xs) Tanpa Kotak Card */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 self-start sm:self-auto">
-              <span>Tahun {activePoint.labelTahun}:</span>
-              <span className="text-xs font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
-              {activePoint.perubahanPersen > 0 && (
-                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-0.5">
-                  <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
-                </span>
-              )}
-              {activePoint.perubahanPersen < 0 && (
-                <span className="text-xs font-semibold text-rose-700 flex items-center gap-0.5">
-                  <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
-                </span>
-              )}
-              {activePoint.perubahanPersen === 0 && (
-                <span className="text-xs text-slate-400 font-medium">Basis</span>
-              )}
+            <div className="flex flex-col sm:items-end gap-0.5 self-start sm:self-auto">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                <span>Tahun {activePoint.labelTahun}:</span>
+                <span className="text-xs font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
+                {activePoint.perubahanPersen > 0 && (
+                  <span className="text-xs font-semibold text-emerald-700 flex items-center gap-0.5">
+                    <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
+                  </span>
+                )}
+                {activePoint.perubahanPersen < 0 && (
+                  <span className="text-xs font-semibold text-rose-700 flex items-center gap-0.5">
+                    <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
+                  </span>
+                )}
+                {activePoint.perubahanPersen === 0 && (
+                  <span className="text-xs text-slate-400 font-medium">Basis</span>
+                )}
+              </div>
+              <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                Arahkan / klik titik untuk detail kenaikan & penurunan
+              </span>
             </div>
           </div>
 
@@ -304,137 +314,269 @@ export default function AgriculturalMonitoringDashboard() {
 
           {/* Area Kanvas SVG Diagram Garis Berkelanjutan (Sejajar ke Bagian Bawah) */}
           <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2 mt-auto">
-            <svg
-              viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-              className="w-full h-auto min-w-[540px] overflow-visible"
-            >
-              <defs>
-                <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.22" />
-                  <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
+            <div className="relative min-w-[540px]">
+              <svg
+                viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+                className="w-full h-auto min-w-[540px] overflow-visible"
+                onClick={() => setPinnedIdx(null)}
+              >
+                <defs>
+                  <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.22" />
+                    <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
 
-              {/* Garis Bantu Horizontal (Grid Lines) */}
-              {[0, 0.33, 0.66, 1].map((pct, gIdx) => {
-                const y = PAD_TOP + pct * PLOT_H;
-                const val = yMax - pct * (yMax - yMin);
-                const labelVal = val >= 10 ? val.toFixed(1) : val.toFixed(2);
-                return (
-                  <g key={gIdx}>
-                    <line
-                      x1={PAD_X}
-                      y1={y}
-                      x2={SVG_W - PAD_X}
-                      y2={y}
-                      stroke="#e2e8f0"
-                      strokeDasharray="3 3"
-                      strokeWidth="1"
-                    />
-                    <text
-                      x={PAD_X - 8}
-                      y={y + 3}
-                      textAnchor="end"
-                      fontSize="9"
-                      fill="#94a3b8"
-                      fontWeight="500"
+                {/* Garis Bantu Horizontal (Grid Lines) */}
+                {[0, 0.33, 0.66, 1].map((pct, gIdx) => {
+                  const y = PAD_TOP + pct * PLOT_H;
+                  const val = yMax - pct * (yMax - yMin);
+                  const labelVal = val >= 10 ? val.toFixed(1) : val.toFixed(2);
+                  return (
+                    <g key={gIdx}>
+                      <line
+                        x1={PAD_X}
+                        y1={y}
+                        x2={SVG_W - PAD_X}
+                        y2={y}
+                        stroke="#e2e8f0"
+                        strokeDasharray="3 3"
+                        strokeWidth="1"
+                      />
+                      <text
+                        x={PAD_X - 8}
+                        y={y + 3}
+                        textAnchor="end"
+                        fontSize="9"
+                        fill="#94a3b8"
+                        fontWeight="500"
+                      >
+                        {labelVal}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Area Gradient */}
+                <path d={areaPath} fill={`url(#lineGrad-${selected.id})`} />
+
+                {/* Garis Naik-Turun Berkelanjutan */}
+                <path
+                  d={linePath}
+                  fill="none"
+                  stroke={selected.warnaHex}
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+
+                {/* Titik Vertex Tiap Tahun & Label Naik-Turun (Tanpa Segitiga Kasar) */}
+                {points.map((p, idx) => {
+                  const isHovered = hoveredIdx === idx;
+                  const isPinned = pinnedIdx === idx;
+                  const isSelectedOrHovered = isHovered || isPinned;
+                  const isUp = p.status === 'naik';
+                  const isDown = p.status === 'turun';
+
+                  return (
+                    <g
+                      key={p.tahun}
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredIdx(idx)}
+                      onMouseLeave={() => setHoveredIdx(null)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPinnedIdx(pinnedIdx === idx ? null : idx);
+                      }}
                     >
-                      {labelVal}
-                    </text>
-                  </g>
-                );
-              })}
+                      {/* Cincin highlight berdenyut jika aktif */}
+                      {isSelectedOrHovered && (
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={13}
+                          fill={selected.warnaHex}
+                          fillOpacity="0.18"
+                          className="animate-pulse"
+                        />
+                      )}
 
-              {/* Area Gradient */}
-              <path d={areaPath} fill={`url(#lineGrad-${selected.id})`} />
+                      {/* Area sentuh ekstra luas (Touch/Click Target) */}
+                      <circle cx={p.x} cy={p.y} r={22} fill="transparent" />
 
-              {/* Garis Naik-Turun Berkelanjutan */}
-              <path
-                d={linePath}
-                fill="none"
-                stroke={selected.warnaHex}
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+                      {/* Circle Dot */}
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r={isSelectedOrHovered ? 6.5 : 4.5}
+                        fill="#ffffff"
+                        stroke={selected.warnaHex}
+                        strokeWidth={isSelectedOrHovered ? 3.5 : 2.5}
+                        className="transition-all duration-150"
+                      />
 
-              {/* Titik Vertex Tiap Tahun & Label Naik-Turun (Tanpa Segitiga Kasar) */}
-              {points.map((p, idx) => {
-                const isHovered = hoveredIdx === idx;
-                const isUp = p.status === 'naik';
-                const isDown = p.status === 'turun';
-
-                return (
-                  <g
-                    key={p.tahun}
-                    className="cursor-pointer"
-                    onMouseEnter={() => setHoveredIdx(idx)}
-                    onMouseLeave={() => setHoveredIdx(null)}
-                  >
-                    {/* Circle Dot */}
-                    <circle
-                      cx={p.x}
-                      cy={p.y}
-                      r={isHovered ? 6.5 : 4.5}
-                      fill="#ffffff"
-                      stroke={selected.warnaHex}
-                      strokeWidth={isHovered ? 3.5 : 2.5}
-                      className="transition-all duration-150"
-                    />
-
-                    {/* Angka Produksi di Atas Titik */}
-                    <text
-                      x={p.x}
-                      y={p.y - 12}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fontWeight="bold"
-                      fill="#0f172a"
-                    >
-                      {p.produksi}
-                    </text>
-
-                    {/* Persentase Naik/Turun Bersih Tanpa Segitiga Kasar */}
-                    {idx > 0 && (
+                      {/* Angka Produksi di Atas Titik */}
                       <text
                         x={p.x}
-                        y={p.y - 24}
+                        y={p.y - 12}
                         textAnchor="middle"
-                        fontSize="9"
+                        fontSize="10"
                         fontWeight="bold"
-                        fill={isUp ? '#059669' : isDown ? '#e11d48' : '#64748b'}
+                        fill={isSelectedOrHovered ? '#0f172a' : '#1e293b'}
                       >
-                        {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
+                        {p.produksi}
                       </text>
-                    )}
 
-                    {/* Label Tahun (X-Axis) */}
-                    <text
-                      x={p.x}
-                      y={SVG_H - PAD_BOTTOM + 18}
-                      textAnchor="middle"
-                      fontSize="11"
-                      fontWeight="bold"
-                      fill={isHovered ? '#0f172a' : '#475569'}
-                    >
-                      {p.tahun}
-                    </text>
+                      {/* Persentase Naik/Turun Bersih Tanpa Segitiga Kasar */}
+                      {idx > 0 && (
+                        <text
+                          x={p.x}
+                          y={p.y - 24}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fontWeight="bold"
+                          fill={isUp ? '#059669' : isDown ? '#e11d48' : '#64748b'}
+                        >
+                          {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
+                        </text>
+                      )}
 
-                    {/* Tag Status (Realisasi / Est / Target) */}
-                    <text
-                      x={p.x}
-                      y={SVG_H - PAD_BOTTOM + 30}
-                      textAnchor="middle"
-                      fontSize="8.5"
-                      fontWeight="600"
-                      fill={p.tipe === 'target' ? '#059669' : p.tipe === 'estimasi' ? '#d97706' : '#94a3b8'}
-                    >
-                      {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+                      {/* Label Tahun (X-Axis) */}
+                      <text
+                        x={p.x}
+                        y={SVG_H - PAD_BOTTOM + 18}
+                        textAnchor="middle"
+                        fontSize="11"
+                        fontWeight="bold"
+                        fill={isSelectedOrHovered ? '#0f172a' : '#475569'}
+                      >
+                        {p.tahun}
+                      </text>
+
+                      {/* Tag Status (Realisasi / Est / Target) */}
+                      <text
+                        x={p.x}
+                        y={SVG_H - PAD_BOTTOM + 30}
+                        textAnchor="middle"
+                        fontSize="8.5"
+                        fontWeight="600"
+                        fill={p.tipe === 'target' ? '#059669' : p.tipe === 'estimasi' ? '#d97706' : '#94a3b8'}
+                      >
+                        {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {/* Popup Tabel Kecil Informasi Penjelasan Kenaikan / Penurunan */}
+              {tooltipPoint && (
+                <div
+                  style={{
+                    left: `${(tooltipPoint.x / SVG_W) * 100}%`,
+                    top: `${(tooltipPoint.y / SVG_H) * 100}%`,
+                    transform: tooltipPoint.y < 125
+                      ? (tooltipPoint.x < 140
+                          ? 'translate(-12%, 18px)'
+                          : tooltipPoint.x > SVG_W - 140
+                          ? 'translate(-88%, 18px)'
+                          : 'translate(-50%, 18px)')
+                      : (tooltipPoint.x < 140
+                          ? 'translate(-12%, calc(-100% - 18px))'
+                          : tooltipPoint.x > SVG_W - 140
+                          ? 'translate(-88%, calc(-100% - 18px))'
+                          : 'translate(-50%, calc(-100% - 18px))')
+                  }}
+                  className="absolute z-30 w-72 sm:w-80 pointer-events-auto transition-all duration-150 animate-in fade-in zoom-in-95"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="bg-white border border-slate-200 rounded-xl shadow-xl p-3 text-xs text-slate-800 space-y-2.5">
+                    {/* Header Tooltip */}
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-extrabold text-slate-900 text-sm">
+                          Tahun {tooltipPoint.labelTahun}
+                        </span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                          {tooltipPoint.tipe === 'target' 
+                            ? 'Target Nasional' 
+                            : tooltipPoint.tipe === 'estimasi' 
+                            ? 'Estimasi BPS' 
+                            : 'Realisasi BPS'}
+                        </span>
+                      </div>
+                      {pinnedIdx !== null && (
+                        <button 
+                          onClick={() => setPinnedIdx(null)}
+                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1 py-0.5 rounded hover:bg-slate-100 transition-colors"
+                          title="Tutup Tabel"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Tabel Kecil Informasi Singkat */}
+                    <table className="w-full text-xs border-collapse">
+                      <tbody>
+                        <tr className="border-b border-slate-100">
+                          <td className="py-1 text-slate-500 font-medium">Produksi</td>
+                          <td className="py-1 text-right font-bold text-slate-900">
+                            {tooltipPoint.produksi} Juta Ton
+                          </td>
+                        </tr>
+                        <tr className="border-b border-slate-100">
+                          <td className="py-1 text-slate-500 font-medium">Perubahan</td>
+                          <td className="py-1 text-right font-bold">
+                            {tooltipPoint.perubahanPersen > 0 ? (
+                              <span className="text-emerald-700 flex items-center justify-end gap-0.5">
+                                <TrendingUp className="w-3 h-3" /> +{tooltipPoint.perubahanPersen}% (Naik)
+                              </span>
+                            ) : tooltipPoint.perubahanPersen < 0 ? (
+                              <span className="text-rose-700 flex items-center justify-end gap-0.5">
+                                <TrendingDown className="w-3 h-3" /> {tooltipPoint.perubahanPersen}% (Turun)
+                              </span>
+                            ) : (
+                              <span className="text-slate-500 font-semibold">0% (Tahun Basis)</span>
+                            )}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={2} className="pt-2">
+                            <span className="block font-semibold text-slate-800 text-[11px] mb-1">
+                              {tooltipPoint.status === 'naik' 
+                                ? 'Penyebab Kenaikan Produksi:' 
+                                : tooltipPoint.status === 'turun' 
+                                ? 'Penyebab Penurunan Produksi:' 
+                                : 'Kondisi Produksi:'}
+                            </span>
+                            <p className="text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100 font-medium">
+                              {tooltipPoint.keterangan}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Panah Indikator ke Titik Lingkaran */}
+                  <div 
+                    style={{
+                      left: tooltipPoint.x < 140 
+                        ? '12%' 
+                        : tooltipPoint.x > SVG_W - 140 
+                        ? '88%' 
+                        : '50%'
+                    }}
+                    className={`absolute -translate-x-1/2 w-3 h-3 bg-white ${
+                      tooltipPoint.y < 125
+                        ? '-top-1.5 border-l border-t border-slate-200 rotate-45'
+                        : '-bottom-1.5 border-r border-b border-slate-200 rotate-45'
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
 
