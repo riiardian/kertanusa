@@ -379,3 +379,16 @@ ext build), working tree clean, dan verified di browser.
     - **Perbesar Animasi Lottie Farmers**: Memperbesar ukuran animasi Lottie petani (public/Farmers.json) menjadi w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 agar tampil proporsional, jelas, dan memikat di layar kartu rincian.
     - **Direct Link Peta Sebaran Lahan**: Menambahkan anchor id 'peta-sebaran-lahan' (dengan scroll offset navbar scroll-mt-24 sm:scroll-mt-28) pada section peta di halaman beranda. Tombol 'Lihat di Peta Beranda' kini otomatis mengarahkan dan melakukan smooth-scroll langsung ke area peta sebaran lahan sawah, bukan berhenti di hero section.
     - **Sanitasi**: Build Next.js 100% sukses tanpa error, working tree AeroFlazz clean.
+
+147. **Sinkronisasi Desain Halaman Daya Beli Pasar, Auto-Sync Lahan Petani, & Production Deployment VPS [2026-10-02]**:
+    - **Redesain Halaman Daya Beli Pasar**: Diselaraskan dengan estetika natural, clean, dan sederhana dari Beranda, Input Lahan, dan Monitoring Iklim. Menggunakan kartu putih beraksen emerald, divider halus, dan tipografi rapi.
+    - **Eliminasi Dropdown Petani**: Menghilangkan dropdown pemilihan petani manual. Halaman kini langsung terhubung secara otomatis ke data pendaftaran lahan user (kertanusa_active_farmer_data & validasi API /api/petani).
+    - **Penentuan Bibit & Simulasi Lahan Sinkron Otomatis**: Komoditas yang terdaftar langsung disesuaikan dengan tanaman lahan user (Padi, Bawang, Cabai, Jagung, Tomat). Rekomendasi bibit varietas unggul (#1 Utama & #2 Alternatif) langsung mengevaluasi elevasi dataran, tipe pengairan, musim berjalan, dan pH tanah lahan. Luas lahan kalkulator terisi otomatis sesuai luas lahan terdaftar.
+    - **Fallback Rekomendasi Sistem**: Jika user belum menginput lahan, sistem menampilkan data acuan standar rekomendasi (Benchmark Brebes) lengkap dengan lencana 'Rekomendasi Sistem' dan tombol pintas 'Daftarkan Lahan Anda'.
+    - **Dukungan Komoditas Padi Sawah**: Menambahkan komoditas Padi Sawah pada dataset tren harga bulanan Bapanas dan proyeksi ROI.
+    - **Deployment Produksi ke VPS Linux (116.212.72.123)**:
+      - Kode berhasil di-push ke GitHub repository https://github.com/riiardian/kertanusa.git.
+      - Diterapkan ke server VPS via SSH di /www/wwwroot/kertanusa.
+      - Build Next.js 100% sukses (12/12 routes).
+      - Service dikelola secara persisten melalui PM2 (kertanusa aktif di port 3002).
+      - Port firewall UFW 3002/tcp diizinkan dan terverifikasi sehat (HTTP 200 OK).
