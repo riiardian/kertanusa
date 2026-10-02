@@ -1111,3 +1111,206 @@ export function calculateProfitProjection(luasM2: number, komoditas: string) {
     roi
   };
 }
+
+// ============================================================
+// MARKET INTELLIGENCE ENGINE
+// ============================================================
+
+export type RisikoLevel = 'Rendah' | 'Sedang' | 'Tinggi';
+
+export interface MarketIntelligenceScore {
+  komoditas: string;
+  icon: string;
+  kategori: CommodityCategory;
+  // Skor 0-100
+  skorPermintaan: number;      // seberapa banyak dicari / dibeli
+  skorTrenHarga: number;       // apakah harga sedang naik
+  skorStabilitas: number;      // seberapa stabil harga (tidak fluktuatif)
+  skorProfitPotensial: number; // potensi margin keuntungan
+  skorTotal: number;           // composite score 0-100
+  // Label & insight
+  risikoLevel: RisikoLevel;
+  labelRekomendasi: string;    // "Tanam Sekarang" / "Pertimbangkan" / "Tunda Dulu"
+  hargaSaatIni: number;
+  trenMingguan: string;
+  persentaseTren: number;
+  alasanSingkat: string;       // 1 kalimat kenapa recommended/tidak
+  bulanPuncakBerikutnya: string;
+  // Estimasi finansial untuk lahan tertentu (diisi oleh getSmartRecommendations)
+  estimasiLabaBersih?: number;
+  roi?: number;
+}
+
+/**
+ * Hitung varians harga bulanan (makin rendah = makin stabil)
+ */
+function hitungStabilitas(historis: { harga: number }[]): number {
+  const harga = historis.map(h => h.harga);
+  const avg = harga.reduce((a, b) => a + b, 0) / harga.length;
+  const variance = harga.reduce((sum, h) => sum + Math.pow(h - avg, 2), 0) / harga.length;
+  const cv = Math.sqrt(variance) / avg; // coefficient of variation
+  // cv rendah = stabil. cv > 0.4 = sangat fluktuatif
+  return Math.max(0, Math.min(100, Math.round((1 - cv / 0.5) * 100)));
+}
+
+/**
+ * Hitung seberapa dekat bulan puncak permintaan berikutnya (0-100)
+ */
+function hitungKedekatanMusimPuncak(bulanPuncak: string[]): { skor: number; labelBulan: string } {
+  const bulanMap: Record<string, number> = {
+    'Januari': 1, 'Februari': 2, 'Maret': 3, 'April': 4,
+    'Mei': 5, 'Juni': 6, 'Juli': 7, 'Agustus': 8,
+    'September': 9, 'Oktober': 10, 'November': 11, 'Desember': 12
+  };
+  const now = new Date().getMonth() + 1; // 1-12
+  let minGap = 12;
+  let labelBulan = bulanPuncak[0] || '-';
+  for (const b of bulanPuncak) {
+    for (const [key, val] of Object.entries(bulanMap)) {
+      if (b.toLowerCase().includes(key.toLowerCase())) {
+        const gap = ((val - now + 12) % 12);
+        if (gap < minGap) { minGap = gap; labelBulan = key; }
+      }
+    }
+  }
+  // gap=0 (bulan ini) = 100, gap=6 = 50, gap=11 = 9
+  const skor = Math.max(10, Math.round(100 - (minGap / 12) * 90));
+  return { skor, labelBulan };
+}
+
+/**
+ * Hitung skor permintaan dari indeks daya beli rata-rata 3 bulan terakhir
+ */
+function hitungSkorPermintaan(historis: { indeks_daya_beli: number }[]): number {
+  const recent = historis.slice(-3);
+  const avg = recent.reduce((s, h) => s + h.indeks_daya_beli, 0) / recent.length;
+  return Math.round(avg);
+}
+
+/**
+ * Hitung skor tren harga
+ */
+function hitungSkorTren(tren: string, persen: number): number {
+  if (tren === 'Naik') return Math.min(100, 60 + persen * 2.5);
+  if (tren === 'Turun') return Math.max(0, 40 - persen * 2);
+  return 55; // Stabil
+}
+
+/**
+ * Hitung potensi profit score berdasarkan ROI rata-rata per 10.000 m²
+ */
+function hitungSkorProfit(komoditas: string): number {
+  const proj = calculateProfitProjection(10000, komoditas);
+  const roi = proj.roi;
+  // ROI 0% = 30, ROI 100% = 80, ROI 200%+ = 100
+  return Math.min(100, Math.max(10, Math.round(30 + roi * 0.35)));
+}
+
+/**
+ * Generate label rekomendasi berdasarkan skor dan risiko
+ */
+function getLabelRekomendasi(skor: number, risiko: RisikoLevel, musimDekat: boolean): string {
+  if (skor >= 72 && risiko === 'Rendah') return '🟢 Tanam Sekarang';
+  if (skor >= 72 && musimDekat) return '🟢 Segera Tanam';
+  if (skor >= 55 && risiko !== 'Tinggi') return '🟡 Pertimbangkan';
+  if (risiko === 'Tinggi') return '🔴 Hati-Hati';
+  return '🟡 Pantau Dulu';
+}
+
+/**
+ * Generate kalimat alasan singkat
+ */
+function getAlasanSingkat(item: MarketCommodityTrendExtended, skor: number, stabilitas: number): string {
+  if (item.tren_mingguan === 'Naik' && item.persentase_tren >= 8)
+    return `Harga naik ${item.persentase_tren}% minggu ini — permintaan pasar sedang tinggi.`;
+  if (stabilitas >= 75)
+    return `Harga relatif stabil sepanjang tahun, risiko kerugian harga rendah.`;
+  if (skor >= 70)
+    return `Potensi profit tinggi dengan margin keuntungan yang kompetitif.`;
+  if (item.tren_mingguan === 'Turun')
+    return `Harga sedang turun — sebaiknya tunggu sinyal pembalikan pasar.`;
+  return `Pasar sedang normal, cocok untuk petani berpengalaman di sektor ini.`;
+}
+
+/**
+ * Fungsi utama: hitung Market Intelligence Score untuk semua komoditas
+ */
+export function calculateAllMarketScores(luasM2: number = 10000): MarketIntelligenceScore[] {
+  return COMMODITY_TRENDS.map(item => {
+    const skorPermintaan = hitungSkorPermintaan(item.historis_bulanan);
+    const skorTren = hitungSkorTren(item.tren_mingguan, item.persentase_tren);
+    const stabilitas = hitungStabilitas(item.historis_bulanan);
+    const skorProfit = hitungSkorProfit(item.komoditas);
+    const { skor: skorMusim, labelBulan } = hitungKedekatanMusimPuncak(item.bulan_harga_tertinggi);
+
+    // Composite score (weighted)
+    const skorTotal = Math.round(
+      skorPermintaan * 0.30 +
+      skorTren       * 0.30 +
+      stabilitas     * 0.20 +
+      skorProfit     * 0.15 +
+      skorMusim      * 0.05
+    );
+
+    // Risk level
+    let risiko: RisikoLevel;
+    if (skorTotal >= 68 && stabilitas >= 60) risiko = 'Rendah';
+    else if (skorTotal >= 48) risiko = 'Sedang';
+    else risiko = 'Tinggi';
+
+    const musimDekat = skorMusim >= 70;
+    const label = getLabelRekomendasi(skorTotal, risiko, musimDekat);
+    const alasan = getAlasanSingkat(item, skorTotal, stabilitas);
+
+    // Profit estimate untuk luas lahan spesifik
+    const proj = calculateProfitProjection(luasM2, item.komoditas);
+
+    return {
+      komoditas: item.komoditas,
+      icon: item.icon,
+      kategori: item.kategori,
+      skorPermintaan,
+      skorTrenHarga: Math.round(skorTren),
+      skorStabilitas: stabilitas,
+      skorProfitPotensial: skorProfit,
+      skorTotal,
+      risikoLevel: risiko,
+      labelRekomendasi: label,
+      hargaSaatIni: item.harga_saat_ini,
+      trenMingguan: item.tren_mingguan,
+      persentaseTren: item.persentase_tren,
+      alasanSingkat: alasan,
+      bulanPuncakBerikutnya: labelBulan,
+      estimasiLabaBersih: proj.labaBersih,
+      roi: proj.roi,
+    };
+  }).sort((a, b) => b.skorTotal - a.skorTotal);
+}
+
+/**
+ * Ambil top N rekomendasi terbaik (filter "Tanam" / "Pertimbangkan" saja)
+ */
+export function getTopRecommendations(luasM2: number, topN = 3): MarketIntelligenceScore[] {
+  return calculateAllMarketScores(luasM2)
+    .filter(s => !s.labelRekomendasi.includes('Hati-Hati'))
+    .slice(0, topN);
+}
+
+/**
+ * Ambil 3 market pulse highlights
+ */
+export function getMarketPulse(): {
+  mostDemanded: MarketIntelligenceScore;
+  fastestRising: MarketIntelligenceScore;
+  mostStable: MarketIntelligenceScore;
+} {
+  const all = calculateAllMarketScores(10000);
+  const mostDemanded = [...all].sort((a, b) => b.skorPermintaan - a.skorPermintaan)[0];
+  const fastestRising = [...all].sort((a, b) => {
+    const scoreA = a.trenMingguan === 'Naik' ? a.persentaseTren : -99;
+    const scoreB = b.trenMingguan === 'Naik' ? b.persentaseTren : -99;
+    return scoreB - scoreA;
+  })[0];
+  const mostStable = [...all].sort((a, b) => b.skorStabilitas - a.skorStabilitas)[0];
+  return { mostDemanded, fastestRising, mostStable };
+}
