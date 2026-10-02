@@ -564,37 +564,7 @@ export default function AgriculturalMonitoringDashboard() {
               )}
             </div>
 
-            {/* Strip Informasi Singkat di Bawah Grafik (Selalu Terbaca Bersih & Tidak Pernah Terpotong) */}
-            <div className="mt-2.5 pt-2.5 border-t border-slate-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-900">
-                    Faktor Tren {activePoint.labelTahun} ({activePoint.tipe === 'target' ? 'Target Nasional' : activePoint.tipe === 'estimasi' ? 'Estimasi BPS' : 'Realisasi BPS'}):
-                  </span>
-                  {activePoint.perubahanPersen > 0 ? (
-                    <span className="font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded text-[10.5px]">
-                      ▲ +{activePoint.perubahanPersen}% Naik
-                    </span>
-                  ) : activePoint.perubahanPersen < 0 ? (
-                    <span className="font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded text-[10.5px]">
-                      ▼ {activePoint.perubahanPersen}% Turun
-                    </span>
-                  ) : (
-                    <span className="font-semibold text-slate-600 bg-slate-200/80 px-1.5 py-0.2 rounded text-[10.5px]">
-                      Tahun Basis
-                    </span>
-                  )}
-                </div>
-                <p className="text-slate-600 text-[11px] leading-relaxed">
-                  {activePoint.keterangan}
-                </p>
-              </div>
-              <div className="text-left sm:text-right shrink-0">
-                <span className="text-[10px] text-slate-400 block">Produksi</span>
-                <span className="font-extrabold text-slate-900 text-xs sm:text-sm">{activePoint.produksi} Jt Ton</span>
-              </div>
-            </div>
-          </div>
+                      </div>
 
         </div>
 
