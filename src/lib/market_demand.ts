@@ -96,6 +96,30 @@ export const COMMODITY_TRENDS: MarketCommodityTrend[] = [
       { bulan: 'Nov', harga: 8500, indeks_daya_beli: 72 },
       { bulan: 'Des', harga: 12000, indeks_daya_beli: 100 }
     ]
+  },
+  {
+    komoditas: 'Padi Sawah',
+    harga_saat_ini: 7200,
+    tren_mingguan: 'Stabil',
+    persentase_tren: 2.3,
+    musim_puncak: 'Desember - Februari (Paceklik Pra-Panen) & Ramadhan',
+    bulan_harga_tertinggi: ['Januari', 'Februari', 'Maret', 'Desember'],
+    alasan_permintaan: 'Kebutuhan pokok beras stabil tinggi dengan kenaikan harga gabah kering panen (GKP) saat masa tunggu tanam musim rendengan.',
+    rekomendasi_waktu_tanam: 'Tanam serentak pada awal musim hujan (November) untuk mengamankan panen raya di Februari-Maret dengan harga serapan Bulog optimal.',
+    historis_bulanan: [
+      { bulan: 'Jan', harga: 7400, indeks_daya_beli: 92 },
+      { bulan: 'Feb', harga: 7600, indeks_daya_beli: 96 },
+      { bulan: 'Mar', harga: 7100, indeks_daya_beli: 88 },
+      { bulan: 'Apr', harga: 6800, indeks_daya_beli: 75 },
+      { bulan: 'Mei', harga: 6700, indeks_daya_beli: 70 },
+      { bulan: 'Jun', harga: 6850, indeks_daya_beli: 74 },
+      { bulan: 'Jul', harga: 6900, indeks_daya_beli: 78 },
+      { bulan: 'Ags', harga: 7000, indeks_daya_beli: 82 },
+      { bulan: 'Sep', harga: 7100, indeks_daya_beli: 85 },
+      { bulan: 'Okt', harga: 7200, indeks_daya_beli: 88 },
+      { bulan: 'Nov', harga: 7350, indeks_daya_beli: 90 },
+      { bulan: 'Des', harga: 7550, indeks_daya_beli: 95 }
+    ]
   }
 ];
 
@@ -104,12 +128,16 @@ export function calculateProfitProjection(luasM2: number, komoditas: string) {
   const yieldPerM2: Record<string, { kg: number, biayaPerM2: number, hargaDefault: number }> = {
     'Cabai Rawit Merah': { kg: 0.9, biayaPerM2: 24000, hargaDefault: 75000 },
     'Bawang Merah': { kg: 1.2, biayaPerM2: 22000, hargaDefault: 42000 },
+    'Tomat Sayur': { kg: 2.5, biayaPerM2: 20000, hargaDefault: 18000 },
     'Tomat': { kg: 2.5, biayaPerM2: 20000, hargaDefault: 18000 },
     'Jagung Manis': { kg: 1.8, biayaPerM2: 8000, hargaDefault: 9500 },
-    'Padi Sawah (Ciherang/Inpari)': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 13000 }
+    'Jagung': { kg: 1.8, biayaPerM2: 8000, hargaDefault: 9500 },
+    'Padi Sawah': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 },
+    'Padi Sawah (Ciherang/Inpari)': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 },
+    'Padi': { kg: 0.6, biayaPerM2: 4500, hargaDefault: 7200 }
   };
 
-  const item = yieldPerM2[komoditas] || yieldPerM2['Cabai Rawit Merah'];
+  const item = yieldPerM2[komoditas] || yieldPerM2['Bawang Merah'] || yieldPerM2['Cabai Rawit Merah'];
   const totalPanenKg = Math.round(luasM2 * item.kg);
   const totalBiayaProduksi = Math.round(luasM2 * item.biayaPerM2);
   const totalOmset = Math.round(totalPanenKg * item.hargaDefault);
