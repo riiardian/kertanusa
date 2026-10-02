@@ -161,10 +161,10 @@ export default function AgriculturalMonitoringDashboard() {
   const yMax = maxVal + buffer;
 
   const SVG_W = 680;
-  const SVG_H = 260;
+  const SVG_H = 270;
   const PAD_X = 55;
-  const PAD_TOP = 32;
-  const PAD_BOTTOM = 36;
+  const PAD_TOP = 48;
+  const PAD_BOTTOM = 38;
   const PLOT_W = SVG_W - PAD_X * 2;
   const PLOT_H = SVG_H - PAD_TOP - PAD_BOTTOM;
 
@@ -313,11 +313,11 @@ export default function AgriculturalMonitoringDashboard() {
           </div>
 
           {/* Area Kanvas SVG Diagram Garis Berkelanjutan (Sejajar ke Bagian Bawah) */}
-          <div className="w-full overflow-x-auto bg-slate-50/60 border border-slate-200/80 rounded-xl pt-4 pb-2 px-2 mt-auto">
-            <div className="relative min-w-[540px]">
+          <div className="w-full bg-slate-50/60 border border-slate-200/80 rounded-xl p-3 sm:p-4 mt-auto relative overflow-visible">
+            <div className="relative w-full overflow-visible">
               <svg
                 viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-                className="w-full h-auto min-w-[540px] overflow-visible"
+                className="w-full h-auto overflow-visible select-none"
                 onClick={() => setPinnedIdx(null)}
               >
                 <defs>
@@ -370,7 +370,7 @@ export default function AgriculturalMonitoringDashboard() {
                   strokeLinejoin="round"
                 />
 
-                {/* Titik Vertex Tiap Tahun & Label Naik-Turun (Tanpa Segitiga Kasar) */}
+                {/* Hit Areas Vertikal Penuh & Titik Vertex Tiap Tahun */}
                 {points.map((p, idx) => {
                   const isHovered = hoveredIdx === idx;
                   const isPinned = pinnedIdx === idx;
@@ -378,17 +378,42 @@ export default function AgriculturalMonitoringDashboard() {
                   const isUp = p.status === 'naik';
                   const isDown = p.status === 'turun';
 
+                  // Lebar slice zona interaksi vertikal agar transisi kursor antar tahun mulus tanpa jeda
+                  const sliceW = PLOT_W / (points.length - 1);
+                  const sliceX = p.x - sliceW / 2;
+
                   return (
-                    <g
-                      key={p.tahun}
-                      className="cursor-pointer"
-                      onMouseEnter={() => setHoveredIdx(idx)}
-                      onMouseLeave={() => setHoveredIdx(null)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPinnedIdx(pinnedIdx === idx ? null : idx);
-                      }}
-                    >
+                    <g key={p.tahun}>
+                      {/* Zona Sentuh/Hover Vertikal Penuh (Mencegah kursor lepas atau patah-patah) */}
+                      <rect
+                        x={sliceX}
+                        y={0}
+                        width={sliceW}
+                        height={SVG_H}
+                        fill="transparent"
+                        className="cursor-pointer"
+                        onMouseEnter={() => setHoveredIdx(idx)}
+                        onMouseLeave={() => setHoveredIdx(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPinnedIdx(pinnedIdx === idx ? null : idx);
+                        }}
+                      />
+
+                      {/* Garis Bantu Vertikal saat aktif */}
+                      {isSelectedOrHovered && (
+                        <line
+                          x1={p.x}
+                          y1={PAD_TOP - 8}
+                          x2={p.x}
+                          y2={SVG_H - PAD_BOTTOM}
+                          stroke={selected.warnaHex}
+                          strokeWidth="1.5"
+                          strokeDasharray="3 3"
+                          strokeOpacity="0.45"
+                        />
+                      )}
+
                       {/* Cincin highlight berdenyut jika aktif */}
                       {isSelectedOrHovered && (
                         <circle
@@ -396,15 +421,12 @@ export default function AgriculturalMonitoringDashboard() {
                           cy={p.y}
                           r={13}
                           fill={selected.warnaHex}
-                          fillOpacity="0.18"
-                          className="animate-pulse"
+                          fillOpacity="0.2"
+                          className="animate-pulse pointer-events-none"
                         />
                       )}
 
-                      {/* Area sentuh ekstra luas (Touch/Click Target) */}
-                      <circle cx={p.x} cy={p.y} r={22} fill="transparent" />
-
-                      {/* Circle Dot */}
+                      {/* Circle Dot Titik Data */}
                       <circle
                         cx={p.x}
                         cy={p.y}
@@ -412,7 +434,7 @@ export default function AgriculturalMonitoringDashboard() {
                         fill="#ffffff"
                         stroke={selected.warnaHex}
                         strokeWidth={isSelectedOrHovered ? 3.5 : 2.5}
-                        className="transition-all duration-150"
+                        className="transition-all duration-150 pointer-events-none"
                       />
 
                       {/* Angka Produksi di Atas Titik */}
@@ -423,11 +445,12 @@ export default function AgriculturalMonitoringDashboard() {
                         fontSize="10"
                         fontWeight="bold"
                         fill={isSelectedOrHovered ? '#0f172a' : '#1e293b'}
+                        className="pointer-events-none"
                       >
                         {p.produksi}
                       </text>
 
-                      {/* Persentase Naik/Turun Bersih Tanpa Segitiga Kasar */}
+                      {/* Persentase Naik/Turun */}
                       {idx > 0 && (
                         <text
                           x={p.x}
@@ -436,6 +459,7 @@ export default function AgriculturalMonitoringDashboard() {
                           fontSize="9"
                           fontWeight="bold"
                           fill={isUp ? '#059669' : isDown ? '#e11d48' : '#64748b'}
+                          className="pointer-events-none"
                         >
                           {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
                         </text>
@@ -449,6 +473,7 @@ export default function AgriculturalMonitoringDashboard() {
                         fontSize="11"
                         fontWeight="bold"
                         fill={isSelectedOrHovered ? '#0f172a' : '#475569'}
+                        className="pointer-events-none"
                       >
                         {p.tahun}
                       </text>
@@ -461,6 +486,7 @@ export default function AgriculturalMonitoringDashboard() {
                         fontSize="8.5"
                         fontWeight="600"
                         fill={p.tipe === 'target' ? '#059669' : p.tipe === 'estimasi' ? '#d97706' : '#94a3b8'}
+                        className="pointer-events-none"
                       >
                         {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
                       </text>
@@ -469,28 +495,24 @@ export default function AgriculturalMonitoringDashboard() {
                 })}
               </svg>
 
-              {/* Popup Tabel Kecil Informasi Penjelasan Kenaikan / Penurunan */}
+              {/* Popup Tabel Kecil Informasi Penjelasan Kenaikan / Penurunan (SELALU DI ATAS TITIK, TIDAK PERNAH DI BAWAH) */}
               {tooltipPoint && (
                 <div
                   style={{
                     left: `${(tooltipPoint.x / SVG_W) * 100}%`,
                     top: `${(tooltipPoint.y / SVG_H) * 100}%`,
-                    transform: tooltipPoint.y < 125
-                      ? (tooltipPoint.x < 140
-                          ? 'translate(-12%, 18px)'
-                          : tooltipPoint.x > SVG_W - 140
-                          ? 'translate(-88%, 18px)'
-                          : 'translate(-50%, 18px)')
-                      : (tooltipPoint.x < 140
-                          ? 'translate(-12%, calc(-100% - 18px))'
-                          : tooltipPoint.x > SVG_W - 140
-                          ? 'translate(-88%, calc(-100% - 18px))'
-                          : 'translate(-50%, calc(-100% - 18px))')
+                    transform: tooltipPoint.x < 140
+                      ? 'translate(-10%, calc(-100% - 16px))'
+                      : tooltipPoint.x > SVG_W - 140
+                      ? 'translate(-90%, calc(-100% - 16px))'
+                      : 'translate(-50%, calc(-100% - 16px))'
                   }}
-                  className="absolute z-30 w-72 sm:w-80 pointer-events-auto transition-all duration-150 animate-in fade-in zoom-in-95"
+                  className={`absolute z-30 w-72 sm:w-80 transition-opacity duration-150 ${
+                    pinnedIdx !== null ? 'pointer-events-auto' : 'pointer-events-none'
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="bg-white border border-slate-200 rounded-xl shadow-xl p-3 text-xs text-slate-800 space-y-2.5">
+                  <div className="bg-white border border-slate-200/95 rounded-xl shadow-2xl p-3 text-xs text-slate-800 space-y-2">
                     {/* Header Tooltip */}
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <div className="flex items-center gap-1.5">
@@ -508,7 +530,7 @@ export default function AgriculturalMonitoringDashboard() {
                       {pinnedIdx !== null && (
                         <button 
                           onClick={() => setPinnedIdx(null)}
-                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1 py-0.5 rounded hover:bg-slate-100 transition-colors"
+                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1 py-0.5 rounded hover:bg-slate-100 transition-colors pointer-events-auto"
                           title="Tutup Tabel"
                         >
                           ✕
@@ -529,11 +551,11 @@ export default function AgriculturalMonitoringDashboard() {
                           <td className="py-1 text-slate-500 font-medium">Perubahan</td>
                           <td className="py-1 text-right font-bold">
                             {tooltipPoint.perubahanPersen > 0 ? (
-                              <span className="text-emerald-700 flex items-center justify-end gap-0.5">
+                              <span className="text-emerald-700 flex items-center justify-end gap-0.5 font-bold">
                                 <TrendingUp className="w-3 h-3" /> +{tooltipPoint.perubahanPersen}% (Naik)
                               </span>
                             ) : tooltipPoint.perubahanPersen < 0 ? (
-                              <span className="text-rose-700 flex items-center justify-end gap-0.5">
+                              <span className="text-rose-700 flex items-center justify-end gap-0.5 font-bold">
                                 <TrendingDown className="w-3 h-3" /> {tooltipPoint.perubahanPersen}% (Turun)
                               </span>
                             ) : (
@@ -559,27 +581,52 @@ export default function AgriculturalMonitoringDashboard() {
                     </table>
                   </div>
 
-                  {/* Panah Indikator ke Titik Lingkaran */}
+                  {/* Panah Indikator ke Titik Lingkaran di Bawah Tooltip */}
                   <div 
                     style={{
                       left: tooltipPoint.x < 140 
-                        ? '12%' 
+                        ? '10%' 
                         : tooltipPoint.x > SVG_W - 140 
-                        ? '88%' 
+                        ? '90%' 
                         : '50%'
                     }}
-                    className={`absolute -translate-x-1/2 w-3 h-3 bg-white ${
-                      tooltipPoint.y < 125
-                        ? '-top-1.5 border-l border-t border-slate-200 rotate-45'
-                        : '-bottom-1.5 border-r border-b border-slate-200 rotate-45'
-                    }`}
+                    className="absolute -bottom-1.5 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-slate-200 rotate-45"
                   />
                 </div>
               )}
             </div>
+
+            {/* Strip Informasi Singkat di Bawah Grafik (Selalu Terbaca Bersih & Tidak Pernah Terpotong) */}
+            <div className="mt-2.5 pt-2.5 border-t border-slate-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-900">
+                    Faktor Tren {activePoint.labelTahun} ({activePoint.tipe === 'target' ? 'Target Nasional' : activePoint.tipe === 'estimasi' ? 'Estimasi BPS' : 'Realisasi BPS'}):
+                  </span>
+                  {activePoint.perubahanPersen > 0 ? (
+                    <span className="font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded text-[10.5px]">
+                      ▲ +{activePoint.perubahanPersen}% Naik
+                    </span>
+                  ) : activePoint.perubahanPersen < 0 ? (
+                    <span className="font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded text-[10.5px]">
+                      ▼ {activePoint.perubahanPersen}% Turun
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-slate-600 bg-slate-200/80 px-1.5 py-0.2 rounded text-[10.5px]">
+                      Tahun Basis
+                    </span>
+                  )}
+                </div>
+                <p className="text-slate-600 text-[11px] leading-relaxed">
+                  {activePoint.keterangan}
+                </p>
+              </div>
+              <div className="text-left sm:text-right shrink-0">
+                <span className="text-[10px] text-slate-400 block">Produksi</span>
+                <span className="font-extrabold text-slate-900 text-xs sm:text-sm">{activePoint.produksi} Jt Ton</span>
+              </div>
+            </div>
           </div>
-
-
 
         </div>
 
