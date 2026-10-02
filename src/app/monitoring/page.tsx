@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
 import { 
   Droplets, Thermometer, MapPin, Sun, CloudRain, ShieldCheck, 
   Wind, CloudSun, Clock, Activity, Sprout, Sparkles, CheckCircle2,
@@ -426,25 +425,15 @@ export default function MonitoringPage() {
 
       {/* 2. KARTU RINCIAN LAHAN */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-base font-bold text-slate-900">
-              {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Brebes)'}
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {isUserLahan 
-                ? 'Data lahan terhubung langsung dengan profil pendaftaran sawah Anda.'
-                : 'Data acuan standar untuk contoh panduan cuaca dan perawatan sawah.'}
-            </p>
-          </div>
-          {isUserLahan && (
-            <Link
-              href="/input-lahan"
-              className="text-xs text-slate-500 hover:text-emerald-700 font-medium underline underline-offset-2 shrink-0"
-            >
-              Ubah Data Lahan
-            </Link>
-          )}
+        <div className="border-b border-slate-100 pb-3">
+          <h2 className="text-base font-bold text-slate-900">
+            {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Brebes)'}
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {isUserLahan 
+              ? 'Data lahan terhubung langsung dengan profil pendaftaran sawah Anda.'
+              : 'Data acuan standar untuk contoh panduan cuaca dan perawatan sawah.'}
+          </p>
         </div>
 
         {/* Tabel Ringkas Key-Value Rapi */}
