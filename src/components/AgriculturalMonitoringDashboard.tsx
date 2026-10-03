@@ -196,7 +196,20 @@ export default function AgriculturalMonitoringDashboard() {
   const tooltipPoint = activeTooltipIdx !== null ? points[activeTooltipIdx] : null;
 
   return (
-    <div className="w-full space-y-6">
+    <div
+      className="w-full relative rounded-2xl overflow-hidden"
+      style={{
+        backgroundImage: 'url(/statistik-hd.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Overlay: gradient putih tipis agar konten terbaca */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/85 to-white/92 pointer-events-none" />
+
+      {/* Konten di atas overlay */}
+      <div className="relative z-10 w-full space-y-6 px-5 sm:px-8 py-7">
       
       {/* 1. HEADER SECTION & UNDERLINE TABS (Gaya Datar Natural ala Navbar AeroFlazz) */}
       <div className="space-y-4 border-b border-slate-200/80 pb-0">
@@ -644,6 +657,7 @@ export default function AgriculturalMonitoringDashboard() {
 
       </div>
 
+      </div>
     </div>
   );
 }
