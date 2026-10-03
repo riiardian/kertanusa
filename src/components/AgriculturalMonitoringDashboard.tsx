@@ -196,18 +196,17 @@ export default function AgriculturalMonitoringDashboard() {
   const tooltipPoint = activeTooltipIdx !== null ? points[activeTooltipIdx] : null;
 
   return (
-    <div
-      className="w-full relative overflow-hidden py-12 sm:py-16"
-      style={{
-        backgroundImage: 'url(/statistik-4k.webp?v=4k)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 35%',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      {/* Soft natural gradient overlay: gambar sawah & gunung Agung terang, segar, dan jelas */}
-      <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/45 via-transparent to-slate-950/35 pointer-events-none" />
+    <div className="w-full relative overflow-hidden py-12 sm:py-16 bg-slate-950">
+      {/* Background Image dengan opacity ideal (seimbang, tidak terlalu terang & tidak gelap) */}
+      <div
+        className="absolute inset-0 bg-cover bg-no-repeat bg-[center_35%] pointer-events-none transition-opacity duration-300"
+        style={{
+          backgroundImage: 'url(/statistik.webp?v=4k)',
+          opacity: 0.55,
+        }}
+      />
+      {/* Soft gradient vignette: kedalaman natural & teks tetap kontras */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-transparent to-slate-950/50 pointer-events-none" />
 
       {/* z-10 content wrapper: sejajar dengan max-w-7xl seperti hero banner */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-6">
