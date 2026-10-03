@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import LottieAnimation from './LottieAnimation';
-import loadingAnimation from '../../public/loading.json';
+import loadingAnimation from '../../public/growingplant.json';
 
 export default function PageTransitionLoader() {
   const pathname = usePathname();
@@ -107,7 +107,7 @@ export default function PageTransitionLoader() {
       <div className="flex flex-col items-center justify-center">
         <LottieAnimation
           animationData={loadingAnimation}
-          className="w-28 h-28 sm:w-36 sm:h-36"
+          className="w-36 h-36 sm:w-44 sm:h-44"
           loop={true}
           autoplay={true}
         />

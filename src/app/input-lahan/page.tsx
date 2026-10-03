@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { RefreshCw, MapPin, Check, ChevronDown, Trash2 } from 'lucide-react';
 import { REGIONS } from '@/lib/agro_regions';
 import LottieAnimation from '@/components/LottieAnimation';
-import loadingAnimation from '../../../public/loading.json';
+import loadingAnimation from '../../../public/growingplant.json';
 
 export default function InputLahanPage() {
   const [formData, setFormData] = useState({
@@ -262,7 +262,7 @@ export default function InputLahanPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent select-none cursor-wait animate-in fade-in duration-150">
           <LottieAnimation
             animationData={loadingAnimation}
-            className="w-24 h-24 sm:w-28 sm:h-28"
+            className="w-32 h-32 sm:w-36 sm:h-36"
             loop={true}
             autoplay={true}
           />
