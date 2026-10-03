@@ -205,11 +205,14 @@ export default function AgriculturalMonitoringDashboard() {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Overlay: gradient putih tipis agar konten terbaca */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/85 to-white/92 pointer-events-none" />
+      {/* Vignette tipis - gambar sawah tetap terlihat */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20 pointer-events-none" />
 
-      {/* Konten di atas overlay */}
+      {/* z-10 content wrapper */}
       <div className="relative z-10 w-full space-y-6 px-5 sm:px-8 py-7">
+
+        {/* Frosted glass card */}
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl px-5 sm:px-8 py-7 space-y-6">
       
       {/* 1. HEADER SECTION & UNDERLINE TABS (Gaya Datar Natural ala Navbar AeroFlazz) */}
       <div className="space-y-4 border-b border-slate-200/80 pb-0">
@@ -654,6 +657,8 @@ export default function AgriculturalMonitoringDashboard() {
             </span>
           </div>
         </div>
+
+        </div>  {/* end: frosted glass card */}
 
       </div>
 
