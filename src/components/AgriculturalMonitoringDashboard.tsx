@@ -199,7 +199,7 @@ export default function AgriculturalMonitoringDashboard() {
     <div
       className="w-full relative overflow-hidden py-12 sm:py-16"
       style={{
-        backgroundImage: 'url(/statistik.webp)',
+        backgroundImage: 'url(/statistik-4k.webp?v=4k)',
         backgroundSize: 'cover',
         backgroundPosition: 'center 35%',
         backgroundRepeat: 'no-repeat',
@@ -216,7 +216,7 @@ export default function AgriculturalMonitoringDashboard() {
         <div className="space-y-4 border-b border-white/20 pb-0">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[11px] font-bold text-emerald-300 bg-slate-950/80 backdrop-blur-sm border border-emerald-400/40 px-2.5 py-0.5 rounded shadow-sm">
+              <span className="text-[11px] font-bold text-white bg-emerald-700 px-2.5 py-0.5 rounded shadow-sm">
                 Data Resmi BPS
               </span>
               <span className="text-xs text-white/95 font-semibold drop-shadow">Periode 2021 - 2026</span>
@@ -266,7 +266,7 @@ export default function AgriculturalMonitoringDashboard() {
               <div>
                 <div className="flex items-center gap-2.5">
                   <span className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{selected.nama}</span>
-                  <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-slate-950/80 backdrop-blur-sm border border-emerald-400/40 px-2 py-0.5 rounded shadow-sm">
+                  <span className="text-[10px] sm:text-[10.5px] font-bold text-white bg-emerald-700 px-2 py-0.5 rounded shadow-sm">
                     {selected.kategoriLabel}
                   </span>
                 </div>
@@ -315,7 +315,7 @@ export default function AgriculturalMonitoringDashboard() {
             <div className="text-xs sm:text-sm text-slate-100 leading-relaxed border-t border-white/20 pt-2.5 space-y-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
               <p>{selected.ringkasan}</p>
               <div className="flex items-start gap-2 pt-0.5">
-                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-slate-950/80 border border-emerald-400/40 px-2 py-0.5 rounded shrink-0 mt-0.5 shadow-sm">
+                <span className="text-[10px] sm:text-[10.5px] font-bold text-white bg-emerald-700 px-2 py-0.5 rounded shrink-0 mt-0.5 shadow-sm">
                   Saran Petani
                 </span>
                 <span className="text-white font-medium">
@@ -579,18 +579,18 @@ export default function AgriculturalMonitoringDashboard() {
 
           </div>
 
-          {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (KARTU PUTIH ELEGAN MENYESUAIKAN DIAGRAM GARIS) */}
-          <div className="lg:col-span-4 flex flex-col justify-between bg-white/95 backdrop-blur-md rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-200/90">
+          {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (BLENDED NATURAL DI ATAS LATAR GAMBAR) */}
+          <div className="lg:col-span-4 flex flex-col justify-between pt-2 lg:pt-0 lg:border-l lg:border-white/20 lg:pl-8">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-1.5">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider drop-shadow">
                   Proporsi Produksi Nasional
                 </h3>
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold text-white bg-emerald-700 px-2 py-0.5 rounded shadow-sm">
                   BPS 2024
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-100 drop-shadow">
                 Porsi pangsa hasil panen komoditas pangan, sayur, dan buah di seluruh wilayah Indonesia.
               </p>
 
@@ -602,7 +602,7 @@ export default function AgriculturalMonitoringDashboard() {
                     cy="50"
                     r={donutRadius}
                     fill="none"
-                    stroke="#f1f5f9"
+                    stroke="rgba(255,255,255,0.25)"
                     strokeWidth={donutStroke}
                   />
                   {donutSlices.map((slice) => (
@@ -620,8 +620,8 @@ export default function AgriculturalMonitoringDashboard() {
                   ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                  <span className="text-base font-black text-slate-900 leading-none">100%</span>
-                  <span className="text-[9px] text-slate-400 mt-0.5">Total Nasional</span>
+                  <span className="text-base font-black text-white leading-none drop-shadow">100%</span>
+                  <span className="text-[9px] text-slate-200 mt-0.5 drop-shadow font-medium">Total Nasional</span>
                 </div>
               </div>
 
@@ -630,24 +630,24 @@ export default function AgriculturalMonitoringDashboard() {
                 {DATA_KOMODITAS.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between text-xs px-2 py-1 text-slate-600 hover:bg-slate-50 rounded transition-colors"
+                    className="flex items-center justify-between text-xs px-2 py-1 text-slate-100 hover:bg-black/10 rounded transition-colors drop-shadow"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
-                      <span className="font-medium text-slate-700">{p.nama}</span>
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: p.warnaHex }} />
+                      <span className="font-medium text-white">{p.nama}</span>
                     </div>
-                    <strong className="text-slate-900 font-bold">{p.pangsaPersen}%</strong>
+                    <strong className="text-white font-bold">{p.pangsaPersen}%</strong>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Penjelasan Bersih Tanpa Emoji */}
-            <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-600 leading-relaxed mt-4 flex items-start gap-2">
-              <span className="text-[9.5px] font-bold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+            <div className="pt-3 border-t border-white/20 text-xs text-slate-100 leading-relaxed mt-4 flex items-start gap-2 drop-shadow">
+              <span className="text-[9.5px] font-bold text-white bg-emerald-700 px-1.5 py-0.5 rounded shrink-0 mt-0.5 shadow-sm">
                 Fakta Pangan
               </span>
-              <span className="text-slate-700">
+              <span className="text-white font-medium">
                 Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
               </span>
             </div>
