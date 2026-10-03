@@ -12,7 +12,7 @@ import { getFallbackWeatherData } from '@/lib/weather';
 
 const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   id: 'benchmark-brebes',
-  nama_petani: 'Lahan Acuan Rekomendasi',
+  nama_petani: 'Lahan Percontohan (Acuan Rekomendasi)',
   daerah: REGIONS[0].nama,
   lat: REGIONS[0].lat,
   lon: REGIONS[0].lon,
@@ -675,7 +675,7 @@ export default function MonitoringPage() {
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900">
-            {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Brebes)'}
+            {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Acuan Rekomendasi)'}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             {isUserLahan 
@@ -688,7 +688,7 @@ export default function MonitoringPage() {
         <div className="divide-y divide-slate-100 text-xs sm:text-sm">
           <div className="py-2.5 flex justify-between items-center">
             <span className="text-slate-500 font-medium">Nama Pemilik / Petani</span>
-            <span className="text-slate-900 font-bold">{activePetani.nama_petani}</span>
+            <span className="text-slate-900 font-bold">{isUserLahan ? activePetani.nama_petani : 'Lahan Percontohan (Acuan Rekomendasi)'}</span>
           </div>
           <div className="py-2.5 flex justify-between items-center">
             <span className="text-slate-500 font-medium">Wilayah / Lokasi</span>

@@ -37,7 +37,7 @@ import {
 
 const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   id: 'benchmark-brebes',
-  nama_petani: 'Lahan Acuan Rekomendasi',
+  nama_petani: 'Lahan Percontohan (Acuan Rekomendasi)',
   daerah: REGIONS[0].nama,
   lat: REGIONS[0].lat,
   lon: REGIONS[0].lon,
@@ -52,7 +52,7 @@ const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   suhu_lingkungan: REGIONS[0].suhu_rata_rata,
   ph_tanah: REGIONS[0].ph_rata_rata,
   status_tanaman: 'Vegetatif Aktif',
-  catatan: 'Data acuan standar agrometeorologi rekomendasi sistem Kertanusa.',
+  catatan: 'Data benchmark agrometeorologi acuan rekomendasi standar sistem Kertanusa.',
   created_at: new Date().toISOString()
 };
 
@@ -79,43 +79,82 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
 }
 
 export default function MarketDemandPage() {
-  const [activePetani, setActivePetani] = useState<PetaniRecord>(DEFAULT_BENCHMARK_FARMER);
-  const [isUserLahan, setIsUserLahan] = useState(false);
+  const [activePetani, setActivePetani] = useState<PetaniRecord>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('kertanusa_active_farmer_data');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {}
+      }
+    }
+    return DEFAULT_BENCHMARK_FARMER;
+  });
+
+  const [isUserLahan, setIsUserLahan] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('kertanusa_active_farmer_data');
+      return !!stored;
+    }
+    return false;
+  });
+
   const [activeCategory, setActiveCategory] = useState<CommodityCategory | 'Semua'>('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedKomoditas, setSelectedKomoditas] = useState<string | null>(null);
   const [calcLuas, setCalcLuas] = useState<number>(10000);
 
-  // 1. Muat profil lahan aktif dari storage / API
+  // 1. Muat profil lahan aktif persis seperti halaman monitoring iklim
   useEffect(() => {
-    async function loadFarmer() {
+    async function initActiveFarmer() {
       try {
-        const stored = typeof window !== 'undefined' ? localStorage.getItem('kertanusa_active_farmer_data') : null;
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed && parsed.nama_petani) {
-            setActivePetani(parsed);
-            setIsUserLahan(true);
-            const luasM2 = parsed.satuan_luas === 'hektar' ? Number(parsed.luas_tanah) * 10000 : Number(parsed.luas_tanah) || 10000;
-            setCalcLuas(luasM2);
-            return;
+        let targetFarmer: PetaniRecord | null = null;
+        const storedData = typeof window !== 'undefined' ? localStorage.getItem('kertanusa_active_farmer_data') : null;
+        const storedId = typeof window !== 'undefined' ? localStorage.getItem('kertanusa_active_farmer_id') : null;
+
+        let parsed: any = null;
+        if (storedData) {
+          try {
+            parsed = JSON.parse(storedData);
+          } catch {
+            parsed = null;
           }
         }
 
-        const res = await fetch('/api/petani', { cache: 'no-store' });
-        const json = await res.json();
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          const latest = json.data[json.data.length - 1];
-          setActivePetani(latest);
+        // Validasi ke backend apakah petani ini benar tersimpan di database pengguna
+        if (storedId || parsed) {
+          const res = await fetch('/api/petani');
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data)) {
+            targetFarmer = json.data.find((p: PetaniRecord) => 
+              (storedId && p.id === storedId) ||
+              (parsed?.id && p.id === parsed.id) ||
+              (parsed?.nama_petani && p.nama_petani.trim().toLowerCase() === parsed.nama_petani.trim().toLowerCase())
+            ) || null;
+          }
+        }
+
+        if (targetFarmer) {
           setIsUserLahan(true);
-          const luasM2 = latest.satuan_luas === 'hektar' ? Number(latest.luas_tanah) * 10000 : Number(latest.luas_tanah) || 10000;
+          setActivePetani(targetFarmer);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('kertanusa_active_farmer_id', targetFarmer.id);
+            localStorage.setItem('kertanusa_active_farmer_data', JSON.stringify(targetFarmer));
+          }
+          const luasM2 = targetFarmer.satuan_luas === 'hektar' ? Number(targetFarmer.luas_tanah) * 10000 : Number(targetFarmer.luas_tanah) || 10000;
           setCalcLuas(luasM2);
+        } else {
+          // Petani belum input lahan: tampilkan data acuan rekomendasi standar
+          setIsUserLahan(false);
+          setActivePetani(DEFAULT_BENCHMARK_FARMER);
+          setCalcLuas(10000);
         }
       } catch {
-        // Fallback default benchmark
+        setIsUserLahan(false);
+        setActivePetani(DEFAULT_BENCHMARK_FARMER);
       }
     }
-    loadFarmer();
+    initActiveFarmer();
   }, []);
 
   // Luas lahan normalisasi m2
@@ -158,45 +197,45 @@ export default function MarketDemandPage() {
   }, [activeCategory, searchQuery]);
 
   // Komoditas aktif terpilih untuk detail analisis
-  const currentDetailItem: MarketCommodityTrendExtended = useMemo(() => {
+  const currentDetailItem = useMemo(() => {
     if (selectedKomoditas) {
+      const found = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase() === selectedKomoditas.toLowerCase());
+      if (found) return found;
       return getUniversalCommodityData(selectedKomoditas);
     }
     if (searchQuery.trim()) {
-      return getUniversalCommodityData(searchQuery.trim());
-    }
-    if (topRecs.length > 0) {
-      return getUniversalCommodityData(topRecs[0].komoditas);
+      const found = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase().includes(searchQuery.toLowerCase()));
+      if (found) return found;
+      return getUniversalCommodityData(searchQuery);
     }
     return COMMODITY_TRENDS[0];
-  }, [selectedKomoditas, searchQuery, topRecs]);
+  }, [selectedKomoditas, searchQuery]);
 
-  // Hitung simulasi profit komoditas aktif
+  // Proyeksi profit komoditas terpilih
   const currentProjection = useMemo(() => {
     return calculateProfitProjection(calcLuas, currentDetailItem.komoditas);
-  }, [calcLuas, currentDetailItem]);
+  }, [currentDetailItem.komoditas, calcLuas]);
 
-  // Rekomendasi varietas benih
-  const seedKey = getSeedKomoditasKey(currentDetailItem.komoditas);
+  // Rekomendasi benih varietas komoditas terpilih
   const detailRec = useMemo(() => {
-    const reg = REGIONS.find(r => r.nama.toLowerCase().includes((activePetani.daerah || '').toLowerCase())) || REGIONS[0];
+    const key = getSeedKomoditasKey(currentDetailItem.komoditas);
     return recommendBestSeeds({
-      daerahNama: activePetani.daerah || reg.nama,
-      komoditas: seedKey,
+      komoditas: key,
+      daerahNama: activePetani.daerah || 'Brebes',
       ketinggian: 'rendah',
       tipe_lahan: 'irigasi_teknis',
-      musim: 'hujan',
-      ph_tanah: activePetani.ph_tanah || reg.ph_rata_rata || 6.5,
-      target_pasar: 'umum'
+      musim: 'kemarau',
+      ph_tanah: Number(activePetani.ph_tanah) || 6.5
     });
-  }, [activePetani, seedKey]);
+  }, [currentDetailItem.komoditas, activePetani.daerah, activePetani.ph_tanah]);
 
-  // Harga tertinggi untuk skala grafik
+  // Nilai harga tertinggi untuk visualisasi grafik tren bulanan
   const maxPriceInGraph = useMemo(() => {
-    return Math.max(...currentDetailItem.historis_bulanan.map(h => h.harga), 1);
+    if (!currentDetailItem.historis_bulanan || currentDetailItem.historis_bulanan.length === 0) return 100000;
+    return Math.max(...currentDetailItem.historis_bulanan.map(h => h.harga)) * 1.15;
   }, [currentDetailItem]);
 
-  // Hitung umur HST
+  // Hari setelah tanam (HST)
   const daysPassed = useMemo(() => {
     if (!activePetani.waktu_tanam) return 0;
     const diff = Date.now() - new Date(activePetani.waktu_tanam).getTime();
@@ -208,13 +247,6 @@ export default function MarketDemandPage() {
 
       {/* ── HEADER HALAMAN DENGAN JARAK AMAN DARI NAVBAR ── */}
       <div className="space-y-2 border-b border-slate-200/80 pb-6 pt-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/80 inline-flex items-center gap-1.5">
-            <Compass className="w-3.5 h-3.5 text-emerald-700" />
-            Data Intelijen Pasar Agrikultur
-          </span>
-          <span className="text-xs text-slate-400 font-medium">Pembaruan Riil Pasar Nasional</span>
-        </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
           Daya Beli & Tren Pasar Pertanian
         </h1>
@@ -227,7 +259,7 @@ export default function MarketDemandPage() {
       <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900">
-            {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Brebes)'}
+            {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Acuan Rekomendasi)'}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             {isUserLahan 
@@ -240,7 +272,9 @@ export default function MarketDemandPage() {
         <div className="divide-y divide-slate-100 text-xs sm:text-sm">
           <div className="py-2.5 flex justify-between items-center">
             <span className="text-slate-500 font-medium">Nama Pemilik / Petani</span>
-            <span className="text-slate-900 font-bold">{activePetani.nama_petani}</span>
+            <span className="text-slate-900 font-bold">
+              {isUserLahan ? activePetani.nama_petani : 'Lahan Percontohan (Acuan Rekomendasi)'}
+            </span>
           </div>
           <div className="py-2.5 flex justify-between items-center">
             <span className="text-slate-500 font-medium">Wilayah / Lokasi</span>
@@ -451,7 +485,7 @@ export default function MarketDemandPage() {
         </div>
       </div>
 
-      {/* ── 4. DIREKTORI & PENCARIAN CERDAS (KOMPAK, HANYA TAMPIL SAAT DIKETIK / DIFILTER) ── */}
+      {/* ── 4. DIREKTORI & PENCARIAN CERDAS (KOMPAK, HASIL BERBENTUK TABEL KECIL & SIMPEL) ── */}
       <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
         
         {/* Header Pencarian & Input Kolom */}
@@ -524,7 +558,7 @@ export default function MarketDemandPage() {
             ))}
           </div>
 
-          {/* Filter Kategori Opsional */}
+          {/* Filter Kategori Ringkas */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-slate-100">
             {ALL_CATEGORIES.map(cat => (
               <button
@@ -550,62 +584,78 @@ export default function MarketDemandPage() {
           </div>
         </div>
 
-        {/* HASIL PENCARIAN (HANYA MUNCUL JIKA USER MENGETIK / MEMILIH KATEGORI) */}
+        {/* TABEL HASIL PENCARIAN (KECIL & SIMPEL, BUKAN KOTAK LEBAR BESAR) */}
         {filteredCommodities.length > 0 ? (
-          <div className="p-5 sm:p-6 border-t border-slate-100 bg-slate-50/30 space-y-3">
-            <span className="text-xs font-bold text-slate-700 block">
-              Hasil Pencarian ({filteredCommodities.length} Komoditas):
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredCommodities.map(c => {
-                const isSelected = currentDetailItem.komoditas.toLowerCase() === c.komoditas.toLowerCase();
-                return (
-                  <button
-                    key={c.komoditas}
-                    type="button"
-                    onClick={() => {
-                      setSelectedKomoditas(c.komoditas);
-                      const el = document.getElementById('analisis-komoditas');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className={`text-left p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between space-y-2.5 ${
-                      isSelected
-                        ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-200'
-                        : 'border-slate-200 hover:border-slate-300 hover:bg-white bg-white/90'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="text-sm font-bold text-slate-900 leading-tight">{c.komoditas}</h3>
-                        <span className="text-[11px] text-slate-400 font-medium block mt-0.5">{c.kategori}</span>
-                      </div>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                        c.tren_mingguan === 'Naik'
-                          ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
-                          : 'text-slate-600 bg-slate-100'
-                      }`}>
-                        {c.tren_mingguan === 'Naik' ? `+${c.persentase_tren}%` : 'Stabil'}
-                      </span>
-                    </div>
+          <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/30 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-700">
+                Hasil Pencarian ({filteredCommodities.length} Komoditas):
+              </span>
+              <span className="text-[11px] text-slate-400">Klik baris untuk memuat analisis detail di bawah</span>
+            </div>
 
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Harga Pasar:</span>
-                      <strong className="text-slate-900 font-semibold">Rp {c.harga_saat_ini.toLocaleString('id-ID')} / kg</strong>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-500">
-                      <span>Panen: {c.umur_panen || '3-4 Bulan'}</span>
-                      <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
-                        Lihat panduan →
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white max-h-80 overflow-y-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 sticky top-0 border-b border-slate-200 text-slate-500 font-semibold z-10">
+                  <tr>
+                    <th className="py-2.5 px-3.5">Komoditas</th>
+                    <th className="py-2.5 px-3 hidden sm:table-cell">Kategori</th>
+                    <th className="py-2.5 px-3 text-right">Harga Pasar</th>
+                    <th className="py-2.5 px-3 text-center">Tren</th>
+                    <th className="py-2.5 px-3 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredCommodities.map(c => {
+                    const isSelected = currentDetailItem.komoditas.toLowerCase() === c.komoditas.toLowerCase();
+                    return (
+                      <tr
+                        key={c.komoditas}
+                        onClick={() => {
+                          setSelectedKomoditas(c.komoditas);
+                          const el = document.getElementById('analisis-komoditas');
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className={`transition-colors cursor-pointer hover:bg-slate-50 ${
+                          isSelected ? 'bg-emerald-50/70' : ''
+                        }`}
+                      >
+                        <td className="py-2.5 px-3.5">
+                          <div className={`font-bold ${isSelected ? 'text-emerald-900' : 'text-slate-900'}`}>{c.komoditas}</div>
+                          <div className="text-[10px] text-slate-400 font-normal sm:hidden">{c.kategori}</div>
+                        </td>
+                        <td className="py-2.5 px-3 text-slate-500 hidden sm:table-cell">
+                          {c.kategori}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-semibold text-slate-900">
+                          Rp {c.harga_saat_ini.toLocaleString('id-ID')}/kg
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                            c.tren_mingguan === 'Naik'
+                              ? 'text-emerald-800 bg-emerald-50 border border-emerald-200'
+                              : 'text-slate-600 bg-slate-100'
+                          }`}>
+                            {c.tren_mingguan === 'Naik' ? `+${c.persentase_tren}%` : 'Stabil'}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <button
+                            type="button"
+                            className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 px-2 py-1 rounded hover:bg-emerald-100/60 transition-colors cursor-pointer"
+                          >
+                            Pilih
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         ) : (
-          /* TAMPILAN COMPACT JIKA BELUM MENGETIK (TIDAK MEMENUHI LAYAR DENGAN SEMUA TABEL) */
+          /* TAMPILAN COMPACT SAAT BELUM MENGETIK */
           <div className="p-6 border-t border-slate-100 bg-slate-50/40 text-center space-y-2">
             <Sprout className="w-6 h-6 text-emerald-600 mx-auto" />
             <h3 className="text-xs sm:text-sm font-bold text-slate-800">
