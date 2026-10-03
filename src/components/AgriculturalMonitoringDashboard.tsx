@@ -197,470 +197,463 @@ export default function AgriculturalMonitoringDashboard() {
 
   return (
     <div
-      className="w-full relative rounded-2xl overflow-hidden"
+      className="w-full relative overflow-hidden py-12 sm:py-16"
       style={{
-        backgroundImage: 'url(/statistik-hd.jpg)',
+        backgroundImage: 'url(/statistik.webp)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center 30%',
+        backgroundPosition: 'center 35%',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Vignette tipis - gambar sawah tetap terlihat */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20 pointer-events-none" />
+      {/* Dark gradient overlay ala hero section: pemandangan gunung & sawah tetap terlihat, teks kontras tajam & terbaca jelas */}
+      <div className="absolute inset-0 bg-slate-950/75 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-transparent to-slate-950/85 pointer-events-none" />
 
-      {/* z-10 content wrapper */}
-      <div className="relative z-10 w-full space-y-6 px-5 sm:px-8 py-7">
+      {/* z-10 content wrapper: sejajar dengan max-w-7xl seperti hero banner */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-6">
 
-        {/* Frosted glass card */}
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl px-5 sm:px-8 py-7 space-y-6">
-      
-      {/* 1. HEADER SECTION & UNDERLINE TABS (Gaya Datar Natural ala Navbar AeroFlazz) */}
-      <div className="space-y-4 border-b border-slate-200/80 pb-0">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">
-              Data Resmi BPS
-            </span>
-            <span className="text-xs text-slate-500 font-medium">Periode 2021 - 2026</span>
+        {/* 1. HEADER SECTION & UNDERLINE TABS (Gaya Datar Natural ala Navbar AeroFlazz) */}
+        <div className="space-y-4 border-b border-white/15 pb-0">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2.5 py-0.5 rounded">
+                Data Resmi BPS
+              </span>
+              <span className="text-xs text-slate-300 font-medium">Periode 2021 - 2026</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">
+              Statistik Panen & Pasokan Pangan Nasional
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              Perkembangan hasil panen tahunan untuk membaca ketersediaan stok pangan dan potensi pasar.
+            </p>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Statistik Panen & Pasokan Pangan Nasional
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Perkembangan hasil panen tahunan untuk membaca ketersediaan stok pangan dan potensi pasar.
-          </p>
+
+          {/* Tab Pilihan Komoditas: Underline Tab Datar & Lapang */}
+          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar -mb-px">
+            {DATA_KOMODITAS.map((k) => {
+              const isSelected = selectedId === k.id;
+              return (
+                <button
+                  key={k.id}
+                  onClick={() => {
+                    setSelectedId(k.id);
+                    setHoveredIdx(null);
+                    setPinnedIdx(null);
+                  }}
+                  className={`pb-2.5 text-xs sm:text-sm transition-all shrink-0 cursor-pointer border-b-2 ${
+                    isSelected
+                      ? 'border-emerald-400 text-white font-bold'
+                      : 'border-transparent text-slate-300 hover:text-white hover:border-slate-400 font-medium'
+                  }`}
+                >
+                  {k.nama}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Tab Pilihan Komoditas: Underline Tab Datar & Lapang Tanpa Kotak Kapsul Abu-abu */}
-        <div className="flex items-center gap-6 overflow-x-auto no-scrollbar -mb-px">
-          {DATA_KOMODITAS.map((k) => {
-            const isSelected = selectedId === k.id;
-            return (
-              <button
-                key={k.id}
-                onClick={() => {
-                  setSelectedId(k.id);
-                  setHoveredIdx(null);
-                  setPinnedIdx(null);
-                }}
-                className={`pb-2.5 text-xs sm:text-sm transition-all shrink-0 cursor-pointer border-b-2 ${
-                  isSelected
-                    ? 'border-emerald-600 text-slate-900 font-bold'
-                    : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300 font-medium'
-                }`}
-              >
-                {k.nama}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 2. AREA INTI: LINE CHART & DONUT CHART (CLEAN NATURAL) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        
-        {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
-        <div className="lg:col-span-8 flex flex-col justify-between pt-1.5">
-          <div className="space-y-3 mb-2.5">
+        {/* 2. AREA INTI: LINE CHART & DONUT CHART (CLEAN NATURAL OVERLAY) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Header Komoditas & Angka Produksi Aktif (Proporsional, Ukuran Seimbang) */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="text-lg font-bold text-slate-900">{selected.nama}</span>
-                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
-                  {selected.kategoriLabel}
+          {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
+          <div className="lg:col-span-8 flex flex-col justify-between pt-1.5">
+            <div className="space-y-3 mb-2.5">
+            
+            {/* Header Komoditas & Angka Produksi Aktif */}
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl font-bold text-white">{selected.nama}</span>
+                  <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded">
+                    {selected.kategoriLabel}
+                  </span>
+                </div>
+                
+                {/* Data Mencakup */}
+                <p className="text-xs text-slate-300 mt-1">
+                  Mencakup: <strong className="text-white font-semibold">{selected.komoditasPopuler}</strong>
+                </p>
+
+                {/* Sentra Utama dengan Icon Lokasi & Lokasi di-Bold */}
+                <div className="flex items-center gap-1.5 text-xs text-slate-300 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>
+                    Sentra utama: <strong className="text-white font-semibold">{selected.lumbungTerbesar}</strong>
+                  </span>
+                </div>
+              </div>
+
+              {/* Info Tahun Aktif */}
+              <div className="flex flex-col sm:items-end gap-0.5 self-start sm:self-auto">
+                <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                  <span>Tahun {activePoint.labelTahun}:</span>
+                  <span className="text-xs font-bold text-white">{activePoint.produksi} Jt Ton</span>
+                  {activePoint.perubahanPersen > 0 && (
+                    <span className="text-xs font-semibold text-emerald-400 flex items-center gap-0.5">
+                      <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
+                    </span>
+                  )}
+                  {activePoint.perubahanPersen < 0 && (
+                    <span className="text-xs font-semibold text-rose-400 flex items-center gap-0.5">
+                      <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
+                    </span>
+                  )}
+                  {activePoint.perubahanPersen === 0 && (
+                    <span className="text-xs text-slate-400 font-medium">Basis</span>
+                  )}
+                </div>
+                <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                  <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                  Arahkan / klik titik untuk detail kenaikan & penurunan
                 </span>
               </div>
-              
-              {/* Data Mencakup */}
-              <p className="text-xs text-slate-500 mt-0.5">
-                Mencakup: <strong className="text-slate-700">{selected.komoditasPopuler}</strong>
-              </p>
+            </div>
 
-              {/* Sentra Utama dengan Icon Lokasi & Lokasi di-Bold */}
-              <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                <span>
-                  Sentra utama: <strong className="text-slate-900">{selected.lumbungTerbesar}</strong>
+            {/* Penjelasan Ringkas & Saran Petani */}
+            <div className="text-xs sm:text-sm text-slate-200 leading-relaxed border-t border-white/10 pt-2.5 space-y-2">
+              <p>{selected.ringkasan}</p>
+              <div className="flex items-start gap-2 pt-0.5">
+                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded shrink-0 mt-0.5">
+                  Saran Petani
+                </span>
+                <span className="text-slate-100 font-medium">
+                  {selected.saran}
                 </span>
               </div>
             </div>
 
-            {/* Info Tahun Aktif: Ukuran Teks Seimbang (text-xs) Tanpa Kotak Card */}
-            <div className="flex flex-col sm:items-end gap-0.5 self-start sm:self-auto">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <span>Tahun {activePoint.labelTahun}:</span>
-                <span className="text-xs font-bold text-slate-900">{activePoint.produksi} Jt Ton</span>
-                {activePoint.perubahanPersen > 0 && (
-                  <span className="text-xs font-semibold text-emerald-700 flex items-center gap-0.5">
-                    <TrendingUp className="w-3.5 h-3.5" /> +{activePoint.perubahanPersen}%
-                  </span>
-                )}
-                {activePoint.perubahanPersen < 0 && (
-                  <span className="text-xs font-semibold text-rose-700 flex items-center gap-0.5">
-                    <TrendingDown className="w-3.5 h-3.5" /> {activePoint.perubahanPersen}%
-                  </span>
-                )}
-                {activePoint.perubahanPersen === 0 && (
-                  <span className="text-xs text-slate-400 font-medium">Basis</span>
-                )}
-              </div>
-              <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                <Info className="w-3 h-3 text-slate-400 shrink-0" />
-                Arahkan / klik titik untuk detail kenaikan & penurunan
-              </span>
             </div>
-          </div>
 
-          {/* Penjelasan Ringkas & Saran Petani (Natural, Tanpa Kotak Card) */}
-          <div className="text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-2.5 space-y-2">
-            <p>{selected.ringkasan}</p>
-            <div className="flex items-start gap-2 pt-0.5">
-              <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded shrink-0 mt-0.5">
-                Saran Petani
-              </span>
-              <span className="text-slate-800 font-medium">
-                {selected.saran}
-              </span>
-            </div>
-          </div>
+            {/* Area Kanvas SVG Diagram Garis Berkelanjutan */}
+            <div className="w-full bg-slate-950/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 mt-auto relative overflow-visible shadow-lg">
+              <div className="relative w-full overflow-visible">
+                <svg
+                  viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+                  className="w-full h-auto overflow-visible select-none"
+                  onClick={() => setPinnedIdx(null)}
+                >
+                  <defs>
+                    <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
 
-          </div>
-
-          {/* Area Kanvas SVG Diagram Garis Berkelanjutan (Sejajar ke Bagian Bawah) */}
-          <div className="w-full bg-slate-50/60 border border-slate-200/80 rounded-xl p-3 sm:p-4 mt-auto relative overflow-visible">
-            <div className="relative w-full overflow-visible">
-              <svg
-                viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-                className="w-full h-auto overflow-visible select-none"
-                onClick={() => setPinnedIdx(null)}
-              >
-                <defs>
-                  <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.22" />
-                    <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-
-                {/* Garis Bantu Horizontal (Grid Lines) */}
-                {[0, 0.33, 0.66, 1].map((pct, gIdx) => {
-                  const y = PAD_TOP + pct * PLOT_H;
-                  const val = yMax - pct * (yMax - yMin);
-                  const labelVal = val >= 10 ? val.toFixed(1) : val.toFixed(2);
-                  return (
-                    <g key={gIdx}>
-                      <line
-                        x1={PAD_X}
-                        y1={y}
-                        x2={SVG_W - PAD_X}
-                        y2={y}
-                        stroke="#e2e8f0"
-                        strokeDasharray="3 3"
-                        strokeWidth="1"
-                      />
-                      <text
-                        x={PAD_X - 8}
-                        y={y + 3}
-                        textAnchor="end"
-                        fontSize="9"
-                        fill="#94a3b8"
-                        fontWeight="500"
-                      >
-                        {labelVal}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* Area Gradient */}
-                <path d={areaPath} fill={`url(#lineGrad-${selected.id})`} />
-
-                {/* Garis Naik-Turun Berkelanjutan */}
-                <path
-                  d={linePath}
-                  fill="none"
-                  stroke={selected.warnaHex}
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                {/* Titik Vertex Tiap Tahun & Area Hover/Klik Khusus di Lingkaran Titik */}
-                {points.map((p, idx) => {
-                  const isHovered = hoveredIdx === idx;
-                  const isPinned = pinnedIdx === idx;
-                  const isSelectedOrHovered = isHovered || isPinned;
-                  const isUp = p.status === 'naik';
-                  const isDown = p.status === 'turun';
-
-                  return (
-                    <g key={p.tahun}>
-                      {/* Garis Bantu Vertikal saat aktif */}
-                      {isSelectedOrHovered && (
+                  {/* Garis Bantu Horizontal (Grid Lines) */}
+                  {[0, 0.33, 0.66, 1].map((pct, gIdx) => {
+                    const y = PAD_TOP + pct * PLOT_H;
+                    const val = yMax - pct * (yMax - yMin);
+                    const labelVal = val >= 10 ? val.toFixed(1) : val.toFixed(2);
+                    return (
+                      <g key={gIdx}>
                         <line
-                          x1={p.x}
-                          y1={PAD_TOP - 8}
-                          x2={p.x}
-                          y2={SVG_H - PAD_BOTTOM}
-                          stroke={selected.warnaHex}
-                          strokeWidth="1.5"
+                          x1={PAD_X}
+                          y1={y}
+                          x2={SVG_W - PAD_X}
+                          y2={y}
+                          stroke="rgba(255,255,255,0.12)"
                           strokeDasharray="3 3"
-                          strokeOpacity="0.45"
+                          strokeWidth="1"
                         />
-                      )}
+                        <text
+                          x={PAD_X - 8}
+                          y={y + 3}
+                          textAnchor="end"
+                          fontSize="9"
+                          fill="#94a3b8"
+                          fontWeight="500"
+                        >
+                          {labelVal}
+                        </text>
+                      </g>
+                    );
+                  })}
 
-                      {/* Cincin highlight berdenyut jika aktif */}
-                      {isSelectedOrHovered && (
+                  {/* Area Gradient */}
+                  <path d={areaPath} fill={`url(#lineGrad-${selected.id})`} />
+
+                  {/* Garis Naik-Turun Berkelanjutan */}
+                  <path
+                    d={linePath}
+                    fill="none"
+                    stroke={selected.warnaHex}
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Titik Vertex Tiap Tahun & Area Hover/Klik Khusus di Lingkaran Titik */}
+                  {points.map((p, idx) => {
+                    const isHovered = hoveredIdx === idx;
+                    const isPinned = pinnedIdx === idx;
+                    const isSelectedOrHovered = isHovered || isPinned;
+                    const isUp = p.status === 'naik';
+                    const isDown = p.status === 'turun';
+
+                    return (
+                      <g key={p.tahun}>
+                        {/* Garis Bantu Vertikal saat aktif */}
+                        {isSelectedOrHovered && (
+                          <line
+                            x1={p.x}
+                            y1={PAD_TOP - 8}
+                            x2={p.x}
+                            y2={SVG_H - PAD_BOTTOM}
+                            stroke={selected.warnaHex}
+                            strokeWidth="1.5"
+                            strokeDasharray="3 3"
+                            strokeOpacity="0.45"
+                          />
+                        )}
+
+                        {/* Cincin highlight berdenyut jika aktif */}
+                        {isSelectedOrHovered && (
+                          <circle
+                            cx={p.x}
+                            cy={p.y}
+                            r={13}
+                            fill={selected.warnaHex}
+                            fillOpacity="0.2"
+                            className="animate-pulse pointer-events-none"
+                          />
+                        )}
+
+                        {/* Area Sentuh/Hover Tepat di Bagian Bulet-Bulet (Radius 14px) */}
                         <circle
                           cx={p.x}
                           cy={p.y}
-                          r={13}
-                          fill={selected.warnaHex}
-                          fillOpacity="0.2"
-                          className="animate-pulse pointer-events-none"
+                          r={14}
+                          fill="transparent"
+                          className="cursor-pointer"
+                          onMouseEnter={() => setHoveredIdx(idx)}
+                          onMouseLeave={() => setHoveredIdx(null)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPinnedIdx(pinnedIdx === idx ? null : idx);
+                          }}
                         />
-                      )}
 
-                      {/* Area Sentuh/Hover Tepat di Bagian Bulet-Bulet (Radius 14px) */}
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={14}
-                        fill="transparent"
-                        className="cursor-pointer"
-                        onMouseEnter={() => setHoveredIdx(idx)}
-                        onMouseLeave={() => setHoveredIdx(null)}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPinnedIdx(pinnedIdx === idx ? null : idx);
-                        }}
-                      />
+                        {/* Circle Dot Titik Data */}
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={isSelectedOrHovered ? 6.5 : 4.5}
+                          fill="#ffffff"
+                          stroke={selected.warnaHex}
+                          strokeWidth={isSelectedOrHovered ? 3.5 : 2.5}
+                          className="transition-all duration-150 pointer-events-none"
+                        />
 
-                      {/* Circle Dot Titik Data */}
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={isSelectedOrHovered ? 6.5 : 4.5}
-                        fill="#ffffff"
-                        stroke={selected.warnaHex}
-                        strokeWidth={isSelectedOrHovered ? 3.5 : 2.5}
-                        className="transition-all duration-150 pointer-events-none"
-                      />
-
-                      {/* Angka Produksi di Atas Titik */}
-                      <text
-                        x={p.x}
-                        y={p.y - 12}
-                        textAnchor="middle"
-                        fontSize="10"
-                        fontWeight="bold"
-                        fill={isSelectedOrHovered ? '#0f172a' : '#1e293b'}
-                        className="pointer-events-none"
-                      >
-                        {p.produksi}
-                      </text>
-
-                      {/* Persentase Naik/Turun */}
-                      {idx > 0 && (
+                        {/* Angka Produksi di Atas Titik */}
                         <text
                           x={p.x}
-                          y={p.y - 24}
+                          y={p.y - 12}
                           textAnchor="middle"
-                          fontSize="9"
+                          fontSize="10"
                           fontWeight="bold"
-                          fill={isUp ? '#059669' : isDown ? '#e11d48' : '#64748b'}
+                          fill={isSelectedOrHovered ? '#ffffff' : '#f1f5f9'}
                           className="pointer-events-none"
                         >
-                          {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
+                          {p.produksi}
                         </text>
-                      )}
 
-                      {/* Label Tahun (X-Axis) */}
-                      <text
-                        x={p.x}
-                        y={SVG_H - PAD_BOTTOM + 18}
-                        textAnchor="middle"
-                        fontSize="11"
-                        fontWeight="bold"
-                        fill={isSelectedOrHovered ? '#0f172a' : '#475569'}
-                        className="pointer-events-none"
-                      >
-                        {p.tahun}
-                      </text>
-
-                      {/* Tag Status (Realisasi / Est / Target) */}
-                      <text
-                        x={p.x}
-                        y={SVG_H - PAD_BOTTOM + 30}
-                        textAnchor="middle"
-                        fontSize="8.5"
-                        fontWeight="600"
-                        fill={p.tipe === 'target' ? '#059669' : p.tipe === 'estimasi' ? '#d97706' : '#94a3b8'}
-                        className="pointer-events-none"
-                      >
-                        {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-
-              {/* Popup Ringkas Langsung ke Inti: Hanya Penyebab Kenaikan / Penurunan (Selalu di Atas Titik) */}
-              {tooltipPoint && (
-                <div
-                  style={{
-                    left: `${(tooltipPoint.x / SVG_W) * 100}%`,
-                    top: `${(tooltipPoint.y / SVG_H) * 100}%`,
-                    transform: tooltipPoint.x < 130
-                      ? 'translate(-10%, calc(-100% - 14px))'
-                      : tooltipPoint.x > SVG_W - 130
-                      ? 'translate(-90%, calc(-100% - 14px))'
-                      : 'translate(-50%, calc(-100% - 14px))'
-                  }}
-                  className={`absolute z-30 w-64 sm:w-72 transition-opacity duration-150 ${
-                    pinnedIdx !== null ? 'pointer-events-auto' : 'pointer-events-none'
-                  }`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="bg-white border border-slate-200/95 rounded-xl shadow-xl p-3 text-xs text-slate-800 space-y-1.5">
-                    {/* Header Ringkas: Judul Penyebab + Tombol Tutup Saat Di-klik */}
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                      <span className={`text-[11px] font-bold flex items-center gap-1 ${
-                        tooltipPoint.status === 'naik'
-                          ? 'text-emerald-700'
-                          : tooltipPoint.status === 'turun'
-                          ? 'text-rose-700'
-                          : 'text-slate-700'
-                      }`}>
-                        {tooltipPoint.status === 'naik' ? (
-                          <>
-                            <TrendingUp className="w-3.5 h-3.5" />
-                            Penyebab Kenaikan:
-                          </>
-                        ) : tooltipPoint.status === 'turun' ? (
-                          <>
-                            <TrendingDown className="w-3.5 h-3.5" />
-                            Penyebab Penurunan:
-                          </>
-                        ) : (
-                          'Kondisi Produksi:'
+                        {/* Persentase Naik/Turun */}
+                        {idx > 0 && (
+                          <text
+                            x={p.x}
+                            y={p.y - 24}
+                            textAnchor="middle"
+                            fontSize="9"
+                            fontWeight="bold"
+                            fill={isUp ? '#34d399' : isDown ? '#fb7185' : '#94a3b8'}
+                            className="pointer-events-none"
+                          >
+                            {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
+                          </text>
                         )}
-                      </span>
 
-                      {pinnedIdx !== null && (
-                        <button 
-                          onClick={() => setPinnedIdx(null)}
-                          className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors pointer-events-auto"
-                          title="Tutup"
+                        {/* Label Tahun (X-Axis) */}
+                        <text
+                          x={p.x}
+                          y={SVG_H - PAD_BOTTOM + 18}
+                          textAnchor="middle"
+                          fontSize="11"
+                          fontWeight="bold"
+                          fill={isSelectedOrHovered ? '#ffffff' : '#cbd5e1'}
+                          className="pointer-events-none"
                         >
-                          ✕
-                        </button>
-                      )}
-                    </div>
+                          {p.tahun}
+                        </text>
 
-                    {/* Penjelasan Langsung ke Intinya */}
-                    <p className="text-[11.5px] text-slate-600 leading-relaxed font-medium">
-                      {tooltipPoint.keterangan}
-                    </p>
-                  </div>
+                        {/* Tag Status (Realisasi / Est / Target) */}
+                        <text
+                          x={p.x}
+                          y={SVG_H - PAD_BOTTOM + 30}
+                          textAnchor="middle"
+                          fontSize="8.5"
+                          fontWeight="600"
+                          fill={p.tipe === 'target' ? '#34d399' : p.tipe === 'estimasi' ? '#fbbf24' : '#94a3b8'}
+                          className="pointer-events-none"
+                        >
+                          {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
 
-                  {/* Panah Indikator ke Titik Lingkaran */}
-                  <div 
+                {/* Popup Ringkas Langsung ke Inti */}
+                {tooltipPoint && (
+                  <div
                     style={{
-                      left: tooltipPoint.x < 130 
-                        ? '10%' 
-                        : tooltipPoint.x > SVG_W - 130 
-                        ? '90%' 
-                        : '50%'
+                      left: `${(tooltipPoint.x / SVG_W) * 100}%`,
+                      top: `${(tooltipPoint.y / SVG_H) * 100}%`,
+                      transform: tooltipPoint.x < 130
+                        ? 'translate(-10%, calc(-100% - 14px))'
+                        : tooltipPoint.x > SVG_W - 130
+                        ? 'translate(-90%, calc(-100% - 14px))'
+                        : 'translate(-50%, calc(-100% - 14px))'
                     }}
-                    className="absolute -bottom-1.5 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-slate-200 rotate-45"
-                  />
-                </div>
-              )}
-            </div>
+                    className={`absolute z-30 w-64 sm:w-72 transition-opacity duration-150 ${
+                      pinnedIdx !== null ? 'pointer-events-auto' : 'pointer-events-none'
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-3 text-xs text-white space-y-1.5">
+                      <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                        <span className={`text-[11px] font-bold flex items-center gap-1 ${
+                          tooltipPoint.status === 'naik'
+                            ? 'text-emerald-400'
+                            : tooltipPoint.status === 'turun'
+                            ? 'text-rose-400'
+                            : 'text-slate-300'
+                        }`}>
+                          {tooltipPoint.status === 'naik' ? (
+                            <>
+                              <TrendingUp className="w-3.5 h-3.5" />
+                              Penyebab Kenaikan:
+                            </>
+                          ) : tooltipPoint.status === 'turun' ? (
+                            <>
+                              <TrendingDown className="w-3.5 h-3.5" />
+                              Penyebab Penurunan:
+                            </>
+                          ) : (
+                            'Kondisi Produksi:'
+                          )}
+                        </span>
 
+                        {pinnedIdx !== null && (
+                          <button 
+                            onClick={() => setPinnedIdx(null)}
+                            className="text-slate-400 hover:text-white text-xs font-bold px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors pointer-events-auto"
+                            title="Tutup"
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
 
-        </div>
+                      <p className="text-[11.5px] text-slate-200 leading-relaxed font-medium">
+                        {tooltipPoint.keterangan}
+                      </p>
+                    </div>
 
-        {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (STATIS / TETAP MENAMPILKAN TOTAL) */}
-        <div className="lg:col-span-4 flex flex-col justify-between pt-2 lg:pt-0 lg:border-l lg:border-slate-200/80 lg:pl-8">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Proporsi Produksi Nasional
-              </h3>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
-                BPS 2024
-              </span>
+                    {/* Panah Indikator ke Titik Lingkaran */}
+                    <div 
+                      style={{
+                        left: tooltipPoint.x < 130 
+                          ? '10%' 
+                          : tooltipPoint.x > SVG_W - 130 
+                          ? '90%' 
+                          : '50%'
+                      }}
+                      className="absolute -bottom-1.5 -translate-x-1/2 w-3 h-3 bg-slate-900 border-r border-b border-white/20 rotate-45"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-            <p className="text-xs text-slate-500">
-              Porsi pangsa hasil panen komoditas pangan, sayur, dan buah di seluruh wilayah Indonesia.
-            </p>
 
-            {/* Donut Chart SVG Statis (100% Total Nasional Tetap) */}
-            <div className="relative flex items-center justify-center my-4">
-              <svg width="124" height="124" viewBox="0 0 100 100" className="transform -rotate-90">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r={donutRadius}
-                  fill="none"
-                  stroke="#f1f5f9"
-                  strokeWidth={donutStroke}
-                />
-                {donutSlices.map((slice) => (
+          </div>
+
+          {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (STATIS / TETAP MENAMPILKAN TOTAL) */}
+          <div className="lg:col-span-4 flex flex-col justify-between pt-2 lg:pt-0 lg:border-l lg:border-white/15 lg:pl-8">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                  Proporsi Produksi Nasional
+                </h3>
+                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded">
+                  BPS 2024
+                </span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Porsi pangsa hasil panen komoditas pangan, sayur, dan buah di seluruh wilayah Indonesia.
+              </p>
+
+              {/* Donut Chart SVG Statis (100% Total Nasional Tetap) */}
+              <div className="relative flex items-center justify-center my-4">
+                <svg width="124" height="124" viewBox="0 0 100 100" className="transform -rotate-90">
                   <circle
-                    key={slice.id}
                     cx="50"
                     cy="50"
                     r={donutRadius}
                     fill="none"
-                    stroke={slice.warnaHex}
+                    stroke="#334155"
                     strokeWidth={donutStroke}
-                    strokeDasharray={`${slice.length} ${circumference}`}
-                    strokeDashoffset={-slice.offset}
                   />
+                  {donutSlices.map((slice) => (
+                    <circle
+                      key={slice.id}
+                      cx="50"
+                      cy="50"
+                      r={donutRadius}
+                      fill="none"
+                      stroke={slice.warnaHex}
+                      strokeWidth={donutStroke}
+                      strokeDasharray={`${slice.length} ${circumference}`}
+                      strokeDashoffset={-slice.offset}
+                    />
+                  ))}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span className="text-base font-black text-white leading-none">100%</span>
+                  <span className="text-[9px] text-slate-300 mt-0.5">Total Nasional</span>
+                </div>
+              </div>
+
+              {/* List Legend Statis */}
+              <div className="space-y-1.5 pt-2">
+                {DATA_KOMODITAS.map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between text-xs px-2 py-1 text-slate-200 hover:bg-white/5 rounded transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
+                      <span className="font-medium text-slate-200">{p.nama}</span>
+                    </div>
+                    <strong className="text-white font-bold">{p.pangsaPersen}%</strong>
+                  </div>
                 ))}
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="text-base font-black text-slate-900 leading-none">100%</span>
-                <span className="text-[9px] text-slate-400 mt-0.5">Total Nasional</span>
               </div>
             </div>
 
-            {/* List Legend Statis (Hanya Menampilkan Data Tanpa Mengubah State Saat Diklik) */}
-            <div className="space-y-1.5 pt-2">
-              {DATA_KOMODITAS.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between text-xs px-2 py-1 text-slate-600"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
-                    <span className="font-medium text-slate-700">{p.nama}</span>
-                  </div>
-                  <strong className="text-slate-900 font-bold">{p.pangsaPersen}%</strong>
-                </div>
-              ))}
+            {/* Penjelasan Bersih Tanpa Emoji */}
+            <div className="pt-3 border-t border-white/15 text-xs text-slate-300 leading-relaxed mt-4 flex items-start gap-2">
+              <span className="text-[9.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+                Fakta Pangan
+              </span>
+              <span className="text-slate-200">
+                Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
+              </span>
             </div>
           </div>
 
-          {/* Penjelasan Bersih Tanpa Emoji */}
-          <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-600 leading-relaxed mt-4 flex items-start gap-2">
-            <span className="text-[9.5px] font-bold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
-              Fakta Pangan
-            </span>
-            <span>
-              Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
-            </span>
-          </div>
         </div>
-
-        </div>  {/* end: frosted glass card */}
-
-      </div>
 
       </div>
     </div>
