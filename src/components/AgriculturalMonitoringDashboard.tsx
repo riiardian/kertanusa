@@ -205,26 +205,26 @@ export default function AgriculturalMonitoringDashboard() {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Dark gradient overlay ala hero section: pemandangan gunung & sawah tetap terlihat, teks kontras tajam & terbaca jelas */}
-      <div className="absolute inset-0 bg-slate-950/75 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-transparent to-slate-950/85 pointer-events-none" />
+      {/* Soft natural gradient overlay: gambar sawah & gunung Agung terang, segar, dan jelas */}
+      <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/45 via-transparent to-slate-950/35 pointer-events-none" />
 
       {/* z-10 content wrapper: sejajar dengan max-w-7xl seperti hero banner */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-6">
 
         {/* 1. HEADER SECTION & UNDERLINE TABS (Gaya Datar Natural ala Navbar AeroFlazz) */}
-        <div className="space-y-4 border-b border-white/15 pb-0">
+        <div className="space-y-4 border-b border-white/20 pb-0">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2.5 py-0.5 rounded">
+              <span className="text-[11px] font-bold text-emerald-300 bg-slate-950/80 backdrop-blur-sm border border-emerald-400/40 px-2.5 py-0.5 rounded shadow-sm">
                 Data Resmi BPS
               </span>
-              <span className="text-xs text-slate-300 font-medium">Periode 2021 - 2026</span>
+              <span className="text-xs text-white/95 font-semibold drop-shadow">Periode 2021 - 2026</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight drop-shadow-sm">
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
               Statistik Panen & Pasokan Pangan Nasional
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            <p className="text-xs sm:text-sm text-slate-100 font-medium mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
               Perkembangan hasil panen tahunan untuk membaca ketersediaan stok pangan dan potensi pasar.
             </p>
           </div>
@@ -243,8 +243,8 @@ export default function AgriculturalMonitoringDashboard() {
                   }}
                   className={`pb-2.5 text-xs sm:text-sm transition-all shrink-0 cursor-pointer border-b-2 ${
                     isSelected
-                      ? 'border-emerald-400 text-white font-bold'
-                      : 'border-transparent text-slate-300 hover:text-white hover:border-slate-400 font-medium'
+                      ? 'border-emerald-400 text-white font-bold drop-shadow'
+                      : 'border-transparent text-slate-100 hover:text-white drop-shadow font-semibold'
                   }`}
                 >
                   {k.nama}
@@ -254,30 +254,30 @@ export default function AgriculturalMonitoringDashboard() {
           </div>
         </div>
 
-        {/* 2. AREA INTI: LINE CHART & DONUT CHART (CLEAN NATURAL OVERLAY) */}
+        {/* 2. AREA INTI: LINE CHART & DONUT CHART */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* KOLOM KIRI: INFO KOMODITAS, MENCUKUP, SENTRA ICON LOKASI & SARAN PETANI */}
           <div className="lg:col-span-8 flex flex-col justify-between pt-1.5">
-            <div className="space-y-3 mb-2.5">
+            <div className="space-y-3 mb-3">
             
             {/* Header Komoditas & Angka Produksi Aktif */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2.5">
-                  <span className="text-xl font-bold text-white">{selected.nama}</span>
-                  <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded">
+                  <span className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{selected.nama}</span>
+                  <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-slate-950/80 backdrop-blur-sm border border-emerald-400/40 px-2 py-0.5 rounded shadow-sm">
                     {selected.kategoriLabel}
                   </span>
                 </div>
                 
                 {/* Data Mencakup */}
-                <p className="text-xs text-slate-300 mt-1">
+                <p className="text-xs text-slate-100 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   Mencakup: <strong className="text-white font-semibold">{selected.komoditasPopuler}</strong>
                 </p>
 
                 {/* Sentra Utama dengan Icon Lokasi & Lokasi di-Bold */}
-                <div className="flex items-center gap-1.5 text-xs text-slate-300 mt-1">
+                <div className="flex items-center gap-1.5 text-xs text-slate-100 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <span>
                     Sentra utama: <strong className="text-white font-semibold">{selected.lumbungTerbesar}</strong>
@@ -287,7 +287,7 @@ export default function AgriculturalMonitoringDashboard() {
 
               {/* Info Tahun Aktif */}
               <div className="flex flex-col sm:items-end gap-0.5 self-start sm:self-auto">
-                <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                <div className="flex items-center gap-1.5 text-xs text-slate-100 drop-shadow">
                   <span>Tahun {activePoint.labelTahun}:</span>
                   <span className="text-xs font-bold text-white">{activePoint.produksi} Jt Ton</span>
                   {activePoint.perubahanPersen > 0 && (
@@ -301,24 +301,24 @@ export default function AgriculturalMonitoringDashboard() {
                     </span>
                   )}
                   {activePoint.perubahanPersen === 0 && (
-                    <span className="text-xs text-slate-400 font-medium">Basis</span>
+                    <span className="text-xs text-slate-200 font-medium">Basis</span>
                   )}
                 </div>
-                <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                <span className="text-[10px] text-slate-200 drop-shadow flex items-center gap-1">
+                  <Info className="w-3 h-3 text-slate-200 shrink-0" />
                   Arahkan / klik titik untuk detail kenaikan & penurunan
                 </span>
               </div>
             </div>
 
             {/* Penjelasan Ringkas & Saran Petani */}
-            <div className="text-xs sm:text-sm text-slate-200 leading-relaxed border-t border-white/10 pt-2.5 space-y-2">
+            <div className="text-xs sm:text-sm text-slate-100 leading-relaxed border-t border-white/20 pt-2.5 space-y-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
               <p>{selected.ringkasan}</p>
               <div className="flex items-start gap-2 pt-0.5">
-                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded shrink-0 mt-0.5">
+                <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-300 bg-slate-950/80 border border-emerald-400/40 px-2 py-0.5 rounded shrink-0 mt-0.5 shadow-sm">
                   Saran Petani
                 </span>
-                <span className="text-slate-100 font-medium">
+                <span className="text-white font-medium">
                   {selected.saran}
                 </span>
               </div>
@@ -326,8 +326,8 @@ export default function AgriculturalMonitoringDashboard() {
 
             </div>
 
-            {/* Area Kanvas SVG Diagram Garis Berkelanjutan */}
-            <div className="w-full bg-slate-950/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 mt-auto relative overflow-visible shadow-lg">
+            {/* TABEL DIAGRAM GARIS: WARNA PUTIH SESUAI PERMINTAAN USER */}
+            <div className="w-full bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-4 sm:p-5 mt-auto relative overflow-visible shadow-xl">
               <div className="relative w-full overflow-visible">
                 <svg
                   viewBox={`0 0 ${SVG_W} ${SVG_H}`}
@@ -336,7 +336,7 @@ export default function AgriculturalMonitoringDashboard() {
                 >
                   <defs>
                     <linearGradient id={`lineGrad-${selected.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.25" />
+                      <stop offset="0%" stopColor={selected.warnaHex} stopOpacity="0.2" />
                       <stop offset="100%" stopColor={selected.warnaHex} stopOpacity="0.0" />
                     </linearGradient>
                   </defs>
@@ -353,7 +353,7 @@ export default function AgriculturalMonitoringDashboard() {
                           y1={y}
                           x2={SVG_W - PAD_X}
                           y2={y}
-                          stroke="rgba(255,255,255,0.12)"
+                          stroke="#e2e8f0"
                           strokeDasharray="3 3"
                           strokeWidth="1"
                         />
@@ -362,7 +362,7 @@ export default function AgriculturalMonitoringDashboard() {
                           y={y + 3}
                           textAnchor="end"
                           fontSize="9"
-                          fill="#94a3b8"
+                          fill="#64748b"
                           fontWeight="500"
                         >
                           {labelVal}
@@ -453,7 +453,7 @@ export default function AgriculturalMonitoringDashboard() {
                           textAnchor="middle"
                           fontSize="10"
                           fontWeight="bold"
-                          fill={isSelectedOrHovered ? '#ffffff' : '#f1f5f9'}
+                          fill={isSelectedOrHovered ? '#0f172a' : '#1e293b'}
                           className="pointer-events-none"
                         >
                           {p.produksi}
@@ -467,7 +467,7 @@ export default function AgriculturalMonitoringDashboard() {
                             textAnchor="middle"
                             fontSize="9"
                             fontWeight="bold"
-                            fill={isUp ? '#34d399' : isDown ? '#fb7185' : '#94a3b8'}
+                            fill={isUp ? '#059669' : isDown ? '#e11d48' : '#64748b'}
                             className="pointer-events-none"
                           >
                             {isUp ? `+${p.perubahanPersen}%` : `${p.perubahanPersen}%`}
@@ -481,7 +481,7 @@ export default function AgriculturalMonitoringDashboard() {
                           textAnchor="middle"
                           fontSize="11"
                           fontWeight="bold"
-                          fill={isSelectedOrHovered ? '#ffffff' : '#cbd5e1'}
+                          fill={isSelectedOrHovered ? '#0f172a' : '#475569'}
                           className="pointer-events-none"
                         >
                           {p.tahun}
@@ -494,7 +494,7 @@ export default function AgriculturalMonitoringDashboard() {
                           textAnchor="middle"
                           fontSize="8.5"
                           fontWeight="600"
-                          fill={p.tipe === 'target' ? '#34d399' : p.tipe === 'estimasi' ? '#fbbf24' : '#94a3b8'}
+                          fill={p.tipe === 'target' ? '#059669' : p.tipe === 'estimasi' ? '#d97706' : '#94a3b8'}
                           className="pointer-events-none"
                         >
                           {p.tipe === 'target' ? 'Target' : p.tipe === 'estimasi' ? 'Estimasi' : 'BPS'}
@@ -521,14 +521,14 @@ export default function AgriculturalMonitoringDashboard() {
                     }`}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="bg-slate-900/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl p-3 text-xs text-white space-y-1.5">
-                      <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                    <div className="bg-white border border-slate-200/95 rounded-xl shadow-2xl p-3 text-xs text-slate-800 space-y-1.5">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
                         <span className={`text-[11px] font-bold flex items-center gap-1 ${
                           tooltipPoint.status === 'naik'
-                            ? 'text-emerald-400'
+                            ? 'text-emerald-700'
                             : tooltipPoint.status === 'turun'
-                            ? 'text-rose-400'
-                            : 'text-slate-300'
+                            ? 'text-rose-700'
+                            : 'text-slate-700'
                         }`}>
                           {tooltipPoint.status === 'naik' ? (
                             <>
@@ -548,7 +548,7 @@ export default function AgriculturalMonitoringDashboard() {
                         {pinnedIdx !== null && (
                           <button 
                             onClick={() => setPinnedIdx(null)}
-                            className="text-slate-400 hover:text-white text-xs font-bold px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors pointer-events-auto"
+                            className="text-slate-400 hover:text-slate-700 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors pointer-events-auto"
                             title="Tutup"
                           >
                             ✕
@@ -556,7 +556,7 @@ export default function AgriculturalMonitoringDashboard() {
                         )}
                       </div>
 
-                      <p className="text-[11.5px] text-slate-200 leading-relaxed font-medium">
+                      <p className="text-[11.5px] text-slate-600 leading-relaxed font-medium">
                         {tooltipPoint.keterangan}
                       </p>
                     </div>
@@ -570,7 +570,7 @@ export default function AgriculturalMonitoringDashboard() {
                           ? '90%' 
                           : '50%'
                       }}
-                      className="absolute -bottom-1.5 -translate-x-1/2 w-3 h-3 bg-slate-900 border-r border-b border-white/20 rotate-45"
+                      className="absolute -bottom-1.5 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-slate-200 rotate-45"
                     />
                   </div>
                 )}
@@ -579,18 +579,18 @@ export default function AgriculturalMonitoringDashboard() {
 
           </div>
 
-          {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (STATIS / TETAP MENAMPILKAN TOTAL) */}
-          <div className="lg:col-span-4 flex flex-col justify-between pt-2 lg:pt-0 lg:border-l lg:border-white/15 lg:pl-8">
+          {/* KOLOM KANAN: DIAGRAM BULAT PROPORSI NASIONAL (KARTU PUTIH ELEGAN MENYESUAIKAN DIAGRAM GARIS) */}
+          <div className="lg:col-span-4 flex flex-col justify-between bg-white/95 backdrop-blur-md rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-200/90">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Proporsi Produksi Nasional
                 </h3>
-                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
                   BPS 2024
                 </span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-500">
                 Porsi pangsa hasil panen komoditas pangan, sayur, dan buah di seluruh wilayah Indonesia.
               </p>
 
@@ -602,7 +602,7 @@ export default function AgriculturalMonitoringDashboard() {
                     cy="50"
                     r={donutRadius}
                     fill="none"
-                    stroke="#334155"
+                    stroke="#f1f5f9"
                     strokeWidth={donutStroke}
                   />
                   {donutSlices.map((slice) => (
@@ -620,8 +620,8 @@ export default function AgriculturalMonitoringDashboard() {
                   ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                  <span className="text-base font-black text-white leading-none">100%</span>
-                  <span className="text-[9px] text-slate-300 mt-0.5">Total Nasional</span>
+                  <span className="text-base font-black text-slate-900 leading-none">100%</span>
+                  <span className="text-[9px] text-slate-400 mt-0.5">Total Nasional</span>
                 </div>
               </div>
 
@@ -630,24 +630,24 @@ export default function AgriculturalMonitoringDashboard() {
                 {DATA_KOMODITAS.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between text-xs px-2 py-1 text-slate-200 hover:bg-white/5 rounded transition-colors"
+                    className="flex items-center justify-between text-xs px-2 py-1 text-slate-600 hover:bg-slate-50 rounded transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: p.warnaHex }} />
-                      <span className="font-medium text-slate-200">{p.nama}</span>
+                      <span className="font-medium text-slate-700">{p.nama}</span>
                     </div>
-                    <strong className="text-white font-bold">{p.pangsaPersen}%</strong>
+                    <strong className="text-slate-900 font-bold">{p.pangsaPersen}%</strong>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Penjelasan Bersih Tanpa Emoji */}
-            <div className="pt-3 border-t border-white/15 text-xs text-slate-300 leading-relaxed mt-4 flex items-start gap-2">
-              <span className="text-[9.5px] font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
+            <div className="pt-3 border-t border-slate-200/70 text-xs text-slate-600 leading-relaxed mt-4 flex items-start gap-2">
+              <span className="text-[9.5px] font-bold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded shrink-0 mt-0.5">
                 Fakta Pangan
               </span>
-              <span className="text-slate-200">
+              <span className="text-slate-700">
                 Padi dan Jagung adalah dua komoditas terbesar yang menyerap lebih dari 55% kapasitas lahan panen nasional Indonesia.
               </span>
             </div>
