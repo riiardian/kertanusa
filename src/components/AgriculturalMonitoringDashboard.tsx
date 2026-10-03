@@ -197,12 +197,12 @@ export default function AgriculturalMonitoringDashboard() {
 
   return (
     <div className="w-full relative overflow-hidden py-12 sm:py-16 bg-slate-950">
-      {/* Background Image dengan opacity ideal (seimbang, tidak terlalu terang & tidak gelap) */}
+      {/* Background Image dengan opacity lebih rendah (tenang, seimbang, tidak terlalu terang & tidak gelap) */}
       <div
         className="absolute inset-0 bg-cover bg-no-repeat bg-[center_35%] pointer-events-none transition-opacity duration-300"
         style={{
           backgroundImage: 'url(/statistik.webp?v=4k)',
-          opacity: 0.55,
+          opacity: 0.38,
         }}
       />
       {/* Soft gradient vignette: kedalaman natural & teks tetap kontras */}
@@ -325,8 +325,8 @@ export default function AgriculturalMonitoringDashboard() {
 
             </div>
 
-            {/* TABEL DIAGRAM GARIS: WARNA PUTIH SESUAI PERMINTAAN USER */}
-            <div className="w-full bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-4 sm:p-5 mt-auto relative overflow-visible shadow-xl">
+            {/* TABEL DIAGRAM GARIS: WARNA PUTIH DENGAN SENTUHAN SEDIKIT TRANSPARAN (FROSTED GLASS) */}
+            <div className="w-full bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl p-4 sm:p-5 mt-auto relative overflow-visible shadow-xl">
               <div className="relative w-full overflow-visible">
                 <svg
                   viewBox={`0 0 ${SVG_W} ${SVG_H}`}
