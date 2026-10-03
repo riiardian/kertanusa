@@ -232,13 +232,13 @@ export default function HomePage() {
 
       </section>
 
-      {/* 2. STATISTIK PANEN & PASOKAN PANGAN NASIONAL (FULL-WIDTH SEPERTI HERO BANNER) */}
-      <section className="relative w-full overflow-hidden">
-        <AgriculturalMonitoringDashboard />
-      </section>
-
       {/* Konten Utama di Bawah Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        {/* 2. STATISTIK PANEN & PASOKAN PANGAN NASIONAL */}
+        <section>
+          <AgriculturalMonitoringDashboard />
+        </section>
 
         {/* 3. PETA LOKASI SAWAH NUSANTARA 3D */}
         <section id="peta-sebaran-lahan" className="space-y-3 scroll-mt-24 sm:scroll-mt-28">
