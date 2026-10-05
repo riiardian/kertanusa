@@ -132,6 +132,11 @@ function buildMultiYearHistory(
     statusBadgeText: string;
     kesimpulan: string;
     risikoFluktuasi: 'Rendah' | 'Sedang' | 'Tinggi';
+    keputusanSistem: string;
+    arahanLangkah: Array<{
+      kategori: string;
+      arahan: string;
+    }>;
   };
 } {
   const now = new Date();
@@ -220,20 +225,69 @@ function buildMultiYearHistory(
   const isProfit = delta > 0;
   let statusType: 'aman' | 'stabil' | 'waspada' = 'stabil';
   let statusBadgeText = '';
+  let keputusanSistem = '';
   let kesimpulan = '';
+  let arahanLangkah: Array<{ kategori: string; arahan: string }> = [];
+
+  const hppBatasAman = Math.round(avgPanen * 0.52);
 
   if (isProfit && deltaPct >= 10 && yearsProfitable >= 3) {
     statusType = 'aman';
-    statusBadgeText = 'AMAN UNTUK DITANAM SAAT INI (POTENSI SURPLUS PANEN)';
+    statusBadgeText = 'KESIMPULAN SISTEM: SANGAT DIREKOMENDASIKAN UNTUK DITANAM';
+    keputusanSistem = 'Keputusan: SEGERA TANAM (Peluang Margin Surplus Tinggi)';
     kesimpulan = `Berdasarkan pergerakan 5 tahun terakhir, menanam ${item.komoditas} di bulan ${bulanList[plantMonth]} dan panen di bulan ${bulanList[harvestMonth]} (${harvestDays} HST) terbukti konsisten menguntungkan (${yearsProfitable} dari 5 tahun harga naik). Kenaikan rata-rata harga panen mencapai +${deltaPct}% dibanding saat bibit ditanam. Kenaikan ini bukan fluktuasi sesaat 1–2 bulan, melainkan siklus berulang tahunan karena serapan pasar meningkat sementara pasokan panen raya nasional belum tiba. Sangat aman dan prospektif untuk ditanam sekarang.`;
+    arahanLangkah = [
+      {
+        kategori: 'Keputusan & Waktu Tanam',
+        arahan: `Maksimalkan kapasitas petak lahan Anda di bulan ${bulanList[plantMonth]} ini. Permintaan pasar diproyeksikan sedang berada di fase ekspansi saat panen tiba (${bulanList[harvestMonth]}).`,
+      },
+      {
+        kategori: 'Batas Modal HPP Produksi',
+        arahan: `Kunci estimasi biaya operasional maksimal di bawah Rp ${hppBatasAman.toLocaleString('id-ID')} / kg agar potensi laba bersih minimal 45–50% tetap aman terjaga.`,
+      },
+      {
+        kategori: 'Strategi Penyerapan Pasar',
+        arahan: `Hasil panen dapat langsung diserap pasar induk pada harga puncak (estimasi Rp ${avgPanen.toLocaleString('id-ID')} / kg) atau kunci kuota pembeli lebih awal melalui fitur Pre-Order Kertanusa.`,
+      }
+    ];
   } else if (isProfit && deltaPct >= 0) {
     statusType = 'stabil';
-    statusBadgeText = 'STABIL & CUKUP AMAN UNTUK DITANAM';
+    statusBadgeText = 'KESIMPULAN SISTEM: STABIL & CUKUP AMAN UNTUK DITANAM';
+    keputusanSistem = 'Keputusan: AMAN DITANAM (Prioritaskan Efisiensi Biaya Operasional)';
     kesimpulan = `Pola historis 5 tahun menunjukkan harga ${item.komoditas} relatif stabil antara saat tanam (${bulanList[plantMonth]}) hingga panen (${bulanList[harvestMonth]}) dengan selisih rata-rata +${deltaPct}%. Fluktuasi harga tergolong ${risikoFluktuasi.toLowerCase()}. Keuntungan petani diproyeksikan aman dan ditentukan oleh optimalisasi biaya operasional dan tonase panen per hektar.`;
+    arahanLangkah = [
+      {
+        kategori: 'Keputusan Tanam',
+        arahan: `Lahan aman untuk ditanami sesuai jadwal. Jangan mengambil risiko modal spekulatif berlebihan, fokus pada bibit unggul bersertifikat yang tahan cuaca musiman.`,
+      },
+      {
+        kategori: 'Pengendalian Biaya HPP',
+        arahan: `Kunci biaya produksi di bawah Rp ${hppBatasAman.toLocaleString('id-ID')} / kg dengan mengoptimalkan pupuk organik berimbang guna menekan ketergantungan pupuk kimia berharga tinggi.`,
+      },
+      {
+        kategori: 'Waktu Jual & Penyerapan',
+        arahan: `Jual hasil panen secara bertahap atau gunakan fasilitas Pre-Order Kertanusa untuk mengamankan harga kontrak dengan pembeli sebelum terjadi penumpukan stok di pasar lokal.`,
+      }
+    ];
   } else {
     statusType = 'waspada';
-    statusBadgeText = 'WASPADA: RISIKO HARGA ANJLOK SAAT PANEN';
-    kesimpulan = `PERINGATAN RISIKO: Meskipun tren jangka pendek terlihat positif, rekaman data 5 tahun menunjukkan bahwa saat panen tiba di bulan ${bulanList[harvestMonth]}, harga rata-rata justru terkoreksi turun ${Math.abs(deltaPct)}% dibanding saat tanam (${bulanList[plantMonth]}). Hal ini dipicu oleh banjir panen raya serentak di sentra produksi lain. Disarankan mempertimbangkan varietas genjah agar bisa panen 2–3 minggu lebih awal atau menyiapkan fasilitas penyimpanan pascapanen.`;
+    statusBadgeText = 'KESIMPULAN SISTEM: WASPADA – RISIKO HARGA ANJLOK SAAT PANEN';
+    keputusanSistem = 'Keputusan: TUNDA SIKLUS / PILIH VARIETAS GENJAH / DIVERSIFIKASI';
+    kesimpulan = `PERINGATAN RISIKO: Meskipun tren jangka pendek terlihat positif, rekaman data 5 tahun menunjukkan bahwa saat panen tiba di bulan ${bulanList[harvestMonth]}, harga rata-rata justru terkoreksi turun ${Math.abs(deltaPct)}% dibanding saat tanam (${bulanList[plantMonth]}). Hal ini dipicu oleh banjir panen raya serentak di sentra produksi lain.`;
+    arahanLangkah = [
+      {
+        kategori: 'Penyesuaian Siklus',
+        arahan: `Bila tetap ingin menanam, pilih varietas super genjah agar masa panen maju 2–3 minggu lebih awal mendahului puncak banjir pasokan dari sentra lain.`,
+      },
+      {
+        kategori: 'Diversifikasi Lahan',
+        arahan: `Pertimbangkan membagi 40–50% lahan Anda ke tanaman alternatif yang memiliki proyeksi serapan pasar lebih stabil seperti Kapulaga atau Cokelat.`,
+      },
+      {
+        kategori: 'Mitigasi Pascapanen',
+        arahan: `Siapkan fasilitas pengeringan atau tempat penyimpanan pascapanen agar Anda tidak terpaksa menjual di titik harga terendah saat panen raya tiba.`,
+      }
+    ];
   }
 
   return {
@@ -252,6 +306,8 @@ function buildMultiYearHistory(
       statusBadgeText,
       kesimpulan,
       risikoFluktuasi,
+      keputusanSistem,
+      arahanLangkah,
     },
   };
 }
@@ -530,7 +586,7 @@ export default function MarketDemandPage() {
           </div>
 
           {/* Quick Filter Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
             {[
               { label: activePetani.jenis_tanaman || 'Bawang Merah', sub: 'Lahan Anda' },
               { label: pulse.mostDemanded.komoditas, sub: 'Permintaan Tertinggi' },
@@ -543,14 +599,14 @@ export default function MarketDemandPage() {
                   key={tab.label}
                   type="button"
                   onClick={() => setSelectedKomoditas(tab.label)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all whitespace-nowrap border ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all whitespace-nowrap border ${
                     isSelected
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-md font-bold'
+                      : 'bg-white border-slate-200 text-slate-800 hover:border-emerald-600 hover:text-emerald-800 hover:bg-slate-50'
                   }`}
                 >
                   <span className="font-bold">{tab.label}</span>
-                  <span className={`text-[10px] ml-1.5 ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
+                  <span className={`text-[11px] ml-1.5 font-medium ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
                     ({tab.sub})
                   </span>
                 </button>
@@ -687,40 +743,78 @@ export default function MarketDemandPage() {
             </div>
           </div>
 
-          {/* KOTAK SIMPULAN JELAS & TEGAS */}
-          <div className={`p-5 rounded-xl border transition-all ${
-            multiYearAnalysis.harvestOutlook.statusType === 'aman'
-              ? 'bg-slate-900 text-white border-slate-900'
-              : multiYearAnalysis.harvestOutlook.statusType === 'stabil'
-              ? 'bg-white text-slate-900 border-slate-300'
-              : 'bg-slate-50 text-slate-900 border-slate-300'
-          }`}>
-            <div className="flex items-start gap-3.5">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                multiYearAnalysis.harvestOutlook.statusType === 'aman'
-                  ? 'bg-white/10 text-white'
-                  : 'bg-slate-200 text-slate-800'
-              }`}>
-                {multiYearAnalysis.harvestOutlook.statusType === 'aman' ? (
-                  <CheckCircle className="w-5 h-5 text-white stroke-[2.2]" />
-                ) : multiYearAnalysis.harvestOutlook.statusType === 'stabil' ? (
-                  <CheckCircle2 className="w-5 h-5 text-slate-700 stroke-[2]" />
-                ) : (
-                  <AlertTriangle className="w-5 h-5 text-slate-700 stroke-[2]" />
-                )}
+          {/* KOTAK SIMPULAN & ARAHAN SISTEM BAGI PETANI */}
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4">
+            {/* Header Badge & Title */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                  multiYearAnalysis.harvestOutlook.statusType === 'aman'
+                    ? 'bg-emerald-700 text-white'
+                    : multiYearAnalysis.harvestOutlook.statusType === 'stabil'
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-amber-600 text-white'
+                }`}>
+                  {multiYearAnalysis.harvestOutlook.statusType === 'waspada' ? (
+                    <AlertTriangle className="w-5 h-5 text-white stroke-[2.2]" />
+                  ) : (
+                    <CheckCircle className="w-5 h-5 text-white stroke-[2.2]" />
+                  )}
+                </div>
+                <div>
+                  <span className="text-[10.5px] font-extrabold tracking-wider uppercase text-emerald-800 block">
+                    {multiYearAnalysis.harvestOutlook.statusBadgeText}
+                  </span>
+                  <h4 className="text-sm sm:text-base font-black text-slate-900 leading-tight mt-0.5">
+                    {multiYearAnalysis.harvestOutlook.keputusanSistem}
+                  </h4>
+                </div>
               </div>
 
-              <div className="space-y-1 min-w-0">
-                <span className={`text-[11px] font-bold tracking-wider uppercase block ${
-                  multiYearAnalysis.harvestOutlook.statusType === 'aman' ? 'text-slate-300' : 'text-slate-500'
+              {/* Status Pill Badge Solid */}
+              <div className="shrink-0">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-xs ${
+                  multiYearAnalysis.harvestOutlook.statusType === 'aman'
+                    ? 'bg-emerald-700'
+                    : multiYearAnalysis.harvestOutlook.statusType === 'stabil'
+                    ? 'bg-emerald-700'
+                    : 'bg-amber-600'
                 }`}>
-                  {multiYearAnalysis.harvestOutlook.statusBadgeText}
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                  {multiYearAnalysis.harvestOutlook.statusType === 'waspada' ? 'Perlu Mitigasi' : 'Rekomendasi Aman'}
                 </span>
-                <p className={`text-xs sm:text-sm leading-relaxed ${
-                  multiYearAnalysis.harvestOutlook.statusType === 'aman' ? 'text-slate-200' : 'text-slate-700'
-                }`}>
-                  {multiYearAnalysis.harvestOutlook.kesimpulan}
-                </p>
+              </div>
+            </div>
+
+            {/* Ringkasan Analisis Perhitungan */}
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              {multiYearAnalysis.harvestOutlook.kesimpulan}
+            </p>
+
+            {/* ARAHAN SISTEM BAGI PETANI (3 POIN KONKRET) */}
+            <div className="pt-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2.5">
+                Arahan Strategis Hasil Perhitungan Sistem untuk Petani:
+              </span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {multiYearAnalysis.harvestOutlook.arahanLangkah.map((step, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[11px] font-bold flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </span>
+                      <strong className="text-xs font-bold text-slate-900 leading-snug">
+                        {step.kategori}
+                      </strong>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed pl-7">
+                      {step.arahan}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
