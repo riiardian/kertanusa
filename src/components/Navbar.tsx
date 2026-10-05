@@ -74,7 +74,7 @@ export default function Navbar() {
           }`}
         >
           {/* Left: Brand Logo & Subtitle */}
-          <div className="flex items-center shrink-0">
+          <div className="flex-1 flex justify-start items-center shrink-0">
             <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
               <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
                 <Image
@@ -90,25 +90,25 @@ export default function Navbar() {
                 <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
                   KERTANUSA
                 </span>
-                <span className="font-[family-name:var(--font-outfit)] text-[7px] sm:text-[7.5px] lg:text-[7.5px] xl:text-[8.5px] font-extrabold tracking-[0.1em] sm:tracking-[0.14em] xl:tracking-[0.22em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
+                <span className="font-[family-name:var(--font-outfit)] text-[7px] sm:text-[7.5px] lg:text-[7.5px] xl:text-[8px] font-extrabold tracking-[0.1em] sm:tracking-[0.14em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
                   KREASI RISET TANI NUSANTARA
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Right: Desktop Nav Links (ml-auto to guarantee ample breathing room from the brand logo on laptops) */}
-          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-3 2xl:gap-5 justify-end shrink-0 ml-auto">
+          {/* Center: Desktop Nav Links (Centered, Clean Typography without card/capsule badge) */}
+          <nav className="hidden lg:flex items-center gap-3 xl:gap-6 2xl:gap-8 justify-center shrink-0">
             {desktopNavItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-[12px] xl:text-[13.5px] font-semibold transition-all px-2.5 xl:px-3 py-1.5 rounded-full whitespace-nowrap ${
+                  className={`text-[12.5px] xl:text-[13.5px] font-semibold transition-colors py-1 px-1 whitespace-nowrap ${
                     isActive 
-                      ? 'text-emerald-700 font-bold bg-emerald-50/80 shadow-xs' 
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'text-emerald-600 font-bold' 
+                      : 'text-slate-600 hover:text-emerald-600'
                   }`}
                 >
                   {item.label}
@@ -116,6 +116,11 @@ export default function Navbar() {
               );
             })}
           </nav>
+
+          {/* Right: Desktop Counterbalance Spacer (Balances Left Logo so Center is Truly Centered) */}
+          <div className="flex-1 hidden lg:flex justify-end items-center shrink-0">
+            {/* Counterbalance spacer */}
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden">
