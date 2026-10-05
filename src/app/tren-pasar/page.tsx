@@ -514,7 +514,7 @@ export default function MarketDemandPage() {
   }, [currentDetailItem]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-20 pb-16 space-y-8 text-slate-800">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-8 text-slate-800">
 
       {/* ── HEADER ── */}
       <div className="space-y-2 border-b border-slate-200/80 pb-6 pt-2">
@@ -522,7 +522,7 @@ export default function MarketDemandPage() {
           Daya Beli & Tren Pasar Pertanian
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 max-w-3xl leading-relaxed">
-          Pantauan harga riil komoditas, analisis pergerakan historis multi-tahun, dan panduan agronomis budidaya praktis untuk membantu petani menentukan komoditas terbaik dan meminimalkan risiko kerugian panen.
+          Pantauan tren harga dan analisis daya beli komoditas berbasis data historis untuk menentukan waktu tanam terbaik dan hasil panen maksimal.
         </p>
       </div>
 
