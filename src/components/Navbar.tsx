@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { 
-  Sprout, 
   Menu, 
   X, 
   LayoutGrid, 
@@ -76,8 +76,15 @@ export default function Navbar() {
           {/* Left: Brand Logo & Subtitle */}
           <div className="flex items-center shrink-0">
             <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
-                <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+                <Image
+                  src="/logokertanusa.png"
+                  alt="Logo Kertanusa"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-contain drop-shadow-xs"
+                  priority
+                />
               </div>
               <div className="flex flex-col justify-center shrink-0">
                 <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
@@ -129,8 +136,15 @@ export default function Navbar() {
           {/* Top Floating Pill Bar */}
           <div className="mx-4 mt-3 px-4 sm:px-6 h-[56px] bg-white rounded-full border border-slate-100 shadow-md flex items-center justify-between shrink-0">
             <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs shrink-0">
-                <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center">
+                <Image
+                  src="/logokertanusa.png"
+                  alt="Logo Kertanusa"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-contain drop-shadow-xs"
+                  priority
+                />
               </div>
               <div className="flex flex-col justify-center shrink-0">
                 <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">

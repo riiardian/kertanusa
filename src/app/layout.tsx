@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Lora, Outfit } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
@@ -26,6 +26,10 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: 'Kertanusa - Kreasi Riset Tani Nusantara | Riset & Inovasi Pertanian Cerdas',
   description: 'Kertanusa (Kreasi Riset Tani Nusantara) - Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat.',
+  icons: {
+    icon: '/logokertanusa.png',
+    apple: '/logokertanusa.png',
+  },
 };
 
 export default function RootLayout({
