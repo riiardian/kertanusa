@@ -80,7 +80,7 @@ export default function Navbar() {
       {/* Main Floating Navbar Header (Bentuk Kapsul Melayang) */}
       <header className="fixed top-0 left-0 right-0 z-40 w-full flex justify-center pointer-events-none">
         <div
-          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-24px)] sm:w-[96%] lg:w-[98%] xl:w-[92%] 2xl:w-[88%] max-w-[1280px] h-[56px] px-3 sm:px-5 xl:px-7 translate-y-3 ${
+          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-32px)] sm:w-[94%] lg:w-[96%] xl:w-[90%] max-w-[1280px] h-[56px] px-4 sm:px-6 xl:px-8 translate-y-3 ${
             isScrolled
               ? 'border-slate-200/90 shadow-md'
               : 'border-slate-100 shadow-sm'
@@ -88,8 +88,8 @@ export default function Navbar() {
         >
           {/* Left: Brand Logo & Subtitle */}
           <div className="flex-1 flex justify-start items-center shrink-0 min-w-0">
-            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 group shrink-0">
-              <div className="relative w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
                 <Image
                   src="/logokertanusa.png"
                   alt="Logo Kertanusa"
@@ -100,10 +100,10 @@ export default function Navbar() {
                 />
               </div>
               <div className="flex flex-col justify-center shrink-0">
-                <span className="font-[family-name:var(--font-outfit)] font-black text-[14px] sm:text-[15px] xl:text-[17px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
                   KERTANUSA
                 </span>
-                <span className="font-[family-name:var(--font-outfit)] text-[6.5px] sm:text-[7px] xl:text-[8px] font-extrabold tracking-[0.08em] sm:tracking-[0.12em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
+                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] md:text-[8.5px] font-extrabold tracking-[0.16em] sm:tracking-[0.2em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
                   KREASI RISET TANI NUSANTARA
                 </span>
               </div>
@@ -166,7 +166,7 @@ export default function Navbar() {
           {/* Top Floating Pill Bar */}
           <div className="mx-4 mt-3 px-4 sm:px-6 h-[56px] bg-white rounded-full border border-slate-100 shadow-md flex items-center justify-between shrink-0">
             <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-              <div className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 flex items-center justify-center">
                 <Image
                   src="/logokertanusa.png"
                   alt="Logo Kertanusa"
@@ -177,10 +177,10 @@ export default function Navbar() {
                 />
               </div>
               <div className="flex flex-col justify-center shrink-0">
-                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
                   KERTANUSA
                 </span>
-                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] font-extrabold tracking-[0.2em] uppercase text-[#475569] leading-none mt-0.5">
+                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] md:text-[8.5px] font-extrabold tracking-[0.16em] sm:tracking-[0.2em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
                   KREASI RISET TANI NUSANTARA
                 </span>
               </div>
