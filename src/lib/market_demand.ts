@@ -777,7 +777,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(85000, [10, 11, 12, 1], 0.25),
     karakteristik_tanah: 'Tanah hutan subur, lembap, naungan 40-60%, tidak tahan matahari terik langsung',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '2 - 3 Tahun mulai panen buah di pangkal batang',
+    umur_panen: '110 - 130 HST (Siklus Buah 3.5 - 4 Bulan)',
     potensi_hasil_per_ha: '2.5 - 4.5 Ton Buah Kering',
     estimasi_biaya_per_ha: 35000000,
     tips_agronomis: 'Bersihkan daun-daun kering di pangkal rumpun secara teratur agar sinar matahari menembus bunga dan memicu pembuahan.'
@@ -796,7 +796,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(250000, [5, 6, 7, 12], 0.20),
     karakteristik_tanah: 'Tanah kaya serasah organik gembur, aerasi tinggi, tidak boleh tergenang air',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '2.5 - 3 Tahun mulai berbuah (polong matang 8-9 bulan)',
+    umur_panen: '240 - 270 HST (Siklus Polong Matang 8 - 9 Bulan)',
     potensi_hasil_per_ha: '800 - 1.500 kg Polong Kering Grade A',
     estimasi_biaya_per_ha: 85000000,
     tips_agronomis: 'Lakukan penyerbukan bunga secara manual dengan lidi pada pagi hari (pukul 06.00-10.00) saat kepala putik terbuka sempurna.'
@@ -817,7 +817,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(82000, [1, 2, 3, 12], 0.28),
     karakteristik_tanah: 'Lempung liat berpasir tebal minimal 1.5 meter, kaya bahan organik, drainase lancar',
     ph_ideal: 'pH 6.0 - 7.0',
-    umur_panen: 'Tahun ke-2.5 mulai panen produktif',
+    umur_panen: '150 - 180 HST (Siklus Buah 5 - 6 Bulan)',
     potensi_hasil_per_ha: '1.8 - 2.5 Ton Biji Kering Fermentasi',
     estimasi_biaya_per_ha: 28000000,
     tips_agronomis: 'Lakukan fermentasi biji dalam kotak kayu selama 5 hari untuk mengeluarkan aroma khas cokelat premium dan harga jual tertinggi.'
@@ -836,7 +836,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(85000, [5, 6, 7, 8], 0.16),
     karakteristik_tanah: 'Tanah andosol vulkanik pegunungan subur tebal gembur',
     ph_ideal: 'pH 5.0 - 6.5',
-    umur_panen: 'Tahun ke-3 mulai panen ceri merah',
+    umur_panen: '210 - 240 HST (Siklus Ceri Merah 7 - 8 Bulan)',
     potensi_hasil_per_ha: '1.2 - 2.0 Ton Green Bean',
     estimasi_biaya_per_ha: 32000000,
     tips_agronomis: 'Hanya petik buah ceri yang sudah 100% merah matang pohon untuk mendapatkan skor cupping di atas 84 (grade specialty).'
@@ -855,7 +855,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(48000, [5, 6, 7], 0.18),
     karakteristik_tanah: 'Latosol atau andosol gembur berdrainase baik',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: 'Tahun ke-2.5 mulai panen',
+    umur_panen: '180 - 210 HST (Siklus Panen Raya 6 - 7 Bulan)',
     potensi_hasil_per_ha: '1.8 - 3.0 Ton Green Bean',
     estimasi_biaya_per_ha: 26000000,
     tips_agronomis: 'Lakukan pemangkasan cabang tua dan wiwil tunas air setelah panen raya agar cabang baru pembawa bunga tumbuh lebat.'
@@ -1241,10 +1241,18 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   let soil = 'Tanah gembur lempung berpasir, drainase baik, kaya bahan organik';
   let tips = 'Berikan pupuk kandang matang saat olah tanah dan jaga kelembapan tanah teratur.';
 
-  if (lower.includes('buah') || lower.includes('apel') || lower.includes('naga') || lower.includes('berry') || lower.includes('durian') || lower.includes('mangga')) {
+  if (lower.includes('apel') || lower.includes('apple')) {
     category = 'Buah-Buahan';
     basePrice = 32000;
-    harvestAge = '1.5 - 3 Tahun';
+    harvestAge = '120 - 140 HST (Siklus Buah 4 - 5 Bulan)';
+    ph = 'pH 5.5 - 6.5';
+    yieldStr = '15 - 25 Ton / Ha per tahun';
+    soil = 'Tanah andosol / lempung berpasir vulkanik pegunungan, ketinggian 700-1200 mdpl';
+    tips = 'Lakukan perompesan daun secara serentak untuk merangsang tunas bunga serempak dan pembesaran buah optimal.';
+  } else if (lower.includes('buah') || lower.includes('naga') || lower.includes('berry') || lower.includes('durian') || lower.includes('mangga')) {
+    category = 'Buah-Buahan';
+    basePrice = 32000;
+    harvestAge = '120 - 150 HST (Siklus Buah 4 - 5 Bulan)';
     ph = 'pH 5.8 - 6.8';
     yieldStr = '12 - 22 Ton / Ha per tahun';
     soil = 'Tanah subur gembur berpasir tebal, tidak tergenang air, sinar matahari penuh';
@@ -1252,7 +1260,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('jahe') || lower.includes('kunyit') || lower.includes('rempah') || lower.includes('lada') || lower.includes('cengkeh') || lower.includes('kayu manis') || lower.includes('akar')) {
     category = 'Rempah & Bumbu';
     basePrice = 45000;
-    harvestAge = '9 - 12 Bulan';
+    harvestAge = '240 - 270 HST (8 - 9 Bulan)';
     ph = 'pH 5.5 - 6.5';
     yieldStr = '8 - 15 Ton / Ha';
     soil = 'Lempung berpasir gembur tebal kaya serasah hutan atau kompos';
@@ -1260,7 +1268,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('obat') || lower.includes('herbal') || lower.includes('kelor') || lower.includes('stevia') || lower.includes('ginseng') || lower.includes('jamu')) {
     category = 'Tanaman Obat';
     basePrice = 38000;
-    harvestAge = '3 - 6 Bulan';
+    harvestAge = '90 - 120 HST (3 - 4 Bulan)';
     ph = 'pH 6.0 - 7.0';
     yieldStr = '5 - 10 Ton / Ha';
     soil = 'Tanah porous berhumus tinggi, naungan ringan 20-30%';
@@ -1268,7 +1276,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('kopi') || lower.includes('sawit') || lower.includes('karet') || lower.includes('tebu') || lower.includes('tembakau') || lower.includes('teh')) {
     category = 'Perkebunan';
     basePrice = 50000;
-    harvestAge = '2 - 4 Tahun';
+    harvestAge = '180 - 240 HST (Siklus Panen 6 - 8 Bulan)';
     ph = 'pH 5.0 - 6.5';
     yieldStr = '2 - 5 Ton / Ha';
     soil = 'Tanah lapisan olah dalam (kedalaman > 1 meter), bebas padas keras';
@@ -1276,7 +1284,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('padi') || lower.includes('jagung') || lower.includes('singkong') || lower.includes('ubi') || lower.includes('sorgum') || lower.includes('gandum') || lower.includes('kacang')) {
     category = 'Tanaman Pangan';
     basePrice = 12000;
-    harvestAge = '90 - 110 HST';
+    harvestAge = '95 - 115 HST (3 - 4 Bulan)';
     ph = 'pH 5.5 - 7.0';
     yieldStr = '6 - 12 Ton / Ha';
     soil = 'Lempung subur berdrainase baik atau tanah sawah irigasi';

@@ -84,30 +84,57 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
   return 'Tomat';
 }
 
-function parseHarvestDays(umurPanenStr: string | undefined): number {
-  if (!umurPanenStr) return 75;
+function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: string): number {
+  const lower = (komoditasName || '').toLowerCase();
+  if (lower.includes('apel') || lower.includes('apple')) return 130; // ~4.3 bulan (Siklus bunga ke matang petik 120-140 HST)
+  if (lower.includes('jeruk') || lower.includes('citrus')) return 240; // 8 bulan
+  if (lower.includes('kakao') || lower.includes('cokelat')) return 165; // 5.5 bulan (150-180 HST)
+  if (lower.includes('kopi')) return 210; // 7 bulan (180-240 HST)
+  if (lower.includes('kapulaga')) return 120; // 4 bulan (110-130 HST)
+  if (lower.includes('vanili')) return 255; // 8.5 bulan
+  if (lower.includes('jahe') || lower.includes('kunyit')) return 255; // 8.5 bulan
+  if (lower.includes('padi')) return 115; // ~3.8 bulan (105-120 HST)
+  if (lower.includes('jagung')) return 105; // ~3.5 bulan (100-110 HST)
+  if (lower.includes('cabai') || lower.includes('cabe')) return 85; // ~2.8 bulan (80-90 HST)
+  if (lower.includes('bawang')) return 65; // ~2.1 bulan (60-70 HST)
+  if (lower.includes('tomat')) return 75; // ~2.5 bulan (70-80 HST)
+  if (lower.includes('singkong') || lower.includes('ubi')) return 240; // 8 bulan
+
+  if (!umurPanenStr) return 90;
+  
   const hstMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*HST/i) || umurPanenStr.match(/(\d+)\s*HST/i);
   if (hstMatch) {
-    if (hstMatch[2]) return Math.round((Number(hstMatch[1]) + Number(hstMatch[2])) / 2);
+    if (hstMatch[2]) return Math.round(((Number(hstMatch[1]) + Number(hstMatch[2])) / 2));
     return Number(hstMatch[1]);
   }
+
+  const hariMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Hari/i) || umurPanenStr.match(/(\d+)\s*Hari/i);
+  if (hariMatch) {
+    if (hariMatch[2]) return Math.round(((Number(hariMatch[1]) + Number(hariMatch[2])) / 2));
+    return Number(hariMatch[1]);
+  }
+
   const bulanMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Bulan/i) || umurPanenStr.match(/(\d+)\s*Bulan/i);
   if (bulanMatch) {
     if (bulanMatch[2]) return Math.round(((Number(bulanMatch[1]) + Number(bulanMatch[2])) / 2) * 30);
     return Number(bulanMatch[1]) * 30;
   }
-  return 75;
+
+  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
+  if (tahunMatch) {
+    return 150;
+  }
+
+  return 90;
 }
 
 /**
  * Membuat data historis multi-tahun (5 tahun) dengan siklus tanam-panen.
- * Setiap tahun mengacu pada pola historis_bulanan yang sudah ada,
- * ditambah variasi realistis antar tahun.
+ * Setiap komoditas menghitung bulan panen nyata berdasarkan umur panen agronomisnya.
  */
 function buildMultiYearHistory(
   item: MarketCommodityTrendExtended,
-  plantingDate: string | undefined,
-  harvestDate: string | undefined
+  plantingDate: string | undefined
 ): {
   chartData: Array<{
     label: string;
@@ -164,21 +191,17 @@ function buildMultiYearHistory(
   const bulanShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
   const yearVariance = [0.88, 0.92, 0.96, 1.00, 1.04]; // 5 tahun terakhir (2022 s/d 2026)
 
-  // Tentukan bulan tanam & panen
+  // Tentukan bulan tanam
   let plantMonth = currentMonth;
   if (plantingDate) {
     const pd = new Date(plantingDate);
     if (!isNaN(pd.getTime())) plantMonth = pd.getMonth();
   }
 
-  const harvestDays = parseHarvestDays(item.umur_panen);
+  // Hitung durasi dan bulan panen nyata tanaman (bukan 2 bulan seragam!)
+  const harvestDays = parseHarvestDays(item.umur_panen, item.komoditas);
   const harvestMonthOffset = Math.max(1, Math.round(harvestDays / 30));
-  let harvestMonth = (plantMonth + harvestMonthOffset) % 12;
-
-  if (harvestDate) {
-    const hd = new Date(harvestDate);
-    if (!isNaN(hd.getTime())) harvestMonth = hd.getMonth();
-  }
+  const harvestMonth = (plantMonth + harvestMonthOffset) % 12;
 
   const chartData: Array<{
     label: string;
@@ -701,10 +724,9 @@ export default function MarketDemandPage() {
   const multiYearAnalysis = useMemo(() => {
     return buildMultiYearHistory(
       currentDetailItem,
-      activePetani.waktu_tanam,
-      activePetani.estimasi_panen
+      activePetani.waktu_tanam
     );
-  }, [currentDetailItem, activePetani.waktu_tanam, activePetani.estimasi_panen]);
+  }, [currentDetailItem, activePetani.waktu_tanam]);
 
   // Data untuk chart 12-bulan (tahun berjalan saja)
   const monthlyChartData = useMemo(() => {
@@ -735,7 +757,7 @@ export default function MarketDemandPage() {
       </div>
 
       {/* ── 1. KARTU RINCIAN LAHAN ── */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-4">
         <div className="border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900">
             {isUserLahan ? `Rincian Lahan ${activePetani.nama_petani}` : 'Rincian Lahan Percontohan (Acuan Rekomendasi)'}
@@ -809,7 +831,7 @@ export default function MarketDemandPage() {
                   onClick={() => setSelectedKomoditas(tab.label)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all whitespace-nowrap border ${
                     isSelected
-                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-md font-bold'
+                      ? 'bg-emerald-700 text-white border-emerald-700 font-bold'
                       : 'bg-white border-slate-200 text-slate-800 hover:border-emerald-600 hover:text-emerald-800 hover:bg-slate-50'
                   }`}
                 >
@@ -824,7 +846,7 @@ export default function MarketDemandPage() {
         </div>
 
         {/* Card Utama: Diagram Siklus & Hasil Perhitungan Tanam vs Panen */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-5">
           {/* Header Card: Komoditas Terpilih & Jadwal Tanam-Panen */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
@@ -855,173 +877,79 @@ export default function MarketDemandPage() {
             </div>
           </div>
 
-          {/* DIAGRAM INTERAKTIF: Pilihan Tampilan Sederhana & Mudah Dipahami */}
+          {/* DIAGRAM INTERAKTIF: Perbandingan 5 Tahun (Tanam vs Panen) - Super Jelas & Ramah Petani */}
           <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+            <div className="flex items-center justify-between gap-2.5 text-xs">
               <span className="text-slate-800 font-bold flex items-center gap-1.5">
                 <BarChart2 className="w-4 h-4 text-emerald-700" />
-                {chartViewMode === 'yearly'
-                  ? 'Perbandingan Harga: Saat Tanam vs Saat Panen (5 Tahun Terakhir)'
-                  : 'Siklus Pergerakan Harga 12 Bulan (Januari – Desember)'}
+                Perbandingan Harga: Saat Tanam vs Saat Panen (5 Tahun Terakhir)
               </span>
-
-              {/* View Mode Toggle Buttons */}
-              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => setChartViewMode('yearly')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
-                    chartViewMode === 'yearly'
-                      ? 'bg-white text-slate-900 shadow-xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Perbandingan 5 Tahun (Tanam vs Panen)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChartViewMode('monthly')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
-                    chartViewMode === 'monthly'
-                      ? 'bg-white text-slate-900 shadow-xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Siklus 12 Bulan
-                </button>
-              </div>
             </div>
 
-            {/* Chart Area */}
-            <div className="border border-slate-200/90 rounded-2xl bg-white p-4 sm:p-5 shadow-xs">
-              {chartViewMode === 'yearly' ? (
-                <div className="space-y-3">
-                  <div className="h-[250px] sm:h-[280px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={multiYearAnalysis.yearlyComparison}
-                        margin={{ top: 20, right: 10, left: -5, bottom: 0 }}
-                        barGap={6}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                        <XAxis
-                          dataKey="tahun"
-                          tick={{ fontSize: 12, fill: '#334155', fontWeight: 700 }}
-                          axisLine={{ stroke: '#cbd5e1' }}
-                          tickLine={false}
+            {/* Chart Area - Clean & Natural */}
+            <div className="border border-slate-200 rounded-2xl bg-white p-4 sm:p-5 space-y-3">
+              <div className="h-[250px] sm:h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={multiYearAnalysis.yearlyComparison}
+                    margin={{ top: 20, right: 10, left: -5, bottom: 0 }}
+                    barGap={6}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                    <XAxis
+                      dataKey="tahun"
+                      tick={{ fontSize: 12, fill: '#334155', fontWeight: 700 }}
+                      axisLine={{ stroke: '#cbd5e1' }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={v => `Rp ${(v / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip
+                      content={
+                        <YearlyComparisonTooltip
+                          plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
+                          harvestMonth={multiYearAnalysis.harvestOutlook.harvestMonthName}
                         />
-                        <YAxis
-                          tick={{ fontSize: 10, fill: '#94a3b8' }}
-                          axisLine={false}
-                          tickLine={false}
-                          tickFormatter={v => `Rp ${(v / 1000).toFixed(0)}k`}
-                        />
-                        <Tooltip
-                          content={
-                            <YearlyComparisonTooltip
-                              plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
-                              harvestMonth={multiYearAnalysis.harvestOutlook.harvestMonthName}
-                            />
-                          }
-                        />
-                        <Bar
-                          dataKey="hargaTanam"
-                          name={`Harga Saat Tanam (${multiYearAnalysis.harvestOutlook.plantMonthName})`}
-                          fill="#64748b"
-                          radius={[6, 6, 0, 0]}
-                          maxBarSize={40}
-                        />
-                        <Bar
-                          dataKey="hargaPanen"
-                          name={`Harga Saat Panen (${multiYearAnalysis.harvestOutlook.harvestMonthName})`}
-                          fill="#047857"
-                          radius={[6, 6, 0, 0]}
-                          maxBarSize={40}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                      }
+                    />
+                    <Bar
+                      dataKey="hargaTanam"
+                      name={`Harga Saat Tanam (${multiYearAnalysis.harvestOutlook.plantMonthName})`}
+                      fill="#64748b"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={40}
+                    />
+                    <Bar
+                      dataKey="hargaPanen"
+                      name={`Harga Saat Panen (${multiYearAnalysis.harvestOutlook.harvestMonthName})`}
+                      fill="#047857"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={40}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
 
-                  {/* Keterangan Batang Grafik yang Sangat Jelas untuk Petani */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
-                    <div className="flex items-center gap-4 flex-wrap">
-                      <span className="flex items-center gap-2 font-medium text-slate-700">
-                        <span className="w-3.5 h-3.5 rounded-sm bg-slate-500 inline-block shrink-0" />
-                        <span>Harga Saat Tanam ({multiYearAnalysis.harvestOutlook.plantMonthName})</span>
-                      </span>
-                      <span className="flex items-center gap-2 font-bold text-emerald-800">
-                        <span className="w-3.5 h-3.5 rounded-sm bg-emerald-700 inline-block shrink-0" />
-                        <span>Harga Saat Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
-                      </span>
-                    </div>
-                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
-                      {multiYearAnalysis.harvestOutlook.yearsProfitable} dari 5 tahun harga naik saat panen
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="h-[250px] sm:h-[280px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={multiYearAnalysis.monthlyCycle}
-                        margin={{ top: 20, right: 10, left: -5, bottom: 0 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                        <XAxis
-                          dataKey="bulan"
-                          tick={{ fontSize: 11, fill: '#334155', fontWeight: 600 }}
-                          axisLine={{ stroke: '#cbd5e1' }}
-                          tickLine={false}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 10, fill: '#94a3b8' }}
-                          axisLine={false}
-                          tickLine={false}
-                          tickFormatter={v => `Rp ${(v / 1000).toFixed(0)}k`}
-                        />
-                        <Tooltip
-                          content={
-                            <MonthlyCycleTooltip
-                              plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
-                              harvestMonth={multiYearAnalysis.harvestOutlook.harvestMonthName}
-                            />
-                          }
-                        />
-                        <Bar dataKey="harga" radius={[4, 4, 0, 0]} maxBarSize={34}>
-                          {multiYearAnalysis.monthlyCycle.map((entry, index) => {
-                            let barColor = '#cbd5e1'; // Abu-abu default
-                            if (entry.isHarvest) barColor = '#047857'; // Hijau tua panen
-                            else if (entry.isPlant) barColor = '#334155'; // Gelap tanam
-                            else if (entry.isPeak) barColor = '#10b981'; // Hijau muda puncak
-                            return <Cell key={`cell-${index}`} fill={barColor} />;
-                          })}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Keterangan Warna Bulanan */}
-                  <div className="flex flex-wrap items-center gap-3 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
-                    <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                      <span className="w-3 h-3 rounded-sm bg-slate-800 inline-block" />
-                      Bulan Tanam ({multiYearAnalysis.harvestOutlook.plantMonthName})
-                    </span>
-                    <span className="flex items-center gap-1.5 font-bold text-emerald-800">
-                      <span className="w-3 h-3 rounded-sm bg-emerald-700 inline-block" />
-                      Bulan Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})
-                    </span>
-                    <span className="flex items-center gap-1.5 font-medium text-emerald-600">
-                      <span className="w-3 h-3 rounded-sm bg-emerald-500 inline-block" />
-                      Puncak Permintaan Pasar
-                    </span>
-                    <span className="flex items-center gap-1.5 font-medium text-slate-400">
-                      <span className="w-3 h-3 rounded-sm bg-slate-300 inline-block" />
-                      Bulan Lainnya
-                    </span>
-                  </div>
-                </div>
-              )}
+              {/* Keterangan Batang & Kesimpulan Panen yang Menyatu Sederhana */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                <span className="flex items-center gap-2 font-medium text-slate-700">
+                  <span className="w-3.5 h-3.5 rounded-sm bg-slate-500 inline-block shrink-0" />
+                  <span>Harga Saat Tanam ({multiYearAnalysis.harvestOutlook.plantMonthName})</span>
+                </span>
+                <span className="flex items-center gap-2 font-bold text-emerald-800">
+                  <span className="w-3.5 h-3.5 rounded-sm bg-emerald-700 inline-block shrink-0" />
+                  <span>Harga Saat Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
+                </span>
+                <span className="text-slate-300 hidden sm:inline">•</span>
+                <span className="font-semibold text-emerald-700 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline-block shrink-0" />
+                  <span>{multiYearAnalysis.harvestOutlook.yearsProfitable} dari 5 tahun harga naik saat panen</span>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -1065,7 +993,7 @@ export default function MarketDemandPage() {
           </div>
 
           {/* KOTAK SIMPULAN & ARAHAN SISTEM BAGI PETANI */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4">
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white space-y-4">
             {/* Header Badge & Title */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
               <div className="flex items-center gap-3">
@@ -1094,7 +1022,7 @@ export default function MarketDemandPage() {
 
               {/* Status Pill Badge Solid */}
               <div className="shrink-0">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-xs ${
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white ${
                   multiYearAnalysis.harvestOutlook.statusType === 'aman'
                     ? 'bg-emerald-700'
                     : multiYearAnalysis.harvestOutlook.statusType === 'stabil'
@@ -1146,7 +1074,7 @@ export default function MarketDemandPage() {
           {/* Sinyal 1: Permintaan Tertinggi */}
           <div
             onClick={() => setSelectedKomoditas(pulse.mostDemanded.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs hover:border-slate-400 transition-all cursor-pointer group"
+            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
@@ -1181,7 +1109,7 @@ export default function MarketDemandPage() {
           {/* Sinyal 2: Kenaikan Tercepat */}
           <div
             onClick={() => setSelectedKomoditas(pulse.fastestRising.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs hover:border-slate-400 transition-all cursor-pointer group"
+            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
@@ -1216,7 +1144,7 @@ export default function MarketDemandPage() {
           {/* Sinyal 3: Paling Stabil */}
           <div
             onClick={() => setSelectedKomoditas(pulse.mostStable.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs hover:border-slate-400 transition-all cursor-pointer group"
+            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
@@ -1298,7 +1226,7 @@ export default function MarketDemandPage() {
             return (
               <div
                 key={rec.komoditas}
-                className={`bg-white border rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 transition-all ${
+                className={`bg-white border rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all ${
                   isSelected ? 'border-slate-900 ring-1 ring-slate-200' : 'border-slate-200/90 hover:border-slate-300'
                 }`}
               >
@@ -1364,7 +1292,7 @@ export default function MarketDemandPage() {
       </div>
 
       {/* ── 4. DIREKTORI & PENCARIAN ── */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden">
 
         <div className="p-5 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1541,7 +1469,7 @@ export default function MarketDemandPage() {
       </div>
 
       {/* ── 5. ANALISIS DETAIL KOMODITAS TERPILIH ── */}
-      <div id="analisis-komoditas" className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden scroll-mt-24">
+      <div id="analisis-komoditas" className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden scroll-mt-24">
 
         {/* Header Detail */}
         <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
