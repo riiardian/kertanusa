@@ -51,6 +51,19 @@ export default function Navbar() {
   useEffect(() => {
     const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     setIsScrolled(scrollY > 20);
+
+    // Update document title dynamically on client navigation
+    const routeTitles: Record<string, string> = {
+      '/': 'Beranda | KERTANUSA',
+      '/input-lahan': 'Input Lahan | KERTANUSA',
+      '/monitoring': 'Iklim & pH | KERTANUSA',
+      '/scan-ai': 'Scan AI & Panen | KERTANUSA',
+      '/tren-pasar': 'Daya Beli Pasar | KERTANUSA',
+      '/riset-petani': 'Riset Petani | KERTANUSA',
+    };
+    if (routeTitles[pathname]) {
+      document.title = routeTitles[pathname];
+    }
   }, [pathname]);
 
   const desktopNavItems = [
