@@ -67,58 +67,70 @@ export default function Navbar() {
       {/* Main Floating Navbar Header (Bentuk Kapsul Melayang) */}
       <header className="fixed top-0 left-0 right-0 z-40 w-full flex justify-center pointer-events-none">
         <div
-          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-32px)] sm:w-[94%] lg:w-[92%] xl:w-[88%] max-w-[1280px] h-[56px] px-4 sm:px-6 xl:px-8 translate-y-3 ${
+          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-24px)] sm:w-[96%] lg:w-[98%] xl:w-[92%] 2xl:w-[88%] max-w-[1280px] h-[56px] px-3 sm:px-5 xl:px-7 translate-y-3 ${
             isScrolled
               ? 'border-slate-200/90 shadow-md'
               : 'border-slate-100 shadow-sm'
           }`}
         >
           {/* Left: Brand Logo & Subtitle */}
-          <div className="flex-1 flex justify-start items-center shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-              <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
+          <div className="flex-1 flex justify-start items-center shrink-0 min-w-0">
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 group shrink-0">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 xl:w-10 xl:h-10 shrink-0 group-hover:scale-105 transition-transform flex items-center justify-center">
                 <Image
                   src="/logokertanusa.png"
                   alt="Logo Kertanusa"
-                  width={48}
-                  height={48}
+                  width={44}
+                  height={44}
                   className="w-full h-full object-contain drop-shadow-xs"
                   priority
                 />
               </div>
               <div className="flex flex-col justify-center shrink-0">
-                <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
+                <span className="font-[family-name:var(--font-outfit)] font-black text-[14px] sm:text-[15px] xl:text-[17px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
                   KERTANUSA
                 </span>
-                <span className="font-[family-name:var(--font-outfit)] text-[7px] sm:text-[7.5px] lg:text-[7.5px] xl:text-[8px] font-extrabold tracking-[0.1em] sm:tracking-[0.14em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
+                <span className="font-[family-name:var(--font-outfit)] text-[6.5px] sm:text-[7px] xl:text-[8px] font-extrabold tracking-[0.08em] sm:tracking-[0.12em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
                   KREASI RISET TANI NUSANTARA
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Center: Desktop Nav Links (Centered, Clean Typography without card/capsule badge) */}
-          <nav className="hidden lg:flex items-center gap-3 xl:gap-6 2xl:gap-8 justify-center shrink-0">
+          {/* Center: Desktop Nav Links (Neutral font with black bottom underline on hover & persistent on active) */}
+          <nav className="hidden lg:flex items-center gap-2 lg:gap-2.5 xl:gap-5 2xl:gap-7 justify-center shrink-0">
             {desktopNavItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-[12.5px] xl:text-[13.5px] font-semibold transition-colors py-1 px-1 whitespace-nowrap ${
-                    isActive 
-                      ? 'text-emerald-600 font-bold' 
-                      : 'text-slate-600 hover:text-emerald-600'
-                  }`}
+                  className="relative group h-[38px] flex items-center justify-center px-1.5 xl:px-2 text-[11.5px] lg:text-[12px] xl:text-[13.5px] whitespace-nowrap cursor-pointer"
                 >
-                  {item.label}
+                  <span
+                    className={`transition-colors ${
+                      isActive 
+                        ? 'text-slate-950 font-bold' 
+                        : 'text-slate-700 group-hover:text-slate-950 font-medium'
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                  {/* Garis hitam bawah: muncul saat cursor diarahkan (hover) & netep saat halaman aktif */}
+                  <span
+                    className={`absolute bottom-0.5 left-1 right-1 h-[2px] bg-slate-950 rounded-full transition-transform duration-200 origin-center ${
+                      isActive
+                        ? 'scale-x-100 opacity-100'
+                        : 'scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100'
+                    }`}
+                  />
                 </Link>
               );
             })}
           </nav>
 
           {/* Right: Desktop Counterbalance Spacer (Balances Left Logo so Center is Truly Centered) */}
-          <div className="flex-1 hidden lg:flex justify-end items-center shrink-0">
+          <div className="flex-1 hidden lg:flex justify-end items-center shrink-0 pointer-events-none">
             {/* Counterbalance spacer */}
           </div>
 
