@@ -67,14 +67,14 @@ export default function Navbar() {
       {/* Main Floating Navbar Header (Bentuk Kapsul Melayang) */}
       <header className="fixed top-0 left-0 right-0 z-40 w-full flex justify-center pointer-events-none">
         <div
-          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-32px)] sm:w-[92%] lg:w-[88%] max-w-[1280px] h-[56px] px-4 sm:px-8 translate-y-3 ${
+          className={`pointer-events-auto flex items-center justify-between bg-white/95 backdrop-blur-md text-slate-800 will-change-[transform,box-shadow] border rounded-full transition-all duration-300 w-[calc(100%-32px)] sm:w-[94%] lg:w-[92%] xl:w-[88%] max-w-[1280px] h-[56px] px-4 sm:px-6 xl:px-8 translate-y-3 ${
             isScrolled
               ? 'border-slate-200/90 shadow-md'
               : 'border-slate-100 shadow-sm'
           }`}
         >
           {/* Left: Brand Logo & Subtitle */}
-          <div className="flex-1 flex justify-start items-center">
+          <div className="flex items-center shrink-0">
             <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
               <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
                 <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.3]" />
@@ -83,23 +83,25 @@ export default function Navbar() {
                 <span className="font-[family-name:var(--font-outfit)] font-black text-[15px] sm:text-[16px] md:text-[18px] tracking-[0.05em] uppercase text-[#0A1628] leading-tight">
                   KERTANUSA
                 </span>
-                <span className="font-[family-name:var(--font-outfit)] text-[7.5px] sm:text-[8px] md:text-[9px] font-extrabold tracking-[0.2em] sm:tracking-[0.24em] uppercase text-[#475569] leading-none mt-0.5">
+                <span className="font-[family-name:var(--font-outfit)] text-[7px] sm:text-[7.5px] lg:text-[7.5px] xl:text-[8.5px] font-extrabold tracking-[0.1em] sm:tracking-[0.14em] xl:tracking-[0.22em] uppercase text-[#475569] leading-none mt-0.5 whitespace-nowrap">
                   KREASI RISET TANI NUSANTARA
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Center: Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 lg:gap-7 justify-center shrink-0">
+          {/* Right: Desktop Nav Links (ml-auto to guarantee ample breathing room from the brand logo on laptops) */}
+          <nav className="hidden lg:flex items-center gap-1.5 xl:gap-3 2xl:gap-5 justify-end shrink-0 ml-auto">
             {desktopNavItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-[13.5px] font-semibold transition-colors py-1 ${
-                    isActive ? 'text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                  className={`text-[12px] xl:text-[13.5px] font-semibold transition-all px-2.5 xl:px-3 py-1.5 rounded-full whitespace-nowrap ${
+                    isActive 
+                      ? 'text-emerald-700 font-bold bg-emerald-50/80 shadow-xs' 
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                   }`}
                 >
                   {item.label}
@@ -107,11 +109,6 @@ export default function Navbar() {
               );
             })}
           </nav>
-
-          {/* Right: Counterbalance Spacer */}
-          <div className="flex-1 hidden lg:flex justify-end items-center">
-            {/* Spacer penyeimbang tengah */}
-          </div>
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden">
