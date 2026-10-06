@@ -1,14 +1,21 @@
 import fs from 'fs';
 import path from 'path';
-import Database from 'better-sqlite3';
 import { PetaniRecord, VisionAnalysisResult } from './types';
 import { getCropInfo } from './crops';
 import { getRegionProfile } from './agro_regions';
 
-// Direktori & file database SQLite persisten
-const DATA_DIR = path.join(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'kertanusa.db');
-const SEED_JSON_FILE = path.join(DATA_DIR, 'agro_data.json');
+// Direktori penyimpanan data permanen (diabaikan oleh Git agar tidak terhapus saat deploy/restart)
+const STORAGE_DIR = path.join(process.cwd(), 'storage');
+const DB_FILE = path.join(STORAGE_DIR, 'kertanusa_db.json');
+const BACKUP_DIR = path.join(STORAGE_DIR, 'backups');
+const SEED_FILE = path.join(process.cwd(), 'data', 'agro_data.json');
+
+interface DatabaseSchema {
+  petani: PetaniRecord[];
+  scans: VisionAnalysisResult[];
+  _version: number;
+  _updated_at: string;
+}
 
 const DEFAULT_DATA_PETANI: PetaniRecord[] = [
   {
@@ -97,151 +104,92 @@ const DEFAULT_DATA_PETANI: PetaniRecord[] = [
   }
 ];
 
-// Singleton SQLite Database connection
-// Menjaga koneksi tetap persisten & aman dari hot reload Next.js
-declare global {
-  // eslint-disable-next-line no-var
-  var __kertanusa_sqlite_db: Database.Database | undefined;
+function ensureStorageDir(): void {
+  if (!fs.existsSync(STORAGE_DIR)) {
+    fs.mkdirSync(STORAGE_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(BACKUP_DIR)) {
+    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  }
 }
 
-function getDatabase(): Database.Database {
-  if (global.__kertanusa_sqlite_db) {
-    return global.__kertanusa_sqlite_db;
-  }
-
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  const db = new Database(DB_FILE);
-
-  // Optimasi WAL (Write-Ahead Logging) untuk konkurensi cepat dan bebas crash
-  db.pragma('journal_mode = WAL');
-  db.pragma('synchronous = NORMAL');
-
-  // Buat tabel petani jika belum ada
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS petani (
-      id TEXT PRIMARY KEY,
-      nama_petani TEXT NOT NULL,
-      kontak TEXT,
-      luas_tanah REAL NOT NULL,
-      satuan_luas TEXT NOT NULL,
-      daerah TEXT NOT NULL,
-      lat REAL,
-      lon REAL,
-      akurasi_gps REAL,
-      jenis_tanaman TEXT NOT NULL,
-      waktu_tanam TEXT NOT NULL,
-      estimasi_panen TEXT,
-      umur_hari INTEGER,
-      kelembapan_tanah REAL,
-      suhu_lingkungan REAL,
-      ph_tanah REAL,
-      status_tanaman TEXT,
-      catatan TEXT,
-      created_at TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS scans (
-      id TEXT PRIMARY KEY,
-      nama_tanaman TEXT NOT NULL,
-      kategori_diagnosa TEXT,
-      nama_masalah TEXT,
-      tingkat_keparahan TEXT,
-      akurasi REAL,
-      status_kematangan TEXT,
-      estimasi_hari_panen INTEGER,
-      ciri_visual TEXT,
-      rekomendasi_pupuk TEXT,
-      solusi_perawatan TEXT,
-      pestisida_nabati_organik TEXT,
-      created_at TEXT NOT NULL
-    );
-  `);
-
-  // Periksa apakah tabel petani masih kosong; jika iya, seed dari agro_data.json atau default
-  const countRow = db.prepare('SELECT COUNT(*) as count FROM petani').get() as { count: number };
-  if (countRow.count === 0) {
-    let seedList = DEFAULT_DATA_PETANI;
-    if (fs.existsSync(SEED_JSON_FILE)) {
-      try {
-        const raw = fs.readFileSync(SEED_JSON_FILE, 'utf-8');
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed?.petani) && parsed.petani.length > 0) {
-          seedList = parsed.petani;
-        }
-      } catch (err) {
-        console.warn('Gagal membaca seed agro_data.json, memakai default data:', err);
+function loadInitialSeed(): DatabaseSchema {
+  let initialPetani = DEFAULT_DATA_PETANI;
+  if (fs.existsSync(SEED_FILE)) {
+    try {
+      const raw = fs.readFileSync(SEED_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed?.petani) && parsed.petani.length > 0) {
+        initialPetani = parsed.petani;
       }
+    } catch (err) {
+      console.warn('Gagal memuat seed agro_data.json:', err);
+    }
+  }
+
+  const initialDb: DatabaseSchema = {
+    petani: initialPetani,
+    scans: [],
+    _version: 1,
+    _updated_at: new Date().toISOString()
+  };
+
+  saveAtomicDb(initialDb);
+  return initialDb;
+}
+
+function readPersistentDb(): DatabaseSchema {
+  ensureStorageDir();
+  if (!fs.existsSync(DB_FILE)) {
+    return loadInitialSeed();
+  }
+
+  try {
+    const raw = fs.readFileSync(DB_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed?.petani)) {
+      return loadInitialSeed();
+    }
+    return parsed;
+  } catch (err) {
+    console.error('Error membaca database kertanusa_db.json:', err);
+    return loadInitialSeed();
+  }
+}
+
+// Operasi penulisan ATOMIK (Crash-safe & anti-corrupt saat restart PM2/server)
+function saveAtomicDb(data: DatabaseSchema): boolean {
+  try {
+    ensureStorageDir();
+    data._updated_at = new Date().toISOString();
+    const tempFile = path.join(STORAGE_DIR, `kertanusa_db.tmp.${Date.now()}`);
+    
+    // Tulis ke temp file terlebih dahulu
+    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
+    
+    // Rename atomik (menimpa DB_FILE secara instan tanpa jeda korup)
+    fs.renameSync(tempFile, DB_FILE);
+
+    // Buat salinan cadangan berkala
+    try {
+      const backupFile = path.join(BACKUP_DIR, 'kertanusa_latest_backup.json');
+      fs.copyFileSync(DB_FILE, backupFile);
+    } catch {
+      // Abaikan kegagalan backup sekunder
     }
 
-    const insertStmt = db.prepare(`
-      INSERT INTO petani (
-        id, nama_petani, kontak, luas_tanah, satuan_luas, daerah,
-        lat, lon, akurasi_gps, jenis_tanaman, waktu_tanam, estimasi_panen,
-        umur_hari, kelembapan_tanah, suhu_lingkungan, ph_tanah, status_tanaman,
-        catatan, created_at
-      ) VALUES (
-        @id, @nama_petani, @kontak, @luas_tanah, @satuan_luas, @daerah,
-        @lat, @lon, @akurasi_gps, @jenis_tanaman, @waktu_tanam, @estimasi_panen,
-        @umur_hari, @kelembapan_tanah, @suhu_lingkungan, @ph_tanah, @status_tanaman,
-        @catatan, @created_at
-      )
-    `);
-
-    const insertMany = db.transaction((rows: PetaniRecord[]) => {
-      for (const row of rows) {
-        insertStmt.run({
-          id: row.id,
-          nama_petani: row.nama_petani,
-          kontak: row.kontak || null,
-          luas_tanah: Number(row.luas_tanah),
-          satuan_luas: row.satuan_luas || 'm²',
-          daerah: row.daerah,
-          lat: row.lat ?? null,
-          lon: row.lon ?? null,
-          akurasi_gps: row.akurasi_gps ?? null,
-          jenis_tanaman: row.jenis_tanaman,
-          waktu_tanam: row.waktu_tanam,
-          estimasi_panen: row.estimasi_panen || null,
-          umur_hari: row.umur_hari ?? null,
-          kelembapan_tanah: row.kelembapan_tanah ?? null,
-          suhu_lingkungan: row.suhu_lingkungan ?? null,
-          ph_tanah: row.ph_tanah ?? null,
-          status_tanaman: row.status_tanaman || 'Vegetatif Awal',
-          catatan: row.catatan || null,
-          created_at: row.created_at || new Date().toISOString()
-        });
-      }
-    });
-
-    insertMany(seedList);
+    return true;
+  } catch (err) {
+    console.error('Error menyimpan database atomik:', err);
+    return false;
   }
-
-  global.__kertanusa_sqlite_db = db;
-  return db;
 }
 
 export function getAllPetani(): PetaniRecord[] {
-  try {
-    const db = getDatabase();
-    const rows = db.prepare('SELECT * FROM petani ORDER BY datetime(created_at) DESC').all() as any[];
-    return rows.map(r => ({
-      ...r,
-      luas_tanah: Number(r.luas_tanah),
-      lat: r.lat !== null ? Number(r.lat) : undefined,
-      lon: r.lon !== null ? Number(r.lon) : undefined,
-      akurasi_gps: r.akurasi_gps !== null ? Number(r.akurasi_gps) : undefined,
-      umur_hari: r.umur_hari !== null ? Number(r.umur_hari) : undefined,
-      kelembapan_tanah: r.kelembapan_tanah !== null ? Number(r.kelembapan_tanah) : undefined,
-      suhu_lingkungan: r.suhu_lingkungan !== null ? Number(r.suhu_lingkungan) : undefined,
-      ph_tanah: r.ph_tanah !== null ? Number(r.ph_tanah) : undefined
-    }));
-  } catch (err) {
-    console.error('Error getAllPetani SQLite:', err);
-    return DEFAULT_DATA_PETANI;
-  }
+  const db = readPersistentDb();
+  return (db.petani || []).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 }
 
 export function addPetani(data: {
@@ -257,7 +205,7 @@ export function addPetani(data: {
   waktu_tanam: string;
   catatan?: string;
 }): PetaniRecord {
-  const db = getDatabase();
+  const db = readPersistentDb();
   const cropInfo = getCropInfo(data.jenis_tanaman);
   const regionProfile = getRegionProfile(data.daerah);
 
@@ -298,111 +246,30 @@ export function addPetani(data: {
     created_at: new Date().toISOString()
   };
 
-  const stmt = db.prepare(`
-    INSERT INTO petani (
-      id, nama_petani, kontak, luas_tanah, satuan_luas, daerah,
-      lat, lon, akurasi_gps, jenis_tanaman, waktu_tanam, estimasi_panen,
-      umur_hari, kelembapan_tanah, suhu_lingkungan, ph_tanah, status_tanaman,
-      catatan, created_at
-    ) VALUES (
-      @id, @nama_petani, @kontak, @luas_tanah, @satuan_luas, @daerah,
-      @lat, @lon, @akurasi_gps, @jenis_tanaman, @waktu_tanam, @estimasi_panen,
-      @umur_hari, @kelembapan_tanah, @suhu_lingkungan, @ph_tanah, @status_tanaman,
-      @catatan, @created_at
-    )
-  `);
-
-  stmt.run({
-    id: newRecord.id,
-    nama_petani: newRecord.nama_petani,
-    kontak: newRecord.kontak || null,
-    luas_tanah: newRecord.luas_tanah,
-    satuan_luas: newRecord.satuan_luas,
-    daerah: newRecord.daerah,
-    lat: newRecord.lat ?? null,
-    lon: newRecord.lon ?? null,
-    akurasi_gps: newRecord.akurasi_gps ?? null,
-    jenis_tanaman: newRecord.jenis_tanaman,
-    waktu_tanam: newRecord.waktu_tanam,
-    estimasi_panen: newRecord.estimasi_panen || null,
-    umur_hari: newRecord.umur_hari ?? null,
-    kelembapan_tanah: newRecord.kelembapan_tanah ?? null,
-    suhu_lingkungan: newRecord.suhu_lingkungan ?? null,
-    ph_tanah: newRecord.ph_tanah ?? null,
-    status_tanaman: newRecord.status_tanaman || 'Vegetatif Awal',
-    catatan: newRecord.catatan || null,
-    created_at: newRecord.created_at
-  });
-
+  db.petani.unshift(newRecord);
+  saveAtomicDb(db);
   return newRecord;
 }
 
 export function deletePetani(id: string): boolean {
-  try {
-    const db = getDatabase();
-    const info = db.prepare('DELETE FROM petani WHERE id = ?').run(id);
-    return info.changes > 0;
-  } catch (err) {
-    console.error('Error deletePetani SQLite:', err);
-    return false;
+  const db = readPersistentDb();
+  const initialLen = db.petani.length;
+  db.petani = db.petani.filter(p => p.id !== id);
+  if (db.petani.length !== initialLen) {
+    saveAtomicDb(db);
+    return true;
   }
+  return false;
 }
 
 export function getAllScans(): VisionAnalysisResult[] {
-  try {
-    const db = getDatabase();
-    const rows = db.prepare('SELECT * FROM scans ORDER BY datetime(created_at) DESC').all() as any[];
-    return rows.map(r => ({
-      id: r.id,
-      nama_tanaman: r.nama_tanaman,
-      kategori_diagnosa: r.kategori_diagnosa,
-      nama_masalah: r.nama_masalah,
-      tingkat_keparahan: r.tingkat_keparahan,
-      akurasi: Number(r.akurasi),
-      status_kematangan: r.status_kematangan,
-      estimasi_hari_panen: Number(r.estimasi_hari_panen),
-      ciri_visual: r.ciri_visual ? JSON.parse(r.ciri_visual) : [],
-      rekomendasi_pupuk: r.rekomendasi_pupuk ? JSON.parse(r.rekomendasi_pupuk) : [],
-      solusi_perawatan: r.solusi_perawatan ? JSON.parse(r.solusi_perawatan) : [],
-      pestisida_nabati_organik: r.pestisida_nabati_organik ? JSON.parse(r.pestisida_nabati_organik) : []
-    }));
-  } catch (err) {
-    console.error('Error getAllScans SQLite:', err);
-    return [];
-  }
+  const db = readPersistentDb();
+  return db.scans || [];
 }
 
 export function addScanRecord(scan: VisionAnalysisResult): void {
-  try {
-    const db = getDatabase();
-    const stmt = db.prepare(`
-      INSERT INTO scans (
-        id, nama_tanaman, kategori_diagnosa, nama_masalah, tingkat_keparahan,
-        akurasi, status_kematangan, estimasi_hari_panen, ciri_visual,
-        rekomendasi_pupuk, solusi_perawatan, pestisida_nabati_organik, created_at
-      ) VALUES (
-        @id, @nama_tanaman, @kategori_diagnosa, @nama_masalah, @tingkat_keparahan,
-        @akurasi, @status_kematangan, @estimasi_hari_panen, @ciri_visual,
-        @rekomendasi_pupuk, @solusi_perawatan, @pestisida_nabati_organik, @created_at
-      )
-    `);
-
-    stmt.run({
-      id: scan.id,
-      nama_tanaman: scan.nama_tanaman,
-      kategori_diagnosa: scan.kategori_diagnosa,
-      nama_masalah: scan.nama_masalah,
-      tingkat_keparahan: scan.tingkat_keparahan,
-      akurasi: scan.akurasi,
-      status_kematangan: scan.status_kematangan,
-      estimasi_hari_panen: scan.estimasi_hari_panen,
-      ciri_visual: JSON.stringify(scan.ciri_visual || []),
-      rekomendasi_pupuk: JSON.stringify(scan.rekomendasi_pupuk || []),
-      solusi_perawatan: JSON.stringify(scan.solusi_perawatan || []),
-      pestisida_nabati_organik: JSON.stringify(scan.pestisida_nabati_organik || []),
-      created_at: new Date().toISOString()
-    });
-  } catch (err) {
-    console.error('Error addScanRecord SQLite:', err);
-  }
+  const db = readPersistentDb();
+  if (!db.scans) db.scans = [];
+  db.scans.unshift(scan);
+  saveAtomicDb(db);
 }

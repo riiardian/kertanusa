@@ -9,8 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "better-sqlite3": "^13.0.3",
     "leaflet": "^1.9.4",
     "lottie-web": "^5.13.0",
     "lucide-react": "^1.47.0",
