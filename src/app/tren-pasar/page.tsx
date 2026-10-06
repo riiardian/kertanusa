@@ -9,6 +9,7 @@ import {
   getMarketPulse,
   getUniversalCommodityData,
   MarketCommodityTrendExtended,
+  getRegionSuitabilityDetails,
 } from '@/lib/market_demand';
 import { recommendBestSeeds } from '@/lib/seed_recommender';
 import { REGIONS } from '@/lib/agro_regions';
@@ -707,6 +708,10 @@ export default function MarketDemandPage() {
     );
   }, [currentDetailItem, activePetani.waktu_tanam]);
 
+  const regionalSuitability = useMemo(() => {
+    return getRegionSuitabilityDetails(currentDetailItem.komoditas, activePetani?.daerah);
+  }, [currentDetailItem.komoditas, activePetani?.daerah]);
+
   // Data untuk chart 12-bulan (tahun berjalan saja)
   const monthlyChartData = useMemo(() => {
     return currentDetailItem.historis_bulanan.map(h => {
@@ -831,11 +836,16 @@ export default function MarketDemandPage() {
           {/* Header Card: Komoditas Terpilih & Jadwal Tanam-Panen */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-bold text-slate-900">{currentDetailItem.komoditas}</h3>
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-700 text-white">
                   {currentDetailItem.kategori}
                 </span>
+                {!regionalSuitability.isSuitable && (
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-rose-700 text-white">
+                    Kurang Cocok di {activePetani.daerah || 'Wilayah Anda'}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Jadwal Tanam: <strong className="text-slate-800">{multiYearAnalysis.harvestOutlook.plantMonthName}</strong> ➔ Estimasi Panen: <strong className="text-slate-800">{multiYearAnalysis.harvestOutlook.harvestMonthName}</strong> (~{multiYearAnalysis.harvestOutlook.harvestDays} HST)
@@ -857,6 +867,21 @@ export default function MarketDemandPage() {
               </div>
             </div>
           </div>
+
+          {/* Alert Peringatan Ketidakcocokan Agroklimat Wilayah */}
+          {!regionalSuitability.isSuitable && (
+            <div className="p-4 sm:p-5 rounded-2xl border border-rose-300 bg-rose-50/80 flex items-start gap-3 text-xs">
+              <AlertTriangle className="w-5 h-5 text-rose-700 shrink-0 mt-0.5 stroke-[2.2]" />
+              <div className="space-y-1">
+                <strong className="text-rose-950 font-bold block text-sm">
+                  Peringatan Agroklimat: {currentDetailItem.komoditas} Kurang Optimal di Wilayah {activePetani.daerah}
+                </strong>
+                <p className="text-rose-900 leading-relaxed">
+                  {regionalSuitability.alasan}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* DIAGRAM INTERAKTIF: Perbandingan 5 Tahun (Tanam vs Panen) - Super Jelas & Ramah Petani */}
           <div className="space-y-3">

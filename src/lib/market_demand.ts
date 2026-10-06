@@ -1125,55 +1125,88 @@ function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): 
   return 90;
 }
 
+const HIGHLAND_REGIONS = [
+  'malang', 'batu', 'pujon', 'bromo', 'tengger', 'semeru', 'ijen',
+  'dieng', 'wonosobo', 'banjarnegara', 'temanggung', 'bandungan', 'selo', 'tawangmangu', 'karanganyar',
+  'lembang', 'bandung', 'ciwidey', 'pangalengan', 'garut', 'cikajang', 'puncak', 'cipanas', 'cisarua', 'kuningan',
+  'karo', 'berastagi', 'simalungun', 'dairi', 'tapanuli', 'kerinci', 'sungai penuh',
+  'alahan panjang', 'bukittinggi', 'agam', 'tanah datar', 'padang panjang', 'solok selatan',
+  'pagar alam', 'curup', 'rejang lebong', 'toraja', 'tana toraja', 'enrekang', 'malino', 'tomohon', 'modoinding',
+  'bedugul', 'kintamani', 'sembalun', 'bajawa', 'ruteng', 'manggarai', 'takengon', 'bener meriah', 'gayo'
+];
+
+const HIGHLAND_ONLY_CROPS = [
+  'stevia',
+  'apel',
+  'kentang',
+  'kubis',
+  'kol',
+  'kopi arabika',
+  'kapulaga',
+  'wortel',
+  'stroberi',
+  'strawberry',
+  'teh',
+  'brokoli',
+  'paprika',
+  'bawang prei'
+];
+
+const HOT_LOWLAND_ONLY_CROPS = [
+  'tembakau',
+  'semangka',
+  'melon'
+];
+
 export function isCommoditySuitableForRegion(commodityName: string, regionName?: string): boolean {
   if (!regionName) return true;
   const regLower = regionName.toLowerCase();
   const commLower = commodityName.toLowerCase();
 
-  const isLowlandCoastal =
-    regLower.includes('brebes') ||
-    regLower.includes('pantura') ||
-    regLower.includes('banyuwangi') ||
-    regLower.includes('lombok') ||
-    regLower.includes('tegal') ||
-    regLower.includes('cirebon') ||
-    regLower.includes('indramayu') ||
-    regLower.includes('demak') ||
-    regLower.includes('grobogan') ||
-    regLower.includes('rembang') ||
-    regLower.includes('tuban') ||
-    regLower.includes('lamongan') ||
-    regLower.includes('karawang') ||
-    regLower.includes('subang') ||
-    regLower.includes('bekasi');
+  const isHighland = HIGHLAND_REGIONS.some(k => regLower.includes(k));
+  const isLowland = !isHighland;
 
-  const isHighland =
-    regLower.includes('malang') ||
-    regLower.includes('batu') ||
-    regLower.includes('karo') ||
-    regLower.includes('berastagi') ||
-    regLower.includes('dieng') ||
-    regLower.includes('wonosobo') ||
-    regLower.includes('lembang') ||
-    regLower.includes('bandung') ||
-    regLower.includes('garut') ||
-    regLower.includes('temanggung') ||
-    regLower.includes('kerinci') ||
-    regLower.includes('toraja');
-
-  // Tanaman spesifik dataran tinggi (dingin/sejuk/naungan hutan pegunungan 700 - 1800 mdpl)
-  const highlandOnly = ['apel', 'kentang', 'kubis', 'kopi arabika', 'kapulaga', 'wortel', 'stroberi', 'teh'];
-  if (isLowlandCoastal && highlandOnly.some(h => commLower.includes(h))) {
-    return false; // Tidak adaptif di dataran rendah pesisir panas
+  // Tanaman dataran tinggi sejuk (wajib 500-1.500 mdpl, suhu sejuk 18-24°C)
+  // Kurang optimal / berisiko gagal di dataran rendah tropis panas (seperti Tangerang, Banten, Jakarta, Pantura, Surabaya, dll)
+  if (isLowland && HIGHLAND_ONLY_CROPS.some(h => commLower.includes(h))) {
+    return false;
   }
 
-  // Tanaman pesisir panas / kemarau tegas
-  const hotLowlandOnly = ['tembakau', 'semangka'];
-  if (isHighland && hotLowlandOnly.some(h => commLower.includes(h))) {
+  // Tanaman pesisir / kemarau terik dataran rendah
+  if (isHighland && HOT_LOWLAND_ONLY_CROPS.some(h => commLower.includes(h))) {
     return false;
   }
 
   return true;
+}
+
+export function getRegionSuitabilityDetails(commodityName: string, regionName?: string): {
+  isSuitable: boolean;
+  isHighland: boolean;
+  alasan?: string;
+} {
+  if (!regionName) return { isSuitable: true, isHighland: false };
+  const suitable = isCommoditySuitableForRegion(commodityName, regionName);
+  const regLower = regionName.toLowerCase();
+  const isHighland = HIGHLAND_REGIONS.some(k => regLower.includes(k));
+
+  if (!suitable) {
+    if (!isHighland) {
+      return {
+        isSuitable: false,
+        isHighland: false,
+        alasan: `${commodityName} secara botani membutuhkan agroklimat dataran tinggi sejuk (ketinggian 500–1.500 mdpl, suhu harian 20–24°C). Wilayah ${regionName} berada di dataran rendah tropis (suhu 27–34°C). Kondisi panas ini memicu stres fisiologis, penurunan kadar senyawa aktif/manis (glikosida), pembungaan dini prematur, dan pertumbuhan daun kurang optimal.`
+      };
+    } else {
+      return {
+        isSuitable: false,
+        isHighland: true,
+        alasan: `${commodityName} membutuhkan radiasi matahari terik penuh dan musim kemarau tegas dataran rendah. Di dataran tinggi sejuk berkabut ${regionName}, kelembapan berlebih memicu serangan jamur/busuk batang dan kadar gula hasil panen kurang pekat.`
+      };
+    }
+  }
+
+  return { isSuitable: true, isHighland };
 }
 
 function hitungStabilitas(historis: { harga: number }[]): number {
