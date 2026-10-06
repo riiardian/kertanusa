@@ -600,7 +600,7 @@ export default function MarketDemandPage() {
     return activePetani.satuan_luas === 'hektar' ? Number(activePetani.luas_tanah) * 10000 : Number(activePetani.luas_tanah) || 10000;
   }, [activePetani]);
 
-  const pulse = useMemo(() => getMarketPulse(), []);
+  const pulse = useMemo(() => getMarketPulse(activePetani?.daerah), [activePetani?.daerah]);
 
   const pulseSparklines = useMemo(() => {
     const makeSpark = (name: string) => {
@@ -614,7 +614,7 @@ export default function MarketDemandPage() {
     };
   }, [pulse]);
 
-  const topRecs = useMemo(() => getTopRecommendations(calcLuas, 3), [calcLuas]);
+  const topRecs = useMemo(() => getTopRecommendations(calcLuas, 3, activePetani?.daerah), [calcLuas, activePetani?.daerah]);
 
   const filteredCommodities = useMemo(() => {
     if (!searchQuery.trim() && activeCategory === 'Semua') {

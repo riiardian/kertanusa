@@ -1074,6 +1074,48 @@ export interface MarketIntelligenceScore {
   ph_ideal?: string;
   umur_panen?: string;
   tips_agronomis?: string;
+  isHarvestProfitable?: boolean;
+  harvestDeltaPct?: number;
+  isRegionalMatch?: boolean;
+}
+
+function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): number {
+  const lower = (komoditasName || '').toLowerCase();
+  if (lower.includes('apel')) return 130;
+  if (lower.includes('jeruk')) return 240;
+  if (lower.includes('kakao')) return 165;
+  if (lower.includes('kopi')) return 210;
+  if (lower.includes('kapulaga')) return 120;
+  if (lower.includes('padi')) return 115;
+  if (lower.includes('jagung')) return 70;
+  if (lower.includes('bawang')) return 65;
+  if (lower.includes('cabai')) return 85;
+  if (!umurPanenStr) return 90;
+  const match = umurPanenStr.match(/(\d+)/);
+  return match ? Number(match[1]) : 90;
+}
+
+export function isCommoditySuitableForRegion(commodityName: string, regionName?: string): boolean {
+  if (!regionName) return true;
+  const regLower = regionName.toLowerCase();
+  const commLower = commodityName.toLowerCase();
+
+  const isLowlandCoastal = regLower.includes('brebes') || regLower.includes('pantura') || regLower.includes('banyuwangi') || regLower.includes('lombok');
+  const isHighland = regLower.includes('malang') || regLower.includes('batu') || regLower.includes('karo') || regLower.includes('berastagi') || regLower.includes('dieng');
+
+  // Tanaman spesifik dataran tinggi (dingin/sejuk/naungan hutan pegunungan)
+  const highlandOnly = ['apel', 'kentang', 'kubis', 'kopi arabika', 'kapulaga', 'wortel', 'stroberi', 'teh'];
+  if (isLowlandCoastal && highlandOnly.some(h => commLower.includes(h))) {
+    return false; // Tidak adaptif di dataran rendah pesisir panas
+  }
+
+  // Tanaman pesisir panas / kemarau tegas
+  const hotLowlandOnly = ['tembakau', 'semangka'];
+  if (isHighland && hotLowlandOnly.some(h => commLower.includes(h))) {
+    return false;
+  }
+
+  return true;
 }
 
 function hitungStabilitas(historis: { harga: number }[]): number {
@@ -1122,7 +1164,8 @@ function hitungSkorProfit(komoditas: string): number {
   return Math.min(100, Math.max(10, Math.round(30 + proj.roi * 0.35)));
 }
 
-function getLabelRekomendasiClean(skor: number, risiko: RisikoLevel, musimDekat: boolean): string {
+function getLabelRekomendasiClean(skor: number, risiko: RisikoLevel, musimDekat: boolean, isHarvestProfitable: boolean): string {
+  if (!isHarvestProfitable) return 'Waspada Siklus Turun';
   if (skor >= 72 && risiko === 'Rendah') return 'Tanam Sekarang';
   if (skor >= 72 && musimDekat) return 'Segera Tanam';
   if (skor >= 55 && risiko !== 'Tinggi') return 'Pertimbangkan';
@@ -1130,7 +1173,9 @@ function getLabelRekomendasiClean(skor: number, risiko: RisikoLevel, musimDekat:
   return 'Pantau Pasar';
 }
 
-function getAlasanSingkat(item: MarketCommodityTrendExtended, skor: number, stabilitas: number): string {
+function getAlasanSingkat(item: MarketCommodityTrendExtended, skor: number, stabilitas: number, isHarvestProfitable: boolean): string {
+  if (!isHarvestProfitable)
+    return `Saat ini harga tinggi, namun harga saat estimasi panen diproyeksikan terkoreksi turun. Tunda siklus.`;
   if (item.tren_mingguan === 'Naik' && item.persentase_tren >= 8)
     return `Harga naik +${item.persentase_tren}% minggu ini akibat tingginya serapan pasar.`;
   if (stabilitas >= 75)
@@ -1142,30 +1187,46 @@ function getAlasanSingkat(item: MarketCommodityTrendExtended, skor: number, stab
   return `Pasokan pasar stabil dan memiliki serapan konsumen rumah tangga teratur.`;
 }
 
-export function calculateAllMarketScores(luasM2: number = 10000): MarketIntelligenceScore[] {
+export function calculateAllMarketScores(luasM2: number = 10000, regionName?: string): MarketIntelligenceScore[] {
+  const nowMonth = new Date().getMonth();
+
   return COMMODITY_TRENDS.map(item => {
+    const harvestDays = parseHarvestDaysApprox(item.umur_panen, item.komoditas);
+    const harvestMonthOffset = Math.max(1, Math.round(harvestDays / 30));
+    const harvestMonth = (nowMonth + harvestMonthOffset) % 12;
+    const priceAtPlant = item.historis_bulanan[nowMonth]?.harga || item.harga_saat_ini;
+    const priceAtHarvest = item.historis_bulanan[harvestMonth]?.harga || item.harga_saat_ini;
+    const harvestDeltaPct = priceAtPlant > 0 ? Math.round(((priceAtHarvest - priceAtPlant) / priceAtPlant) * 100) : 0;
+    const isHarvestProfitable = harvestDeltaPct >= 0;
+    const isRegionalMatch = isCommoditySuitableForRegion(item.komoditas, regionName);
+
     const skorPermintaan = hitungSkorPermintaan(item.historis_bulanan);
     const skorTren = hitungSkorTren(item.tren_mingguan, item.persentase_tren);
     const stabilitas = hitungStabilitas(item.historis_bulanan);
     const skorProfit = hitungSkorProfit(item.komoditas);
     const { skor: skorMusim, labelBulan } = hitungKedekatanMusimPuncak(item.bulan_harga_tertinggi);
 
-    const skorTotal = Math.round(
-      skorPermintaan * 0.30 +
-      skorTren       * 0.30 +
+    let penaltiPanen = 0;
+    if (!isHarvestProfitable) penaltiPanen -= 20; // Jangan jadikan top pick jika harga anjlok saat panen
+    if (!isRegionalMatch) penaltiPanen -= 30; // Penalti jika tidak cocok dengan iklim/tanah wilayah
+
+    const skorTotal = Math.max(10, Math.min(100, Math.round(
+      skorPermintaan * 0.25 +
+      skorTren       * 0.25 +
       stabilitas     * 0.20 +
       skorProfit     * 0.15 +
-      skorMusim      * 0.05
-    );
+      skorMusim      * 0.05 +
+      penaltiPanen
+    )));
 
     let risiko: RisikoLevel;
-    if (skorTotal >= 68 && stabilitas >= 60) risiko = 'Rendah';
+    if (skorTotal >= 68 && stabilitas >= 60 && isHarvestProfitable) risiko = 'Rendah';
     else if (skorTotal >= 48) risiko = 'Sedang';
     else risiko = 'Tinggi';
 
     const musimDekat = skorMusim >= 70;
-    const label = getLabelRekomendasiClean(skorTotal, risiko, musimDekat);
-    const alasan = getAlasanSingkat(item, skorTotal, stabilitas);
+    const label = getLabelRekomendasiClean(skorTotal, risiko, musimDekat, isHarvestProfitable);
+    const alasan = getAlasanSingkat(item, skorTotal, stabilitas, isHarvestProfitable);
     const proj = calculateProfitProjection(luasM2, item.komoditas);
 
     return {
@@ -1189,30 +1250,45 @@ export function calculateAllMarketScores(luasM2: number = 10000): MarketIntellig
       karakteristik_tanah: item.karakteristik_tanah,
       ph_ideal: item.ph_ideal,
       umur_panen: item.umur_panen,
-      tips_agronomis: item.tips_agronomis
+      tips_agronomis: item.tips_agronomis,
+      isHarvestProfitable,
+      harvestDeltaPct,
+      isRegionalMatch
     };
   }).sort((a, b) => b.skorTotal - a.skorTotal);
 }
 
-export function getTopRecommendations(luasM2: number, topN = 3): MarketIntelligenceScore[] {
-  return calculateAllMarketScores(luasM2)
-    .filter(s => !s.labelRekomendasi.includes('Waspada'))
+export function getTopRecommendations(luasM2: number, topN = 3, regionName?: string): MarketIntelligenceScore[] {
+  return calculateAllMarketScores(luasM2, regionName)
+    .filter(s => {
+      if (regionName && !isCommoditySuitableForRegion(s.komoditas, regionName)) return false;
+      if (!s.isHarvestProfitable) return false;
+      return !s.labelRekomendasi.includes('Waspada');
+    })
     .slice(0, topN);
 }
 
-export function getMarketPulse(): {
+export function getMarketPulse(regionName?: string): {
   mostDemanded: MarketIntelligenceScore;
   fastestRising: MarketIntelligenceScore;
   mostStable: MarketIntelligenceScore;
 } {
-  const all = calculateAllMarketScores(10000);
-  const mostDemanded = [...all].sort((a, b) => b.skorPermintaan - a.skorPermintaan)[0];
-  const fastestRising = [...all].sort((a, b) => {
+  const all = calculateAllMarketScores(10000, regionName);
+  const regionalPool = regionName ? all.filter(c => isCommoditySuitableForRegion(c.komoditas, regionName)) : all;
+  const pool = regionalPool.length > 0 ? regionalPool : all;
+
+  // Most demanded haruslah yang siklus panennya menguntungkan (bukan jebakan harga jatuh)
+  const profitablePool = pool.filter(c => c.isHarvestProfitable);
+  const demandCandidatePool = profitablePool.length > 0 ? profitablePool : pool;
+  const mostDemanded = [...demandCandidatePool].sort((a, b) => b.skorPermintaan - a.skorPermintaan)[0];
+
+  const fastestRising = [...pool].sort((a, b) => {
     const scoreA = a.trenMingguan === 'Naik' ? a.persentaseTren : -99;
     const scoreB = b.trenMingguan === 'Naik' ? b.persentaseTren : -99;
     return scoreB - scoreA;
   })[0];
-  const mostStable = [...all].sort((a, b) => b.skorStabilitas - a.skorStabilitas)[0];
+
+  const mostStable = [...pool].sort((a, b) => b.skorStabilitas - a.skorStabilitas)[0];
   return { mostDemanded, fastestRising, mostStable };
 }
 
