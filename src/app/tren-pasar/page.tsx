@@ -29,7 +29,6 @@ import {
 import YearlyComparisonCustomChart from '@/components/YearlyComparisonCustomChart';
 import {
   Search,
-  CheckCircle2,
   Sprout,
   X,
   ChevronRight,
@@ -339,59 +338,59 @@ function buildMultiYearHistory(
 
   if (isProfit && deltaPct >= 10 && yearsProfitable >= 3) {
     statusType = 'aman';
-    statusBadgeText = 'ANJURAN SISTEM: SANGAT DIREKOMENDASIKAN DITANAM';
-    keputusanSistem = `Waktu Terbaik: Segera Tanam di Bulan ${bulanList[plantMonth]} (Peluang Margin Keuntungan Tinggi)`;
-    kesimpulan = `Evaluasi Siklus Pasar 5 Tahun: Menanam ${item.komoditas} di bulan ${bulanList[plantMonth]} dan panen di bulan ${bulanList[harvestMonth]} (${harvestDays} HST) terbukti konsisten menguntungkan (${yearsProfitable} dari 5 tahun harga naik). Kenaikan rata-rata harga panen mencapai +${deltaPct}% dibanding saat bibit ditanam karena serapan pasar tinggi sebelum panen raya serentak nasional tiba. Sangat prospektif untuk dibudidayakan pada periode ini.`;
+    statusBadgeText = 'Rekomendasi Tanam';
+    keputusanSistem = `Direkomendasikan Tanam di Bulan ${bulanList[plantMonth]} (Potensi Keuntungan Tinggi)`;
+    kesimpulan = `Berdasarkan kalkulasi historis 5 tahun, menanam ${item.komoditas} di bulan ${bulanList[plantMonth]} konsisten menghasilkan keuntungan dengan proyeksi kenaikan harga panen rata-rata +${deltaPct}% (${yearsProfitable} dari 5 tahun harga naik). Periode ini ideal untuk memulai siklus tanam.`;
     arahanLangkah = [
       {
-        kategori: 'Keputusan & Waktu Tanam',
-        arahan: `Maksimalkan kapasitas petak lahan Anda di bulan ${bulanList[plantMonth]} ini. Permintaan pasar diproyeksikan sedang berada di fase ekspansi saat panen tiba (${bulanList[harvestMonth]}).`,
+        kategori: '1. Jadwal Tanam Lapangan',
+        arahan: `Lahan siap ditanami di bulan ${bulanList[plantMonth]}. Estimasi masa panen tiba pada bulan ${bulanList[harvestMonth]} (~${harvestDays} HST) sebelum puncak panen raya nasional tiba.`,
       },
       {
-        kategori: 'Batas Modal HPP Produksi',
-        arahan: `Kunci estimasi biaya operasional maksimal di bawah Rp ${hppBatasAman.toLocaleString('id-ID')} / kg agar potensi laba bersih minimal 45–50% tetap aman terjaga.`,
+        kategori: '2. Estimasi Harga Panen',
+        arahan: `Hasil panen diproyeksikan terserap optimal di pasar pada kisaran Rp ${avgPanen.toLocaleString('id-ID')} / kg dengan potensi surplus keuntungan modal sekitar +${deltaPct}%.`,
       },
       {
-        kategori: 'Strategi Penyerapan Pasar',
-        arahan: `Hasil panen dapat langsung diserap pasar induk pada harga puncak (estimasi Rp ${avgPanen.toLocaleString('id-ID')} / kg) atau kunci kuota pembeli lebih awal melalui fitur Pre-Order Kertanusa.`,
+        kategori: '3. Pemeliharaan Nutrisi Lahan',
+        arahan: `Jaga kestabilan kelembapan dan pH tanah secara rutin, serta gunakan benih unggul adaptif cuaca untuk memastikan tonase hasil panen maksimal.`,
       }
     ];
   } else if (isProfit && deltaPct >= 0) {
     statusType = 'stabil';
-    statusBadgeText = 'ANJURAN SISTEM: STABIL & CUKUP AMAN DITANAM';
-    keputusanSistem = `Waktu Terbaik: Aman Ditanam Sesuai Jadwal (Prioritaskan Efisiensi Biaya Operasional)`;
-    kesimpulan = `Evaluasi Siklus Pasar 5 Tahun: Harga ${item.komoditas} relatif stabil antara saat tanam (${bulanList[plantMonth]}) hingga panen (${bulanList[harvestMonth]}) dengan tren rata-rata +${deltaPct}%. Fluktuasi harga tergolong ${risikoFluktuasi.toLowerCase()}. Keuntungan panen petani dapat terjaga optimal dengan menjaga efisiensi biaya operasional dan memilih benih unggul bersertifikat.`;
+    statusBadgeText = 'Siklus Stabil';
+    keputusanSistem = `Aman Ditanam Sesuai Jadwal (Fokus Efisiensi Biaya Operasional)`;
+    kesimpulan = `Pergerakan harga ${item.komoditas} relatif stabil antara masa tanam (${bulanList[plantMonth]}) dan panen (${bulanList[harvestMonth]}) dengan tren rata-rata +${deltaPct}%. Keuntungan budidaya dapat terjaga optimal melalui efisiensi biaya kerja dan perawatan tanah yang terukur.`;
     arahanLangkah = [
       {
-        kategori: 'Keputusan Tanam',
-        arahan: `Lahan aman untuk ditanami sesuai jadwal. Jangan mengambil risiko modal spekulatif berlebihan, fokus pada bibit unggul bersertifikat yang tahan cuaca musiman.`,
+        kategori: '1. Jadwal Tanam Lapangan',
+        arahan: `Penanaman dapat dijalankan sesuai jadwal kerja di bulan ${bulanList[plantMonth]}. Estimasi panen tiba sekitar bulan ${bulanList[harvestMonth]} (~${harvestDays} HST).`,
       },
       {
-        kategori: 'Pengendalian Biaya HPP',
-        arahan: `Kunci biaya produksi di bawah Rp ${hppBatasAman.toLocaleString('id-ID')} / kg dengan mengoptimalkan pupuk organik berimbang guna menekan ketergantungan pupuk kimia berharga tinggi.`,
+        kategori: '2. Pengendalian Biaya HPP',
+        arahan: `Kunci estimasi biaya operasional di bawah Rp ${hppBatasAman.toLocaleString('id-ID')} / kg dengan memanfaatkan pupuk organik berimbang guna menekan ketergantungan pupuk kimia mahal.`,
       },
       {
-        kategori: 'Waktu Jual & Penyerapan',
-        arahan: `Jual hasil panen secara bertahap atau gunakan fasilitas Pre-Order Kertanusa untuk mengamankan harga kontrak dengan pembeli sebelum terjadi penumpukan stok di pasar lokal.`,
+        kategori: '3. Pemeliharaan Kondisi Tanah',
+        arahan: `Pantau kecukupan air dan sirkulasi aerasi tanah agar tanaman tidak mengalami stres air selama fase pertumbuhan vegetatif.`,
       }
     ];
   } else {
     statusType = 'waspada';
-    statusBadgeText = 'ANJURAN SISTEM: DISARANKAN PENYESUAIAN JADWAL TANAM';
-    keputusanSistem = `Waktu Terbaik: Geser Tanam ke Bulan ${bulanList[optimalPlantMonthIdx]} (Hindari Penumpukan Pasokan Bulan ${bulanList[harvestMonth]})`;
-    kesimpulan = `Evaluasi Siklus Pasar 5 Tahun: Jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, saat masa panen tiba di bulan ${bulanList[harvestMonth]} harga pasar cenderung terkoreksi turun rata-rata ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik) akibat tingginya pasokan panen serentak dari berbagai sentra. Agar modal petani terlindungi dan panen menghasilkan keuntungan optimal, sistem menyarankan untuk menggeser jadwal tanam ke bulan ${bulanList[optimalPlantMonthIdx]} di mana estimasi panen (${bulanList[optimalHarvestMonthIdx]}) bertepatan dengan harga puncak pasar (Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg).`;
+    statusBadgeText = 'Penyesuaian Jadwal Tanam';
+    keputusanSistem = `Disarankan Tunda Tanam Bulan Ini ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`;
+    kesimpulan = `Data historis 5 tahun menunjukkan jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, harga pasar saat panen (${bulanList[harvestMonth]}) cenderung mengalami koreksi turun rata-rata ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik) akibat banjir pasokan panen serentak. Agar modal petani terlindungi, sistem menyarankan menyesuaikan jadwal tanam ke bulan ${bulanList[optimalPlantMonthIdx]} saat pasokan pasar lebih seimbang.`;
     arahanLangkah = [
       {
-        kategori: 'Jadwal Tanam Terbaik (Biar Untung)',
-        arahan: `Tunda tanam di bulan ${bulanList[plantMonth]} ini. Waktu tanam terbaik agar untung maksimal adalah bulan ${bulanList[optimalPlantMonthIdx]} sehingga waktu panen (~${harvestDays} HST) tepat tiba di bulan ${bulanList[optimalHarvestMonthIdx]} saat pasokan pasar sedang langka.`,
+        kategori: '1. Penyesuaian Jadwal Tanam',
+        arahan: `Tunda tanam di bulan ${bulanList[plantMonth]}. Waktu tanam terbaik adalah bulan ${bulanList[optimalPlantMonthIdx]} (~${harvestDays} HST) agar waktu panen tiba di bulan ${bulanList[optimalHarvestMonthIdx]}.`,
       },
       {
-        kategori: 'Waktu & Estimasi Jual Optimal',
-        arahan: `Jual hasil panen pada bulan ${bulanList[optimalHarvestMonthIdx]} di mana harga pasar historis mencapai puncaknya di kisaran Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg (potensi surplus keuntungan +${Math.max(15, optimalDeltaPct)}% dibanding modal tanam).`,
+        kategori: '2. Proyeksi Penjualan Hasil',
+        arahan: `Menanam di bulan ${bulanList[optimalPlantMonthIdx]} membidik estimasi harga puncak panen historis di kisaran Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg (potensi surplus +${Math.max(15, optimalDeltaPct)}%).`,
       },
       {
-        kategori: 'Rekomendasi Bibit Saat Ini',
-        arahan: `Alihkan petak lahan Anda bulan ini ke komoditas unggulan wilayah yang sedang masuk siklus kenaikan harga panen, atau persiapkan pengolahan lahan sebelum musim tanam bulan ${bulanList[optimalPlantMonthIdx]}.`,
+        kategori: '3. Pengelolaan Lahan & Tanah',
+        arahan: `Manfaatkan waktu jeda ini untuk pemulihan pH tanah, pengolahan gulma, dan penyiapan petak lahan, atau alihkan ke komoditas unggulan wilayah yang sedang naik tren panennya.`,
       }
     ];
   }
@@ -995,106 +994,38 @@ export default function MarketDemandPage() {
             </div>
           </div>
 
-          {/* KOTAK SIMPULAN & ARAHAN SISTEM BAGI PETANI (Clean, Natural & Informatif) */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white space-y-5 shadow-xs">
-            {/* Header Badge & Title */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-800 flex items-center justify-center shrink-0">
-                  <Sprout className="w-5 h-5 text-emerald-800" />
-                </div>
-                <div>
-                  <span className="text-[10.5px] font-extrabold tracking-wider uppercase text-emerald-800 block">
-                    {multiYearAnalysis.harvestOutlook.statusBadgeText}
-                  </span>
-                  <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mt-0.5">
-                    {multiYearAnalysis.harvestOutlook.keputusanSistem}
-                  </h4>
-                </div>
-              </div>
-
-              {/* Status Pill Badge Natural */}
-              <div className="shrink-0">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                  multiYearAnalysis.harvestOutlook.statusType === 'aman'
-                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/80'
-                    : multiYearAnalysis.harvestOutlook.statusType === 'stabil'
-                    ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                    : 'bg-emerald-50/70 text-emerald-800 border border-emerald-200/70'
-                }`}>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                  {multiYearAnalysis.harvestOutlook.statusType === 'waspada' 
-                    ? 'Penjadwalan Ulang' 
-                    : multiYearAnalysis.harvestOutlook.statusType === 'aman'
-                    ? 'Siklus Menguntungkan'
-                    : 'Siklus Stabil'}
-                </span>
-              </div>
+          {/* PANDUAN KEPUTUSAN TANAM PETANI (Clean, Ringkas, Berbasis Data Riset) */}
+          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white space-y-4 shadow-xs">
+            {/* Header: Judul Langsung Jelas, Tanpa Icon Hiasan, Tanpa Badge */}
+            <div className="border-b border-slate-100 pb-3">
+              <span className="text-[11px] font-bold tracking-wider uppercase text-slate-500 block">
+                Panduan Budidaya Berdasarkan Riset Pasar & Agroklimat
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1 leading-snug">
+                {multiYearAnalysis.harvestOutlook.keputusanSistem}
+              </h3>
             </div>
 
-            {/* Kartu Ringkasan Informasi Analisis (Seinformatif Mungkin untuk Petani) */}
-            <div className="p-4 sm:p-5 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3.5">
-              <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed font-normal">
-                {multiYearAnalysis.harvestOutlook.kesimpulan}
-              </p>
+            {/* Penjelasan Singkat & Padat Hasil Perhitungan 5 Tahun */}
+            <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed font-normal">
+              {multiYearAnalysis.harvestOutlook.kesimpulan}
+            </p>
 
-              {/* 3 Indikator Ringkas yang Mudah Dibaca Petani */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
-                <div className="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs space-y-0.5">
-                  <span className="text-[10.5px] text-slate-500 font-medium block">Proyeksi Selisih Harga:</span>
-                  <strong className={`text-xs font-bold block ${
-                    multiYearAnalysis.harvestOutlook.deltaPct >= 0 ? 'text-emerald-700' : 'text-slate-800'
-                  }`}>
-                    {multiYearAnalysis.harvestOutlook.deltaPct >= 0 
-                      ? `+${multiYearAnalysis.harvestOutlook.deltaPct}% (Potensi Surplus Laba)` 
-                      : `${multiYearAnalysis.harvestOutlook.deltaPct}% (Risiko Koreksi Harga)`}
+            {/* 3 Arahan Praktis Petani */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+              {multiYearAnalysis.harvestOutlook.arahanLangkah.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5"
+                >
+                  <strong className="text-xs font-bold text-slate-900 block">
+                    {step.kategori}
                   </strong>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {step.arahan}
+                  </p>
                 </div>
-
-                <div className="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs space-y-0.5">
-                  <span className="text-[10.5px] text-slate-500 font-medium block">Konsistensi Pasar (5 Thn):</span>
-                  <strong className="text-xs font-bold text-slate-800 block">
-                    {multiYearAnalysis.harvestOutlook.yearsProfitable} dari 5 tahun harga naik saat panen
-                  </strong>
-                </div>
-
-                <div className="bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs space-y-0.5">
-                  <span className="text-[10.5px] text-slate-500 font-medium block">Bulan Panen Puncak:</span>
-                  <strong className="text-xs font-bold text-emerald-800 block">
-                    Bulan {multiYearAnalysis.harvestOutlook.optimalHarvestMonthName} (Rp {multiYearAnalysis.harvestOutlook.optimalPeakPrice.toLocaleString('id-ID')}/kg)
-                  </strong>
-                </div>
-              </div>
-            </div>
-
-            {/* ARAHAN STRATEGIS HASIL PERHITUNGAN SISTEM UNTUK PETANI */}
-            <div className="pt-1 space-y-2.5">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  3 Arahan Tindakan Nyata Berdasarkan Siklus Pasar:
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {multiYearAnalysis.harvestOutlook.arahanLangkah.map((step, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-xl border border-slate-200/80 bg-white hover:border-slate-300 transition-all space-y-2 shadow-2xs"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-emerald-700 text-white text-[11px] font-bold flex items-center justify-center shrink-0">
-                        {idx + 1}
-                      </span>
-                      <strong className="text-xs font-bold text-slate-900 leading-snug">
-                        {step.kategori}
-                      </strong>
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed pl-8">
-                      {step.arahan}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </div>
