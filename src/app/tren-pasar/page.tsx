@@ -804,7 +804,7 @@ export default function MarketDemandPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-slate-900">{currentDetailItem.komoditas}</h3>
-                <span className="text-xs text-slate-500 font-medium px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-700 text-white">
                   {currentDetailItem.kategori}
                 </span>
               </div>
@@ -1397,7 +1397,7 @@ export default function MarketDemandPage() {
         <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-700 text-white">
                 {currentDetailItem.kategori}
               </span>
               <span className="text-xs text-slate-400 font-medium">Panduan Lengkap Budidaya & Pasar</span>

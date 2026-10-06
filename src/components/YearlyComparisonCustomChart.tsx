@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, TrendingUp, TrendingDown } from 'lucide-react';
 
 export interface YearlyComparisonItem {
   tahun: number;
@@ -161,7 +161,7 @@ export default function YearlyComparisonCustomChart({
             })}
           </div>
 
-          {/* 5 Kolom Tahun (Batang + Badge) */}
+          {/* 5 Kolom Tahun (Batang + Icon Kenaikan/Penurunan) */}
           <div className="absolute inset-0 grid grid-cols-5 gap-1 sm:gap-2.5 z-10 px-0.5 sm:px-1.5">
             {data.map((item) => {
               const isSelected = activeYear === item.tahun;
@@ -187,22 +187,28 @@ export default function YearlyComparisonCustomChart({
                   }`}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                  {/* Mini Percentage Badge above the highest bar */}
+                  {/* Icon Kenaikan / Penurunan + Angka Persentase (Clean & Natural, Tanpa Badge/Pill) */}
                   <div
                     style={{
-                      bottom: `calc(${maxHeight}% + 5px)`,
+                      bottom: `calc(${maxHeight}% + 4px)`,
                     }}
-                    className="absolute left-1/2 -translate-x-1/2 pointer-events-none transition-transform duration-200 group-hover:scale-105 z-10"
+                    className="absolute left-1/2 -translate-x-1/2 pointer-events-none transition-transform duration-200 group-hover:scale-110 z-10 flex items-center justify-center gap-0.5 whitespace-nowrap select-none"
                   >
-                    <span
-                      className={`text-[9px] sm:text-[10.5px] font-bold px-1.5 py-0.5 rounded-full border shadow-2xs whitespace-nowrap ${
-                        item.isProfit
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200/90'
-                          : 'bg-rose-50 text-rose-800 border-rose-200/90'
-                      }`}
-                    >
-                      {item.isProfit ? `+${item.persentase}%` : `${item.persentase}%`}
-                    </span>
+                    {item.isProfit ? (
+                      <>
+                        <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-700 shrink-0 stroke-[2.5]" />
+                        <span className="text-[10px] sm:text-[11.5px] font-bold text-emerald-700 tabular-nums">
+                          +{item.persentase}%
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-600 shrink-0 stroke-[2.5]" />
+                        <span className="text-[10px] sm:text-[11.5px] font-bold text-rose-600 tabular-nums">
+                          {item.persentase}%
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Dua Batang Vertikal: Tanam & Panen */}
@@ -245,16 +251,24 @@ export default function YearlyComparisonCustomChart({
                 <span className="text-slate-900 font-extrabold text-xs sm:text-sm">
                   Tahun {activeItem.tahun}
                 </span>
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      activeItem.isProfit
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-rose-100 text-rose-800'
-                    }`}
-                  >
-                    {activeItem.isProfit ? `+${activeItem.persentase}%` : `${activeItem.persentase}%`}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {activeItem.isProfit ? (
+                      <>
+                        <TrendingUp className="w-3.5 h-3.5 text-emerald-700 stroke-[2.5]" />
+                        <span className="text-xs font-bold text-emerald-700 tabular-nums">
+                          +{activeItem.persentase}%
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="w-3.5 h-3.5 text-rose-600 stroke-[2.5]" />
+                        <span className="text-xs font-bold text-rose-600 tabular-nums">
+                          {activeItem.persentase}%
+                        </span>
+                      </>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={(e) => {
