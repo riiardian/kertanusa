@@ -1081,18 +1081,48 @@ export interface MarketIntelligenceScore {
 
 function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
-  if (lower.includes('apel')) return 130;
-  if (lower.includes('jeruk')) return 240;
-  if (lower.includes('kakao')) return 165;
+  if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke petik buah 110-130 HST)
+  if (lower.includes('apel') || lower.includes('apple')) return 130;
+  if (lower.includes('jeruk') || lower.includes('citrus')) return 240;
+  if (lower.includes('kakao') || lower.includes('cokelat')) return 165;
   if (lower.includes('kopi')) return 210;
   if (lower.includes('kapulaga')) return 120;
+  if (lower.includes('pisang')) return 240;
+  if (lower.includes('vanili')) return 255;
+  if (lower.includes('jahe') || lower.includes('kunyit')) return 255;
   if (lower.includes('padi')) return 115;
-  if (lower.includes('jagung')) return 70;
+  if (lower.includes('jagung')) return 75;
   if (lower.includes('bawang')) return 65;
-  if (lower.includes('cabai')) return 85;
+  if (lower.includes('cabai') || lower.includes('cabe')) return 85;
+  if (lower.includes('tomat')) return 75;
+  if (lower.includes('singkong') || lower.includes('ubi')) return 240;
+
   if (!umurPanenStr) return 90;
-  const match = umurPanenStr.match(/(\d+)/);
-  return match ? Number(match[1]) : 90;
+
+  const hstMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*HST/i) || umurPanenStr.match(/(\d+)\s*HST/i);
+  if (hstMatch) {
+    if (hstMatch[2]) return Math.round((Number(hstMatch[1]) + Number(hstMatch[2])) / 2);
+    return Number(hstMatch[1]);
+  }
+
+  const hariMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Hari/i) || umurPanenStr.match(/(\d+)\s*Hari/i);
+  if (hariMatch) {
+    if (hariMatch[2]) return Math.round((Number(hariMatch[1]) + Number(hariMatch[2])) / 2);
+    return Number(hariMatch[1]);
+  }
+
+  const bulanMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Bulan/i) || umurPanenStr.match(/(\d+)\s*Bulan/i);
+  if (bulanMatch) {
+    if (bulanMatch[2]) return Math.round(((Number(bulanMatch[1]) + Number(bulanMatch[2])) / 2) * 30);
+    return Number(bulanMatch[1]) * 30;
+  }
+
+  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
+  if (tahunMatch) {
+    return 150;
+  }
+
+  return 90;
 }
 
 export function isCommoditySuitableForRegion(commodityName: string, regionName?: string): boolean {
@@ -1100,10 +1130,38 @@ export function isCommoditySuitableForRegion(commodityName: string, regionName?:
   const regLower = regionName.toLowerCase();
   const commLower = commodityName.toLowerCase();
 
-  const isLowlandCoastal = regLower.includes('brebes') || regLower.includes('pantura') || regLower.includes('banyuwangi') || regLower.includes('lombok');
-  const isHighland = regLower.includes('malang') || regLower.includes('batu') || regLower.includes('karo') || regLower.includes('berastagi') || regLower.includes('dieng');
+  const isLowlandCoastal =
+    regLower.includes('brebes') ||
+    regLower.includes('pantura') ||
+    regLower.includes('banyuwangi') ||
+    regLower.includes('lombok') ||
+    regLower.includes('tegal') ||
+    regLower.includes('cirebon') ||
+    regLower.includes('indramayu') ||
+    regLower.includes('demak') ||
+    regLower.includes('grobogan') ||
+    regLower.includes('rembang') ||
+    regLower.includes('tuban') ||
+    regLower.includes('lamongan') ||
+    regLower.includes('karawang') ||
+    regLower.includes('subang') ||
+    regLower.includes('bekasi');
 
-  // Tanaman spesifik dataran tinggi (dingin/sejuk/naungan hutan pegunungan)
+  const isHighland =
+    regLower.includes('malang') ||
+    regLower.includes('batu') ||
+    regLower.includes('karo') ||
+    regLower.includes('berastagi') ||
+    regLower.includes('dieng') ||
+    regLower.includes('wonosobo') ||
+    regLower.includes('lembang') ||
+    regLower.includes('bandung') ||
+    regLower.includes('garut') ||
+    regLower.includes('temanggung') ||
+    regLower.includes('kerinci') ||
+    regLower.includes('toraja');
+
+  // Tanaman spesifik dataran tinggi (dingin/sejuk/naungan hutan pegunungan 700 - 1800 mdpl)
   const highlandOnly = ['apel', 'kentang', 'kubis', 'kopi arabika', 'kapulaga', 'wortel', 'stroberi', 'teh'];
   if (isLowlandCoastal && highlandOnly.some(h => commLower.includes(h))) {
     return false; // Tidak adaptif di dataran rendah pesisir panas
@@ -1277,18 +1335,26 @@ export function getMarketPulse(regionName?: string): {
   const regionalPool = regionName ? all.filter(c => isCommoditySuitableForRegion(c.komoditas, regionName)) : all;
   const pool = regionalPool.length > 0 ? regionalPool : all;
 
-  // Most demanded haruslah yang siklus panennya menguntungkan (bukan jebakan harga jatuh)
-  const profitablePool = pool.filter(c => c.isHarvestProfitable);
+  // 1. Most Demanded HARUS komoditas yang siklus panennya menguntungkan di bulan tanam saat ini
+  // Jangan merekomendasikan komoditas yang harga panennya anjlok (Waspada Siklus Turun)
+  const profitablePool = pool.filter(c => c.isHarvestProfitable && (c.harvestDeltaPct ?? 0) >= 0 && !c.labelRekomendasi.includes('Waspada'));
   const demandCandidatePool = profitablePool.length > 0 ? profitablePool : pool;
   const mostDemanded = [...demandCandidatePool].sort((a, b) => b.skorPermintaan - a.skorPermintaan)[0];
 
-  const fastestRising = [...pool].sort((a, b) => {
+  // 2. Kenaikan Tercepat juga prioritaskan yang hasil panennya menguntungkan
+  const risingProfitablePool = pool.filter(c => c.isHarvestProfitable && c.trenMingguan === 'Naik');
+  const risingPool = risingProfitablePool.length > 0 ? risingProfitablePool : pool;
+  const fastestRising = [...risingPool].sort((a, b) => {
     const scoreA = a.trenMingguan === 'Naik' ? a.persentaseTren : -99;
     const scoreB = b.trenMingguan === 'Naik' ? b.persentaseTren : -99;
     return scoreB - scoreA;
   })[0];
 
-  const mostStable = [...pool].sort((a, b) => b.skorStabilitas - a.skorStabilitas)[0];
+  // 3. Paling Stabil prioritaskan yang siklus panennya stabil/menguntungkan
+  const stableProfitablePool = pool.filter(c => c.isHarvestProfitable);
+  const stablePool = stableProfitablePool.length > 0 ? stableProfitablePool : pool;
+  const mostStable = [...stablePool].sort((a, b) => b.skorStabilitas - a.skorStabilitas)[0];
+
   return { mostDemanded, fastestRising, mostStable };
 }
 

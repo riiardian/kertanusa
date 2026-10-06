@@ -87,15 +87,17 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
 
 function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
+  if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke matang petik 110-130 HST)
   if (lower.includes('apel') || lower.includes('apple')) return 130; // ~4.3 bulan (Siklus bunga ke matang petik 120-140 HST)
   if (lower.includes('jeruk') || lower.includes('citrus')) return 240; // 8 bulan
   if (lower.includes('kakao') || lower.includes('cokelat')) return 165; // 5.5 bulan (150-180 HST)
   if (lower.includes('kopi')) return 210; // 7 bulan (180-240 HST)
   if (lower.includes('kapulaga')) return 120; // 4 bulan (110-130 HST)
+  if (lower.includes('pisang')) return 240; // 8 bulan
   if (lower.includes('vanili')) return 255; // 8.5 bulan
   if (lower.includes('jahe') || lower.includes('kunyit')) return 255; // 8.5 bulan
   if (lower.includes('padi')) return 115; // ~3.8 bulan (105-120 HST)
-  if (lower.includes('jagung')) return 105; // ~3.5 bulan (100-110 HST)
+  if (lower.includes('jagung')) return 75; // ~2.5 bulan (70-80 HST)
   if (lower.includes('cabai') || lower.includes('cabe')) return 85; // ~2.8 bulan (80-90 HST)
   if (lower.includes('bawang')) return 65; // ~2.1 bulan (60-70 HST)
   if (lower.includes('tomat')) return 75; // ~2.5 bulan (70-80 HST)
@@ -182,6 +184,10 @@ function buildMultiYearHistory(
       kategori: string;
       arahan: string;
     }>;
+    optimalPlantMonthName: string;
+    optimalHarvestMonthName: string;
+    optimalPeakPrice: number;
+    optimalDeltaPct: number;
   };
 } {
   const now = new Date();
@@ -307,6 +313,23 @@ function buildMultiYearHistory(
     if (pp >= pt) yearsProfitable++;
   }
 
+  // Menghitung Siklus Terbaik (Bulan Puncak Harga & Waktu Tanam Optimal Biar Untung)
+  let maxPrice = -Infinity;
+  let optimalHarvestMonthIdx = harvestMonth;
+  item.historis_bulanan.forEach((h, idx) => {
+    if (h.harga > maxPrice) {
+      maxPrice = h.harga;
+      optimalHarvestMonthIdx = idx;
+    }
+  });
+
+  // Waktu tanam terbaik dihitung mundur dari bulan panen puncak
+  const optimalPlantMonthIdx = (optimalHarvestMonthIdx - harvestMonthOffset + 12) % 12;
+  const optimalPlantPrice = item.historis_bulanan[optimalPlantMonthIdx]?.harga || item.harga_saat_ini;
+  const optimalPeakPrice = maxPrice;
+  const optimalDelta = optimalPeakPrice - optimalPlantPrice;
+  const optimalDeltaPct = optimalPlantPrice > 0 ? Math.round(((optimalPeakPrice - optimalPlantPrice) / optimalPlantPrice) * 100) : 0;
+
   const isProfit = delta > 0;
   let statusType: 'aman' | 'stabil' | 'waspada' = 'stabil';
   let statusBadgeText = '';
@@ -357,20 +380,20 @@ function buildMultiYearHistory(
   } else {
     statusType = 'waspada';
     statusBadgeText = 'KESIMPULAN SISTEM: WASPADA – RISIKO HARGA ANJLOK SAAT PANEN';
-    keputusanSistem = 'Keputusan: TUNDA SIKLUS / PILIH VARIETAS GENJAH / DIVERSIFIKASI';
-    kesimpulan = `PERINGATAN RISIKO: Meskipun tren jangka pendek terlihat positif, rekaman data 5 tahun menunjukkan bahwa saat panen tiba di bulan ${bulanList[harvestMonth]}, harga rata-rata justru terkoreksi turun ${Math.abs(deltaPct)}% dibanding saat tanam (${bulanList[plantMonth]}). Hal ini dipicu oleh banjir panen raya serentak di sentra produksi lain.`;
+    keputusanSistem = `Keputusan: TUNDA TANAM BULAN INI / GESER KE BULAN ${bulanList[optimalPlantMonthIdx].toUpperCase()}`;
+    kesimpulan = `PERINGATAN RISIKO KERUGIAN: Rekaman data 5 tahun berturut-turut membuktikan bahwa jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, saat panen tiba di bulan ${bulanList[harvestMonth]} harga rata-rata selalu anjlok drastis turun ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik). Hal ini dipicu oleh banjir panen raya serentak dari berbagai sentra produksi. Komoditas ini TIDAK DIREKOMENDASIKAN untuk dibeli bibitnya atau ditanam pada bulan ini.`;
     arahanLangkah = [
       {
-        kategori: 'Penyesuaian Siklus',
-        arahan: `Bila tetap ingin menanam, pilih varietas super genjah agar masa panen maju 2–3 minggu lebih awal mendahului puncak banjir pasokan dari sentra lain.`,
+        kategori: 'Jadwal Tanam Terbaik (Biar Untung)',
+        arahan: `Tunda tanam di bulan ${bulanList[plantMonth]} ini. Waktu tanam terbaik agar untung maksimal adalah bulan ${bulanList[optimalPlantMonthIdx]} sehingga waktu panen (~${harvestDays} HST) tepat tiba di bulan ${bulanList[optimalHarvestMonthIdx]} saat pasokan pasar sedang langka.`,
       },
       {
-        kategori: 'Diversifikasi Lahan',
-        arahan: `Pertimbangkan membagi 40–50% lahan Anda ke tanaman alternatif yang memiliki proyeksi serapan pasar lebih stabil seperti Kapulaga atau Cokelat.`,
+        kategori: 'Waktu & Estimasi Jual Optimal',
+        arahan: `Jual hasil panen pada bulan ${bulanList[optimalHarvestMonthIdx]} di mana harga pasar historis mencapai puncaknya di kisaran Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg (potensi surplus keuntungan +${Math.max(15, optimalDeltaPct)}% dibanding modal tanam).`,
       },
       {
-        kategori: 'Mitigasi Pascapanen',
-        arahan: `Siapkan fasilitas pengeringan atau tempat penyimpanan pascapanen agar Anda tidak terpaksa menjual di titik harga terendah saat panen raya tiba.`,
+        kategori: 'Rekomendasi Bibit Saat Ini',
+        arahan: `Jangan beli atau tanam bibit ${item.komoditas} bulan ini karena berisiko merugi. Alihkan petak lahan Anda ke komoditas unggulan wilayah yang sedang masuk siklus kenaikan harga panen.`,
       }
     ];
   }
@@ -395,6 +418,10 @@ function buildMultiYearHistory(
       risikoFluktuasi,
       keputusanSistem,
       arahanLangkah,
+      optimalPlantMonthName: bulanList[optimalPlantMonthIdx],
+      optimalHarvestMonthName: bulanList[optimalHarvestMonthIdx],
+      optimalPeakPrice,
+      optimalDeltaPct,
     },
   };
 }
@@ -774,26 +801,28 @@ export default function MarketDemandPage() {
               { label: pulse.mostDemanded.komoditas, sub: 'Permintaan Tertinggi' },
               { label: pulse.fastestRising.komoditas, sub: 'Kenaikan Tercepat' },
               { label: pulse.mostStable.komoditas, sub: 'Paling Stabil' },
-            ].map(tab => {
-              const isSelected = currentDetailItem.komoditas.toLowerCase() === tab.label.toLowerCase();
-              return (
-                <button
-                  key={tab.label}
-                  type="button"
-                  onClick={() => setSelectedKomoditas(tab.label)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all whitespace-nowrap border ${
-                    isSelected
-                      ? 'bg-emerald-700 text-white border-emerald-700 font-bold'
-                      : 'bg-white border-slate-200 text-slate-800 hover:border-emerald-600 hover:text-emerald-800 hover:bg-slate-50'
-                  }`}
-                >
-                  <span className="font-bold">{tab.label}</span>
-                  <span className={`text-[11px] ml-1.5 font-medium ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
-                    ({tab.sub})
-                  </span>
-                </button>
-              );
-            })}
+            ]
+              .filter((tab, idx, arr) => arr.findIndex(t => t.label.toLowerCase() === tab.label.toLowerCase()) === idx)
+              .map(tab => {
+                const isSelected = currentDetailItem.komoditas.toLowerCase() === tab.label.toLowerCase();
+                return (
+                  <button
+                    key={tab.label}
+                    type="button"
+                    onClick={() => setSelectedKomoditas(tab.label)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all whitespace-nowrap border ${
+                      isSelected
+                        ? 'bg-emerald-700 text-white border-emerald-700 font-bold'
+                        : 'bg-white border-slate-200 text-slate-800 hover:border-emerald-600 hover:text-emerald-800 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="font-bold">{tab.label}</span>
+                    <span className={`text-[11px] ml-1.5 font-medium ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
+                      ({tab.sub})
+                    </span>
+                  </button>
+                );
+              })}
           </div>
         </div>
 
@@ -1703,14 +1732,73 @@ export default function MarketDemandPage() {
           {/* ─ BAGIAN E: REKOMENDASI BENIH ─ */}
           {detailRec.varietasTerbaik && (
             <div className="border-t border-slate-100 pt-8 space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">
-                Rekomendasi Varietas Bibit / Benih Unggul
-              </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Sprout className="w-4 h-4 text-emerald-700" />
+                    Rekomendasi Varietas Bibit / Benih Unggul
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Spesifikasi varietas terdaftar yang adaptif terhadap agroklimat wilayah {activePetani.daerah || 'setempat'}.
+                  </p>
+                </div>
+
+                {multiYearAnalysis.harvestOutlook.statusType === 'waspada' && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-600 text-white self-start sm:self-auto">
+                    <AlertTriangle className="w-3.5 h-3.5 text-white stroke-[2.2]" />
+                    Tunda Tanam Bulan Ini
+                  </span>
+                )}
+              </div>
+
+              {/* Banner Peringatan jika komoditas WASPADA / Merugi di bulan saat ini */}
+              {multiYearAnalysis.harvestOutlook.statusType === 'waspada' && (
+                <div className="p-4 sm:p-5 rounded-2xl border border-amber-300 bg-amber-50/80 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                      <AlertTriangle className="w-4 h-4 text-white stroke-[2.2]" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs sm:text-sm font-bold text-amber-950">
+                        Peringatan Sistem: Bibit {currentDetailItem.komoditas} Tidak Direkomendasikan Ditanam Bulan {multiYearAnalysis.harvestOutlook.plantMonthName}
+                      </h4>
+                      <p className="text-xs text-amber-900 leading-relaxed">
+                        Data historis 5 tahun memproyeksikan harga saat panen ({multiYearAnalysis.harvestOutlook.harvestMonthName}) terkoreksi turun <strong>{Math.abs(multiYearAnalysis.harvestOutlook.deltaPct)}%</strong>. Untuk menghindari kerugian modal bibit dan pupuk, disarankan <strong>menunda pembelian bibit hingga bulan {multiYearAnalysis.harvestOutlook.optimalPlantMonthName}</strong> agar panen Anda tiba saat harga pasar di puncak (Rp {multiYearAnalysis.harvestOutlook.optimalPeakPrice?.toLocaleString('id-ID')} / kg).
+                      </p>
+                    </div>
+                  </div>
+
+                  {topRecs.length > 0 && topRecs[0].komoditas.toLowerCase() !== currentDetailItem.komoditas.toLowerCase() && (
+                    <div className="pt-2 border-t border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <span className="text-amber-950 font-medium">
+                        Rekomendasi Bibit Alternatif Wilayah {activePetani.daerah || 'Anda'} Bulan Ini: <strong className="text-slate-950">{topRecs[0].komoditas}</strong> (Proyeksi panen untung +{topRecs[0].harvestDeltaPct}%)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedKomoditas(topRecs[0].komoditas);
+                          const el = document.getElementById('analisis-komoditas');
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition-colors cursor-pointer text-xs whitespace-nowrap self-start sm:self-auto"
+                      >
+                        Lihat Bibit {topRecs[0].komoditas} →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
-                  <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 inline-block">
-                    Pilihan Utama
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border inline-block ${
+                    multiYearAnalysis.harvestOutlook.statusType === 'waspada'
+                      ? 'text-amber-800 bg-amber-50 border-amber-200'
+                      : 'text-slate-700 bg-slate-100 border-slate-200'
+                  }`}>
+                    {multiYearAnalysis.harvestOutlook.statusType === 'waspada'
+                      ? `Acuan Siklus Tanam Bulan ${multiYearAnalysis.harvestOutlook.optimalPlantMonthName}`
+                      : 'Pilihan Utama'}
                   </span>
                   <strong className="text-sm font-bold text-slate-900 block">
                     {detailRec.varietasTerbaik.nama_varietas}
