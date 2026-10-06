@@ -344,6 +344,11 @@ export default function IndonesiaMap3D({
               );
 
               layer.on({
+                click: (e: any) => {
+                  if (e?.originalEvent?.target?.blur) {
+                    e.originalEvent.target.blur();
+                  }
+                },
                 mouseover: (e: any) => {
                   const l = e.target;
                   l.setStyle({

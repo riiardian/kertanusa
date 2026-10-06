@@ -276,3 +276,26 @@ svg.recharts-surface,
   box-shadow: none !important;
 }
 
+/* Leaflet Clean Touch & Tap State (Eliminates browser focus bounding box on clicked islands & SVG paths) */
+.leaflet-container,
+.leaflet-container:focus,
+.leaflet-container:focus-visible,
+.leaflet-container *,
+.leaflet-container *:focus,
+.leaflet-container *:focus-visible,
+.leaflet-pane,
+.leaflet-pane:focus,
+.leaflet-pane:focus-visible,
+.leaflet-overlay-pane svg,
+.leaflet-overlay-pane svg *,
+.leaflet-overlay-pane svg path,
+.leaflet-interactive,
+.leaflet-interactive:focus,
+.leaflet-interactive:focus-visible,
+.leaflet-interactive:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+}
+
