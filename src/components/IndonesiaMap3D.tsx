@@ -285,13 +285,22 @@ export default function IndonesiaMap3D({
       const L = (await import('leaflet')).default;
       if (!isMounted || !mapContainerRef.current) return;
 
-      // Center of Indonesia Archipelago (Optimized for Mobile 60fps & Smooth Page Scrolling)
+      // Center of Indonesia Archipelago with Auto Fit Bounds (Sabang to Merauke 100% visible on Mobile & Desktop)
       const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+
+      // Geographic Bounding Box encompassing entire Indonesian Archipelago
+      const indonesiaBounds = L.latLngBounds([
+        [-11.2, 94.8], // Southernmost / Westernmost (Rote/Timor & Sabang)
+        [6.2, 141.2]   // Northernmost / Easternmost (Miangas/Aceh & Merauke)
+      ]);
+
       const map = L.map(mapContainerRef.current, {
-        center: [-2.2, 118.0],
-        zoom: isMobileDevice ? 4.5 : 5,
-        minZoom: 4,
+        center: [-2.5, 118.0],
+        zoom: isMobileDevice ? 3.4 : 4.8,
+        minZoom: 2.8,
         maxZoom: 11,
+        zoomSnap: 0.1,
+        zoomDelta: 0.5,
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
@@ -301,29 +310,32 @@ export default function IndonesiaMap3D({
 
       mapInstanceRef.current = map;
 
-      // Constrain view to Indonesian archipelago bounds to keep view focused
-      const southWest = L.latLng(-12.5, 93.0);
-      const northEast = L.latLng(7.5, 142.5);
-      const bounds = L.latLngBounds(southWest, northEast);
-      map.setMaxBounds(bounds.pad(0.08));
+      // Fit entire archipelago bounds cleanly without cutting off Sabang or Merauke
+      map.fitBounds(indonesiaBounds, {
+        padding: isMobileDevice ? [8, 8] : [24, 24],
+        animate: false
+      });
 
-      // Load and render Islands of Indonesia directly over pure white background (No ocean water)
+      // Keep pan bounds comfortably padded
+      map.setMaxBounds(indonesiaBounds.pad(0.25));
+
+      // Load and render Islands of Indonesia in Rich Dark Green (Hitam-Hijau) over transparent canvas
       try {
         const geoRes = await fetch('/indonesia-islands.json');
         if (geoRes.ok && isMounted) {
           const geoData = await geoRes.json();
           const geoLayer = L.geoJSON(geoData, {
             style: () => ({
-              fillColor: '#e8f5e9', // Soft natural pastoral green (clean & fertile land)
-              fillOpacity: 0.95,
-              color: '#cbd5e1',     // Subtle, crisp boundary outline
+              fillColor: '#064e3b', // Deep rich forest green ("hitam-hijau" kontras & tegas)
+              fillOpacity: 0.92,
+              color: '#047857',     // Crisp defined border outline
               weight: 1,
-              opacity: 0.9
+              opacity: 0.85
             }),
             onEachFeature: (feature: any, layer: any) => {
               const provName = feature.properties?.Propinsi || 'Indonesia';
               layer.bindTooltip(
-                `<div style="font-weight: 600; font-size: 11px; color: #0f172a; text-transform: capitalize;">${provName.toLowerCase()}</div>`,
+                `<div style="font-weight: 700; font-size: 11px; color: #064e3b; text-transform: capitalize;">${provName.toLowerCase()}</div>`,
                 {
                   sticky: true,
                   direction: 'top',
@@ -335,8 +347,8 @@ export default function IndonesiaMap3D({
                 mouseover: (e: any) => {
                   const l = e.target;
                   l.setStyle({
-                    fillColor: '#bbf7d0', // Fresh emerald hover highlight
-                    color: '#059669',     // Emerald outline on hover
+                    fillColor: '#047857', // Brighter emerald highlight on hover
+                    color: '#34d399',
                     weight: 1.5,
                     fillOpacity: 1
                   });
@@ -371,17 +383,32 @@ export default function IndonesiaMap3D({
 
       // Clean Equator Khatulistiwa line (0° Latitude)
       L.polyline([[0, 94], [0, 142]], {
-        color: '#0284c7',
+        color: '#38bdf8',
         weight: 1.2,
         dashArray: '5, 7',
-        opacity: 0.45
+        opacity: 0.6
       }).addTo(map);
 
       setTimeout(() => {
         if (isMounted && mapInstanceRef.current) {
           mapInstanceRef.current.invalidateSize();
+          mapInstanceRef.current.fitBounds(indonesiaBounds, {
+            padding: isMobileDevice ? [8, 8] : [24, 24],
+            animate: false
+          });
         }
       }, 150);
+
+      // Handle window resize dynamically so mobile viewport always fits all islands
+      const handleResize = () => {
+        if (!mapInstanceRef.current) return;
+        const isMob = window.innerWidth < 768;
+        mapInstanceRef.current.fitBounds(indonesiaBounds, {
+          padding: isMob ? [8, 8] : [24, 24],
+          animate: false
+        });
+      };
+      window.addEventListener('resize', handleResize);
 
       setMapReady(true);
     }
@@ -431,13 +458,13 @@ export default function IndonesiaMap3D({
       const dynamicLines = computeDynamicMeshLines(farmers, filterRegion, isRegionJawa);
 
       dynamicLines.forEach(({ points, isBackbone }) => {
-        // Clean Crisp Emerald Telemetry Line across Archipelago (60fps GPU)
+        // Clean Crisp Mint Telemetry Line across Dark Green Islands (High Visibility, 60fps GPU)
         L.polyline(points, {
           className: 'telemetry-network-line',
-          color: isBackbone ? '#059669' : '#10b981',
-          weight: isBackbone ? 1.6 : 1.2,
-          opacity: isBackbone ? 0.75 : 0.5,
-          dashArray: isBackbone ? '6, 6' : '4, 6',
+          color: isBackbone ? '#34d399' : '#6ee7b7',
+          weight: isBackbone ? 1.5 : 1.1,
+          opacity: isBackbone ? 0.85 : 0.65,
+          dashArray: isBackbone ? '5, 5' : '3, 5',
           smoothFactor: 1.5
         }).addTo(linesGroup);
       });
@@ -463,23 +490,36 @@ export default function IndonesiaMap3D({
 
       // Compute optimized coordinates to prevent overlap if farmers are in close proximity
       const dispersedList = computeDispersedFarmers(filtered);
+      const isMob = typeof window !== 'undefined' && window.innerWidth < 768;
+
+      // Responsive Pin Dimensions: Compact on Mobile so islands remain clearly visible!
+      const containerW = isMob ? 18 : 26;
+      const containerH = isMob ? 24 : 36;
+      const shadowW = isMob ? 8 : 12;
+      const shadowH = isMob ? 2.5 : 4;
+      const shadowMarginL = isMob ? -4 : -6;
+      const pinW = isMob ? 14 : 22;
+      const pinH = isMob ? 18 : 28;
+      const pinMarginL = isMob ? -7 : -11;
+      const anchorX = isMob ? 9 : 13;
+      const anchorY = isMob ? 22 : 33;
 
       dispersedList.forEach((item, idx) => {
         const f = item.farmer;
         const isHighlight = highlightFarmerId === f.id || selectedFarmer?.id === f.id;
         const delay = ((idx * 0.22) % 1.5).toFixed(2);
 
-        // Compact Animated Google-Style Red Pin (Width 22px, Height 28px)
+        // Animated Google-Style Red Pin (Scaled Down for Mobile)
         const iconHtml = `
-          <div style="position: relative; width: 26px; height: 36px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer;">
+          <div style="position: relative; width: ${containerW}px; height: ${containerH}px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer;">
             <!-- Ground Shadow (Clean & Fast) -->
             <div style="
               position: absolute;
               bottom: 2px;
               left: 50%;
-              width: 12px;
-              height: 4px;
-              margin-left: -6px;
+              width: ${shadowW}px;
+              height: ${shadowH}px;
+              margin-left: ${shadowMarginL}px;
               border-radius: 50%;
               background: rgba(0, 0, 0, 0.4);
               animation: pinShadowPulse 2s ease-in-out infinite;
@@ -490,18 +530,18 @@ export default function IndonesiaMap3D({
             <!-- Compact Animated Bouncing Pin (Hardware-Accelerated) -->
             <div style="
               position: absolute;
-              bottom: 4px;
+              bottom: 3px;
               left: 50%;
-              width: 22px;
-              height: 28px;
-              margin-left: -11px;
+              width: ${pinW}px;
+              height: ${pinH}px;
+              margin-left: ${pinMarginL}px;
               animation: pinBob 2s ease-in-out infinite;
               animation-delay: ${delay}s;
               transform-origin: bottom center;
               will-change: transform;
             ">
-              <svg width="22" height="28" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="
-                transform: ${isHighlight ? 'scale(1.2)' : 'scale(1)'};
+              <svg width="${pinW}" height="${pinH}" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="
+                transform: ${isHighlight ? 'scale(1.25)' : 'scale(1)'};
                 transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
               ">
                 <!-- Red Pin Body (Google Red #EA4335) -->
@@ -516,9 +556,9 @@ export default function IndonesiaMap3D({
         const customIcon = L.divIcon({
           html: iconHtml,
           className: 'farmer-marker-beacon',
-          iconSize: [26, 36],
-          iconAnchor: [13, 33],
-          popupAnchor: [0, -33]
+          iconSize: [containerW, containerH],
+          iconAnchor: [anchorX, anchorY],
+          popupAnchor: [0, -anchorY]
         });
 
         const marker = L.marker([item.renderLat, item.renderLon], { icon: customIcon });
@@ -610,11 +650,11 @@ export default function IndonesiaMap3D({
           if (isMobile) {
             // Mobile: Close popup, fly camera slightly south so pin is nicely visible in top-half of map above bottom card
             mapInstanceRef.current?.closePopup();
-            mapInstanceRef.current?.flyTo([item.renderLat - 0.2, item.renderLon], 6.5, { duration: 1.2 });
+            mapInstanceRef.current?.flyTo([item.renderLat - 0.2, item.renderLon], 5.8, { duration: 1.2 });
           } else {
             // Desktop: Open side popup and fly camera centered with right offset
             marker.openPopup();
-            mapInstanceRef.current?.flyTo([item.renderLat, item.renderLon + 0.35], 7, { duration: 1.2 });
+            mapInstanceRef.current?.flyTo([item.renderLat, item.renderLon + 0.35], 6.8, { duration: 1.2 });
           }
         });
 
@@ -632,12 +672,21 @@ export default function IndonesiaMap3D({
     setFilterRegion(region);
     if (!mapInstanceRef.current) return;
 
+    const isMob = typeof window !== 'undefined' && window.innerWidth < 768;
+    const indonesiaBounds = [
+      [-11.2, 94.8],
+      [6.2, 141.2]
+    ];
+
     if (region === 'jawa') {
-      mapInstanceRef.current.flyTo([-7.3, 110.0], 6.5, { duration: 1.2 });
+      mapInstanceRef.current.flyTo([-7.4, 110.2], isMob ? 5.5 : 6.6, { duration: 1.2 });
     } else if (region === 'luar-jawa') {
-      mapInstanceRef.current.flyTo([-0.5, 117.0], 5, { duration: 1.2 });
+      mapInstanceRef.current.flyTo([-0.8, 118.0], isMob ? 3.4 : 4.8, { duration: 1.2 });
     } else {
-      mapInstanceRef.current.flyTo([-2.2, 118.0], 5, { duration: 1.2 });
+      mapInstanceRef.current.fitBounds(indonesiaBounds, {
+        padding: isMob ? [8, 8] : [24, 24],
+        duration: 1.2
+      });
     }
   }
 
@@ -648,7 +697,7 @@ export default function IndonesiaMap3D({
     <div className="w-full space-y-2 text-slate-800">
       
       {/* Seamless Vector Map Area (Transparent Canvas, Blends Directly with Bone-White Background) */}
-      <div className="w-full relative rounded-2xl overflow-hidden h-[390px] sm:h-[480px] md:h-[580px] bg-transparent" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+      <div className="w-full relative rounded-2xl overflow-hidden h-[330px] sm:h-[440px] md:h-[540px] bg-transparent" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         <div ref={mapContainerRef} className="w-full h-full z-0 bg-transparent" style={{ background: 'transparent' }}></div>
 
         {/* Island Filter Tabs (Clean Floating Top-Left on Map) */}
@@ -706,7 +755,15 @@ export default function IndonesiaMap3D({
               setSelectedFarmer(null);
               if (mapInstanceRef.current) {
                 mapInstanceRef.current.closePopup();
-                mapInstanceRef.current.flyTo([-2.2, 118.0], 5, { duration: 1.2 });
+                const isMob = typeof window !== 'undefined' && window.innerWidth < 768;
+                const indonesiaBounds = [
+                  [-11.2, 94.8],
+                  [6.2, 141.2]
+                ];
+                mapInstanceRef.current.fitBounds(indonesiaBounds, {
+                  padding: isMob ? [8, 8] : [24, 24],
+                  duration: 1.2
+                });
               }
             }}
             className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/95 hover:bg-white text-emerald-600 border border-slate-200 flex items-center justify-center shadow-sm transition-colors cursor-pointer"
