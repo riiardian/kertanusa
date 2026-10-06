@@ -28,17 +28,13 @@ import {
 } from 'recharts';
 import YearlyComparisonCustomChart from '@/components/YearlyComparisonCustomChart';
 import {
-  TrendingUp,
   Search,
   CheckCircle2,
-  ShieldCheck,
   Sprout,
   X,
   ChevronRight,
-  ArrowUpRight,
   BarChart2,
   Activity,
-  Target,
   AlertTriangle,
   CheckCircle,
 } from 'lucide-react';
@@ -630,18 +626,6 @@ export default function MarketDemandPage() {
 
   const pulse = useMemo(() => getMarketPulse(activePetani?.daerah), [activePetani?.daerah]);
 
-  const pulseSparklines = useMemo(() => {
-    const makeSpark = (name: string) => {
-      const comm = getUniversalCommodityData(name);
-      return comm.historis_bulanan.map(h => ({ b: h.bulan, p: h.harga }));
-    };
-    return {
-      mostDemanded: makeSpark(pulse.mostDemanded.komoditas),
-      fastestRising: makeSpark(pulse.fastestRising.komoditas),
-      mostStable: makeSpark(pulse.mostStable.komoditas),
-    };
-  }, [pulse]);
-
   const topRecs = useMemo(() => getTopRecommendations(calcLuas, 3, activePetani?.daerah), [calcLuas, activePetani?.daerah]);
 
   const filteredCommodities = useMemo(() => {
@@ -1087,229 +1071,9 @@ export default function MarketDemandPage() {
           </div>
         </div>
 
-        {/* 3 KARTU SINYAL PASAR ESENSIAL DENGAN MINI SPARKLINE */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Sinyal 1: Permintaan Tertinggi */}
-          <div
-            onClick={() => setSelectedKomoditas(pulse.mostDemanded.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                <TrendingUp className="w-4 h-4 text-slate-600" />
-                Permintaan Pasar Tertinggi
-              </span>
-              <span className="text-[10px] text-slate-400 group-hover:text-slate-700 transition-colors">
-                Klik Analisis →
-              </span>
-            </div>
-
-            <div>
-              <h3 className="text-base font-bold text-slate-900 leading-tight">{pulse.mostDemanded.komoditas}</h3>
-              <span className="text-xs text-slate-400 font-medium">{pulse.mostDemanded.kategori}</span>
-            </div>
-
-            {/* Mini Sparkline Chart */}
-            <div className="h-10 w-full pt-1">
-              <ResponsiveContainer width="100%" height={38}>
-                <AreaChart data={pulseSparklines.mostDemanded} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
-                  <Area type="monotone" dataKey="p" stroke="#1e293b" fill="#f1f5f9" strokeWidth={1.5} dot={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-              <span className="text-slate-500">Indeks Serapan:</span>
-              <span className="font-bold text-slate-900">{pulse.mostDemanded.skorPermintaan} / 100</span>
-            </div>
-          </div>
-
-          {/* Sinyal 2: Kenaikan Tercepat */}
-          <div
-            onClick={() => setSelectedKomoditas(pulse.fastestRising.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                <ArrowUpRight className="w-4 h-4 text-slate-600" />
-                Kenaikan Harga Tercepat
-              </span>
-              <span className="text-[10px] text-slate-400 group-hover:text-slate-700 transition-colors">
-                Klik Analisis →
-              </span>
-            </div>
-
-            <div>
-              <h3 className="text-base font-bold text-slate-900 leading-tight">{pulse.fastestRising.komoditas}</h3>
-              <span className="text-xs text-slate-400 font-medium">Rp {pulse.fastestRising.hargaSaatIni.toLocaleString('id-ID')} / kg</span>
-            </div>
-
-            {/* Mini Sparkline Chart */}
-            <div className="h-10 w-full pt-1">
-              <ResponsiveContainer width="100%" height={38}>
-                <AreaChart data={pulseSparklines.fastestRising} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
-                  <Area type="monotone" dataKey="p" stroke="#1e293b" fill="#f1f5f9" strokeWidth={1.5} dot={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-              <span className="text-slate-500">Lonjakan Mingguan:</span>
-              <span className="font-bold text-slate-900">+{pulse.fastestRising.persentaseTren}%</span>
-            </div>
-          </div>
-
-          {/* Sinyal 3: Paling Stabil */}
-          <div
-            onClick={() => setSelectedKomoditas(pulse.mostStable.komoditas)}
-            className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 hover:border-slate-400 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-slate-600" />
-                Stabilitas Pasar & Risiko Rendah
-              </span>
-              <span className="text-[10px] text-slate-400 group-hover:text-slate-700 transition-colors">
-                Klik Analisis →
-              </span>
-            </div>
-
-            <div>
-              <h3 className="text-base font-bold text-slate-900 leading-tight">{pulse.mostStable.komoditas}</h3>
-              <span className="text-xs text-slate-400 font-medium">Tahan gejolak harga musiman</span>
-            </div>
-
-            {/* Mini Sparkline Chart */}
-            <div className="h-10 w-full pt-1">
-              <ResponsiveContainer width="100%" height={38}>
-                <AreaChart data={pulseSparklines.mostStable} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
-                  <Area type="monotone" dataKey="p" stroke="#1e293b" fill="#f1f5f9" strokeWidth={1.5} dot={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
-              <span className="text-slate-500">Skor Stabilitas:</span>
-              <span className="font-bold text-slate-900">{pulse.mostStable.skorStabilitas} / 100</span>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* ── 3. REKOMENDASI TERARAH ── */}
-      <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-slate-500" />
-            <div>
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Rekomendasi Tanaman untuk Lahan Anda
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Analisis kesesuaian agroklimat wilayah <strong className="text-slate-700">{activePetani.daerah}</strong> — luas <strong className="text-slate-700">{calcLuas.toLocaleString('id-ID')} m²</strong>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-1.5">
-            {isUserLahan && userLuasM2 > 0 && ![1000, 5000, 10000].includes(userLuasM2) && (
-              <button
-                type="button"
-                onClick={() => setCalcLuas(userLuasM2)}
-                className="px-2.5 py-1 rounded-md bg-slate-900 text-white text-xs font-semibold cursor-pointer hover:bg-slate-700 transition-colors"
-              >
-                Lahan Saya ({userLuasM2.toLocaleString('id-ID')} m²)
-              </button>
-            )}
-            {[1000, 5000, 10000].map(v => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => setCalcLuas(v)}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer transition-colors ${
-                  calcLuas === v
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                {v >= 10000 ? '1 Ha' : `${(v / 1000).toFixed(0)}k m²`}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {topRecs.map((rec, idx) => {
-            const isSelected = currentDetailItem.komoditas.toLowerCase() === rec.komoditas.toLowerCase();
-            return (
-              <div
-                key={rec.komoditas}
-                className={`bg-white border rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all ${
-                  isSelected ? 'border-slate-900 ring-1 ring-slate-200' : 'border-slate-200/90 hover:border-slate-300'
-                }`}
-              >
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Pilihan #{idx + 1}</span>
-                      <h3 className="text-base font-bold text-slate-900 mt-0.5">{rec.komoditas}</h3>
-                      <span className="text-xs text-slate-500 font-medium">{rec.kategori}</span>
-                    </div>
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg text-slate-700 bg-slate-100 border border-slate-200">
-                      {rec.labelRekomendasi}
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    {rec.alasanSingkat}
-                  </p>
-
-                  {/* Mini chart - bar indeks permintaan */}
-                  <div className="space-y-2 pt-1">
-                    <div className="flex justify-between items-center text-[11px]">
-                      <span className="text-slate-500">Skor Total Pasar</span>
-                      <span className="font-bold text-slate-900">{rec.skorTotal}/100</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-1.5">
-                      <div
-                        className="h-1.5 rounded-full bg-slate-800 transition-all"
-                        style={{ width: `${rec.skorTotal}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px]">
-                    <div>
-                      <span className="text-slate-500 block">Harga Pasar</span>
-                      <strong className="text-slate-900 font-semibold">Rp {rec.hargaSaatIni.toLocaleString('id-ID')}/kg</strong>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">ROI Estimasi</span>
-                      <strong className="text-slate-900 font-semibold">{rec.roi}%</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedKomoditas(rec.komoditas);
-                    setSearchQuery(rec.komoditas);
-                    const el = document.getElementById('analisis-komoditas');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full py-2 px-3 rounded-lg text-xs font-semibold text-center border border-slate-200 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <span>Lihat Analisis Lengkap</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── 4. DIREKTORI & PENCARIAN ── */}
+      {/* ── 3. DIREKTORI & PENCARIAN ── */}
       <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden">
 
         <div className="p-5 sm:p-6 space-y-4">
