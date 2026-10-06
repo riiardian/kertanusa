@@ -1,9 +1,9 @@
 @import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
-/* Clean Natural Vector Map Theme: Pure White Canvas (Islands float seamlessly on white background) */
+/* Clean Natural Vector Map Theme: Transparent Canvas (Islands blend seamlessly with page's bone-white background) */
 .leaflet-container {
-  background: #ffffff !important;
+  background: transparent !important;
 }
 
 /* Island Province Tooltip */

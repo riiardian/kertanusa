@@ -647,9 +647,9 @@ export default function IndonesiaMap3D({
   return (
     <div className="w-full space-y-2 text-slate-800">
       
-      {/* Islands-Only Vector Map Area (Pure White Canvas, No Ocean Water) */}
-      <div className="w-full relative rounded-2xl overflow-hidden border border-slate-200/60 shadow-xs h-[390px] sm:h-[480px] md:h-[580px] bg-white" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
-        <div ref={mapContainerRef} className="w-full h-full z-0 rounded-xl bg-white" style={{ background: '#ffffff' }}></div>
+      {/* Seamless Vector Map Area (Transparent Canvas, Blends Directly with Bone-White Background) */}
+      <div className="w-full relative rounded-2xl overflow-hidden h-[390px] sm:h-[480px] md:h-[580px] bg-transparent" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+        <div ref={mapContainerRef} className="w-full h-full z-0 bg-transparent" style={{ background: 'transparent' }}></div>
 
         {/* Island Filter Tabs (Clean Floating Top-Left on Map) */}
         <div className="absolute left-2.5 top-2.5 z-20 flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-sm text-[10px] sm:text-[11px]">
