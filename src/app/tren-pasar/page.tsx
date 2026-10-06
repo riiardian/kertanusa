@@ -571,6 +571,16 @@ export default function MarketDemandPage() {
   const [chartViewMode, setChartViewMode] = useState<'yearly' | 'monthly'>('yearly');
   const [calcLuas, setCalcLuas] = useState<number>(10000);
   const [daysPassed, setDaysPassed] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     async function initActiveFarmer() {
@@ -887,26 +897,33 @@ export default function MarketDemandPage() {
             </div>
 
             {/* Chart Area - Clean & Natural */}
-            <div className="border border-slate-200 rounded-2xl bg-white p-4 sm:p-5 space-y-3">
+            <div className="border border-slate-200 rounded-2xl bg-white p-3 sm:p-5 space-y-3">
               <div className="h-[250px] sm:h-[280px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={multiYearAnalysis.yearlyComparison}
-                    margin={{ top: 20, right: 10, left: -5, bottom: 0 }}
-                    barGap={6}
+                    margin={
+                      isMobile
+                        ? { top: 16, right: 6, left: -14, bottom: 0 }
+                        : { top: 20, right: 12, left: -6, bottom: 0 }
+                    }
+                    barCategoryGap={isMobile ? '32%' : '26%'}
+                    barGap={isMobile ? 2 : 4}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                     <XAxis
                       dataKey="tahun"
-                      tick={{ fontSize: 12, fill: '#334155', fontWeight: 700 }}
+                      tick={{ fontSize: isMobile ? 11 : 12, fill: '#334155', fontWeight: 700 }}
                       axisLine={{ stroke: '#cbd5e1' }}
                       tickLine={false}
+                      dy={4}
                     />
                     <YAxis
+                      width={isMobile ? 42 : 48}
                       tick={{ fontSize: 10, fill: '#94a3b8' }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={v => `Rp ${(v / 1000).toFixed(0)}k`}
+                      tickFormatter={v => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
                     />
                     <Tooltip
                       content={
@@ -920,15 +937,15 @@ export default function MarketDemandPage() {
                       dataKey="hargaTanam"
                       name={`Harga Saat Tanam (${multiYearAnalysis.harvestOutlook.plantMonthName})`}
                       fill="#64748b"
-                      radius={[6, 6, 0, 0]}
-                      maxBarSize={40}
+                      radius={isMobile ? [3, 3, 0, 0] : [5, 5, 0, 0]}
+                      maxBarSize={isMobile ? 14 : 26}
                     />
                     <Bar
                       dataKey="hargaPanen"
                       name={`Harga Saat Panen (${multiYearAnalysis.harvestOutlook.harvestMonthName})`}
                       fill="#047857"
-                      radius={[6, 6, 0, 0]}
-                      maxBarSize={40}
+                      radius={isMobile ? [3, 3, 0, 0] : [5, 5, 0, 0]}
+                      maxBarSize={isMobile ? 14 : 26}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -1521,9 +1538,14 @@ export default function MarketDemandPage() {
               </div>
             </div>
 
-            <div className="border border-slate-100 rounded-xl bg-slate-50/30 p-4">
+            <div className="border border-slate-100 rounded-xl bg-slate-50/30 p-3 sm:p-4">
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={monthlyChartData} barSize={28} margin={{ top: 8, right: 4, left: -10, bottom: 0 }}>
+                <BarChart
+                  data={monthlyChartData}
+                  maxBarSize={isMobile ? 14 : 26}
+                  barCategoryGap={isMobile ? '16%' : '12%'}
+                  margin={{ top: 8, right: 4, left: isMobile ? -14 : -10, bottom: 0 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis
                     dataKey="bulan"
@@ -1532,10 +1554,11 @@ export default function MarketDemandPage() {
                     tickLine={false}
                   />
                   <YAxis
+                    width={isMobile ? 38 : 44}
                     tick={{ fontSize: 10, fill: '#94a3b8' }}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={v => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar
