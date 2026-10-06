@@ -534,6 +534,25 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
 
   // ==================== BUAH-BUAHAN ====================
   {
+    komoditas: 'Apel (Manalagi / Rome Beauty)',
+    kategori: 'Buah-Buahan',
+    icon: '',
+    harga_saat_ini: 32000,
+    tren_mingguan: 'Naik',
+    persentase_tren: 5.2,
+    musim_puncak: 'Liburan Sekolah, Hari Raya & Musim Wisata Petik Apel (Juni-Juli & Des)',
+    bulan_harga_tertinggi: ['Juni', 'Juli', 'Desember', 'Januari'],
+    alasan_permintaan: 'Apel khas dataran tinggi nusantara (Manalagi manis harum dan Rome Beauty renyah) memiliki pasar wisata kuliner, industri olahan sari apel/keripik, dan ritel premium yang sangat tinggi.',
+    rekomendasi_waktu_tanam: 'Lakukan perompesan daun pada awal Maret untuk panen raya liburan Juli, atau rompes bulan Agustus untuk panen akhir tahun Desember.',
+    historis_bulanan: make12MonthCurve(32000, [6, 7, 12, 1], 0.22),
+    karakteristik_tanah: 'Tanah andosol vulkanis pegunungan, gembur berpasir kaya bahan organik, drainase lancar, ketinggian 700 - 1.200 mdpl',
+    ph_ideal: 'pH 5.5 - 6.5',
+    umur_panen: '120 - 135 Hari (Siklus bunga ke matang petik)',
+    potensi_hasil_per_ha: '18 - 28 Ton Buah Segar per tahun',
+    estimasi_biaya_per_ha: 38000000,
+    tips_agronomis: 'Terapkan perompesan daun serentak (defoliasi buatan) pasca pemangkasan tajuk, penjarangan pentil 1-2 buah per dompolan, dan pembungkusan buah untuk mencegah sengatan lalat buah.'
+  },
+  {
     komoditas: 'Jeruk (Siam / Keprok)',
     kategori: 'Buah-Buahan',
     icon: '',

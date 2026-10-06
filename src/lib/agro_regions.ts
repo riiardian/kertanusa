@@ -25,7 +25,7 @@ export const REGIONS: RegionProfile[] = [
     suhu_rata_rata: 22.4,
     kelembapan_tanah_default: 72,
     curah_hujan_tahunan: '2.400 - 2.900 mm/tahun',
-    komoditas_unggulan: ['Tomat', 'Cabai Rawit Merah', 'Sayuran Daun', 'Jagung Manis']
+    komoditas_unggulan: ['Apel (Manalagi / Rome Beauty)', 'Tomat', 'Cabai Rawit Merah', 'Sayuran Daun', 'Jagung Manis']
   },
   {
     id: 'cianjur',

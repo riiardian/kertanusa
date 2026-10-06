@@ -247,6 +247,129 @@ function getCropStages(cropName: string): CropGrowthStage[] {
     ];
   }
 
+  // Apel (Manalagi / Rome Beauty / Anna)
+  if (c.includes('apel') || c.includes('apple')) {
+    return [
+      {
+        title: 'Pemangkasan Tajuk & Perompesan Daun (Dormansi Buatan)',
+        hstRange: 'Hari 1 – 15',
+        minHst: 1,
+        maxHst: 15,
+        warning: 'Lakukan pemangkasan tunas air liar dan perontokan daun tua serentak (defoliasi). Ini memutus fase vegetatif pohon apel untuk merangsang keluarnya tunas bunga serentak. Kurangi air penyiraman.'
+      },
+      {
+        title: 'Muncul Tunas Bunga & Anthesis Mekar',
+        hstRange: 'Hari 16 – 40',
+        minHst: 16,
+        maxHst: 40,
+        warning: 'Bunga apel putih kemerahan mekar lebat. Jaga kelembapan tanah sedang dengan sistem drip piringan tajuk luar. Semprot nutrisi Kalsium-Boron untuk mencegah kerontokan bunga. Jangan semprot pestisida kimia keras saat lebah penyerbuk aktif.'
+      },
+      {
+        title: 'Pentil Buah & Penjarangan (Fruit Thinning)',
+        hstRange: 'Hari 41 – 70',
+        minHst: 41,
+        maxHst: 70,
+        warning: 'Pentil buah terbentuk sebesar kelereng. Lakukan penjarangan buah: sisakan 1–2 pentil terbaik per dompolan agar buah mencapai ukuran Grade A. Berikan pupuk NPK 16-16-16 + Kalsium Nitrat untuk kekuatan sel buah.'
+      },
+      {
+        title: 'Pembesaran Buah & Pembungkusan (Fruit Bagging)',
+        hstRange: 'Hari 71 – 110',
+        minHst: 71,
+        maxHst: 110,
+        warning: 'Buah apel membesar cepat. Bungkus buah dengan kertas khusus untuk mencegah sengatan lalat buah (Bactrocera) dan bercak jamur Marssonina. Aplikasikan pupuk tinggi Kalium (KNO3 Putih / MKP).'
+      },
+      {
+        title: 'Pematangan Warna & Panen Petik',
+        hstRange: 'Hari 111+',
+        minHst: 111,
+        maxHst: 999,
+        warning: 'Warna buah hijau kekuningan (Manalagi) atau semburat merah cerah (Rome Beauty) merata dengan aroma harum khas. Hentikan penyiraman intensif 7 hari sebelum petik agar kadar gula brix dan kerenyahan apel maksimal. Petik dengan tangkai utuh di pagi hari.'
+      }
+    ];
+  }
+
+  // Jeruk (Siam / Keprok / Lemon)
+  if (c.includes('jeruk') || c.includes('citrus') || c.includes('lemon')) {
+    return [
+      {
+        title: 'Pemangkasan Pemeliharaan & Flush Tunas Baru',
+        hstRange: 'HST 1 – 25',
+        minHst: 1,
+        maxHst: 25,
+        warning: 'Pangkas cabang air liar dan ranting kering di dalam kanopi. Tabur pupuk kandang matang dan NPK berimbang di lingkar tajuk luar untuk merangsang tunas daun baru (flushing serempak).'
+      },
+      {
+        title: 'Inisiasi Bunga & Anthesis Mekar',
+        hstRange: 'HST 26 – 55',
+        minHst: 26,
+        maxHst: 55,
+        warning: 'Bunga putih beraroma wangi mekar di ujung ranting. Ini masa paling peka stres air. Siram stabil di parit lingkar luar dan semprot pupuk mikro Boron + ZPT pembungaan.'
+      },
+      {
+        title: 'Pentil Buah & Seleksi Gugur Fisiologis',
+        hstRange: 'HST 56 – 100',
+        minHst: 56,
+        maxHst: 100,
+        warning: 'Terbentuk pentil buah jeruk. Tanaman melakukan gugur buah alami pertama. Berikan Kalsium Nitrat dan Kalium untuk memperkuat tangkai buah dan mencegah kulit buah pecah (fruit cracking).'
+      },
+      {
+        title: 'Pembesaran Buah & Pengisian Bulir Sari',
+        hstRange: 'HST 101 – 170',
+        minHst: 101,
+        maxHst: 170,
+        warning: 'Bulir sari buah jeruk sedang terisi cairan sari manis kaya vitamin C. Aplikasikan pupuk Kalium Sulfat (ZK / KNO3 Putih) dan pasang perangkap feromon lalat buah.'
+      },
+      {
+        title: 'Pematangan Kulit & Panen Petik',
+        hstRange: 'HST 171+',
+        minHst: 171,
+        maxHst: 999,
+        warning: 'Kulit buah mulai melunak kenyal dan bersemu kuning cerah. Potong tangkai buah menggunakan gunting pangkas pada pagi hari saat embun kering untuk menjaga daya simpan.'
+      }
+    ];
+  }
+
+  // Kentang (Dataran Tinggi)
+  if (c.includes('kentang') || c.includes('potato')) {
+    return [
+      {
+        title: 'Pertunasan Umbi Bibit & Tumbuh Akar',
+        hstRange: 'HST 1 – 20',
+        minHst: 1,
+        maxHst: 20,
+        warning: 'Tunas bibit mulai menyembul dari tanah guludan. Jaga kelembapan tanah andosol tetap gembur dan pasang mulsa jika di lahan terbuka.'
+      },
+      {
+        title: 'Pertumbuhan Daun & Pembumbunan I',
+        hstRange: 'HST 21 – 40',
+        minHst: 21,
+        maxHst: 40,
+        warning: 'Tajuk tanaman rimbun hijau. Lakukan pembumbunan tanah guludan pertama dan berikan pupuk susulan NPK agar stolon terbentuk banyak.'
+      },
+      {
+        title: 'Inisiasi Pembentukan Umbi (Tuberization)',
+        hstRange: 'HST 41 – 60',
+        minHst: 41,
+        maxHst: 60,
+        warning: 'Ujung stolon membengkak menjadi calon umbi kentang. Kebutuhan air meningkat stabil. Waspadai embun bulu dan busuk daun Phytophthora infestans saat cuaca lembap kabut.'
+      },
+      {
+        title: 'Pembesaran Umbi & Pengisian Pati',
+        hstRange: 'HST 61 – 85',
+        minHst: 61,
+        maxHst: 85,
+        warning: 'Umbi kentang membesar pesat di dalam tanah. Lakukan pembumbunan kedua agar umbi tidak terpapar sinar matahari (mencegah racun solanin/kulit menghijau). Berikan pupuk Kalium tinggi.'
+      },
+      {
+        title: 'Pengerasan Kulit Umbi & Panen Gali',
+        hstRange: 'HST 86+',
+        minHst: 86,
+        maxHst: 999,
+        warning: 'Daun dan batang mulai menguning rebah alami. Potong tajuk atas (dehaulming) 7–10 hari sebelum panen gali agar kulit umbi tebal, kuat, dan tidak lecet saat digali.'
+      }
+    ];
+  }
+
   // Tanaman Umum Lainnya
   return [
     {
@@ -285,6 +408,312 @@ function getCropStages(cropName: string): CropGrowthStage[] {
       warning: 'Tanaman telah memasuki fase masak fisiologis penuh dan siap dipanen untuk mendapatkan kualitas hasil terbaik.'
     }
   ];
+}
+
+interface CropCareGuide {
+  komoditasClean: string;
+  category: 'Buah' | 'Sayuran & Bumbu' | 'Tanaman Pangan' | 'Umum';
+  siramDesc: string;
+  pupukDesc: string;
+  pupukNamaKhusus: string;
+  userLuasLabel: string;
+  npkKg: number;
+  komposKg: number;
+  khususKg: number;
+  pestWarning: string;
+  tipsFase: string;
+}
+
+function getCropCareGuide(cropName: string, luasTanah: number, satuanLuas: string, weather: WeatherData | null, hst: number): CropCareGuide {
+  const c = (cropName || '').toLowerCase();
+  const luasM2 = satuanLuas === 'hektar' ? Number(luasTanah) * 10000 : Number(luasTanah) || 1000;
+  const areaHa = luasM2 / 10000;
+  const userLuasLabel = `${luasTanah || 1000} ${satuanLuas || 'm²'}`;
+
+  const isDry = (weather?.kelembapan_tanah ?? 55) < 50;
+  const isWet = (weather?.kelembapan_tanah ?? 55) > 80;
+
+  // 1. APEL
+  if (c.includes('apel') || c.includes('apple')) {
+    const isVegetatif = hst <= 40;
+    const isBungaPentil = hst > 40 && hst <= 70;
+
+    const siramDesc = isWet
+      ? 'Tanah kebun apel terlalu basah dan tergenang. Buka saluran parit drainase agar lingkar tajuk tidak becek, untuk mencegah pembusukan leher akar dan jamur upas.'
+      : isDry
+      ? 'Tanah kebun apel kering. Siram pada area piringan lingkar tajuk luar perakaran apel seluas ' + userLuasLabel + '. Hindari menyemprot batang utama langsung.'
+      : 'Kelembapan tanah kebun apel sangat ideal (gembur berpori). Perakaran aktif menyerap nutrisi hara tanpa risiko stres genangan air.';
+
+    const pupukDesc = isVegetatif
+      ? 'Fase Tunas & Bunga: Berikan NPK 16-16-16 + pupuk kandang matang di piringan tajuk terluar, ditambah Kalsium-Boron agar tangkai bunga kokoh.'
+      : isBungaPentil
+      ? 'Fase Pentil Buah: Lakukan penjarangan pentil (sisakan 1–2 buah per dompolan) dan aplikasikan pupuk Kalsium Nitrat + MKP untuk mempertebal dinding sel buah.'
+      : 'Fase Pembesaran & Pematangan: Tingkatkan Kalium (KNO3 Putih / Kalium Sulfat ZK) untuk menaikkan kadar gula manis (Brix), aroma harum, dan warna semburat merah/kuning.';
+
+    const npkKg = Math.max(1, Math.round(250 * areaHa));
+    const komposKg = Math.max(5, Math.round(1500 * areaHa));
+    const khususKg = Math.max(1, Math.round(50 * areaHa));
+
+    return {
+      komoditasClean: 'Pohon Apel (Manalagi / Rome Beauty)',
+      category: 'Buah',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: isVegetatif ? 'Kalsium-Boron' : 'KNO3 Putih / MKP',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai serangan lalat buah (Bactrocera) yang menyengat pentil buah, serta embun tepung (Podosphaera) dan bercak daun Marssonina saat cuaca lembap kabut.',
+      tipsFase: 'Lakukan pembungkusan buah apel (fruit bagging) dengan kertas/plastik khusus saat buah sebesar bola pingpong untuk mencegah cacat kulit.'
+    };
+  }
+
+  // 2. JERUK
+  if (c.includes('jeruk') || c.includes('citrus') || c.includes('lemon')) {
+    const siramDesc = isWet
+      ? 'Tanah kebun jeruk tergenang. Segera buat parit keliling di luar lingkar tajuk agar akar tidak terendam air, yang memicu jamur blendok (Diplodia).'
+      : isDry
+      ? 'Tanah kebun jeruk mulai kering. Alirkan air irigasi piringan di bawah kanopi luar tajuk agar daun tidak menggulung layu.'
+      : 'Kondisi air tanah kebun jeruk pas dan gembur. Akar leluasa bernapas di dalam tanah remah berpasir.';
+
+    const pupukDesc = hst < 60
+      ? 'Fase Flush & Bunga: Berikan pupuk NPK berimbang ditambah unsur mikro Seng (Zn) dan Besi (Fe) untuk mencegah daun menguning (klorosis).'
+      : 'Fase Pembesaran Buah: Fokus pupuk Kalium Sulfat (ZK / KNO3 Putih) dan Kalsium untuk mencegah buah pecah (fruit cracking) dan meningkatkan rasa manis sari jeruk.';
+
+    const npkKg = Math.max(1, Math.round(240 * areaHa));
+    const komposKg = Math.max(5, Math.round(1200 * areaHa));
+    const khususKg = Math.max(1, Math.round(40 * areaHa));
+
+    return {
+      komoditasClean: 'Pohon Jeruk',
+      category: 'Buah',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Kalsium & KNO3',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai kutu loncat Diaphorina citri (vektor penyakit CVPD) serta lalat buah pengorok sari jeruk.',
+      tipsFase: 'Pangkas cabang air liar (wiwil) di bagian tengah kanopi pohon agar sinar matahari leluasa masuk menembus tajuk.'
+    };
+  }
+
+  // 3. CABAI
+  if (c.includes('cabai') || c.includes('cabe') || c.includes('chili') || c.includes('lombok')) {
+    const siramDesc = isWet
+      ? 'Tanah bedengan cabai terlalu basah becek! Buka parit pembuangan air sekarang juga. Akar cabai sangat rentan layu bakteri Ralstonia dan layu fusarium jika terendam.'
+      : isDry
+      ? 'Tanah bedengan cabai mulai kering. Alirkan air ke parit bedengan (sistem leb) lalu buang air berlebih saat tanah mulsa sudah cukup lembap.'
+      : 'Kandungan air tanah bedengan cabai sangat pas gembur. Tanaman cabai tumbuh kokoh tanpa stres perakaran.';
+
+    const pupukDesc = hst < 40
+      ? 'Fase Vegetatif Cabang: Kocor larutan NPK 16-16-16 di lubang mulsa tanaman tiap 7 hari sekali untuk memacu cabang produktif Y.'
+      : 'Fase Bunga & Buah: Semprot Kalsium Nitrat rutin tiap minggu untuk mencegah penyakit patek / antraknosa dan busuk pantat buah, ditambah Kalium tinggi.';
+
+    const npkKg = Math.max(1, Math.round(200 * areaHa));
+    const komposKg = Math.max(5, Math.round(1000 * areaHa));
+    const khususKg = Math.max(1, Math.round(30 * areaHa));
+
+    return {
+      komoditasClean: 'Tanaman Cabai',
+      category: 'Sayuran & Bumbu',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Kalsium Nitrat (CNG)',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai penyakit antraknosa (patek Colletotrichum), keriting daun akibat kutu kebul/thrips, dan busuk basah buah saat hujan sering turun.',
+      tipsFase: 'Pasang ajir bambu dan ikat batang utama cabai sebelum cabang Y berbuah lebat agar tanaman tidak patah saat angin kencang.'
+    };
+  }
+
+  // 4. BAWANG MERAH
+  if (c.includes('bawang')) {
+    const siramDesc = isWet
+      ? 'Tanah bedengan bawang terlalu becek! Parit bedengan harus dikeringkan segera agar umbi bawang tidak busuk basah dan terhindar dari layu moler.'
+      : isDry
+      ? 'Tanah bedengan bawang agak kering. Siram lembut pada pagi hari sebelum jam 08.00 dengan gembor halus untuk membilas embun daun.'
+      : 'Kondisi air tanah pas lembap remah. Parit bedengan mengalir lancar dan umbi bawang tumbuh leluasa bernapas.';
+
+    const pupukDesc = hst < 25
+      ? 'Fase Anakan Daun: Berikan pupuk susulan NPK Phonska + ZA di sela tanaman untuk memacu pertumbuhan rumpun anakan bawang.'
+      : 'Fase Pembesaran Umbi: Aplikasi KNO3 Putih (Kalium tinggi) tanpa tambahan pupuk Urea agar umbi bawang padat berbobot, berkulit merah mengkilap, dan tahan disimpan.';
+
+    const npkKg = Math.max(1, Math.round(250 * areaHa));
+    const komposKg = Math.max(5, Math.round(1200 * areaHa));
+    const khususKg = Math.max(1, Math.round(45 * areaHa));
+
+    return {
+      komoditasClean: 'Bawang Merah',
+      category: 'Sayuran & Bumbu',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'KNO3 Putih (Kalium)',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai bercak ungu trotol (Alternaria porri), ulat grayak bawang (Spodoptera exigua), dan penyakit layu moler Fusarium.',
+      tipsFase: 'Hentikan penyiraman 3 hari sebelum panen cabut umbi agar umbi kesat, tanah mudah dibersihkan, dan umbi tidak mudah busuk saat digantung.'
+    };
+  }
+
+  // 5. TOMAT
+  if (c.includes('tomat')) {
+    const siramDesc = isWet
+      ? 'Tanah bedengan tomat terlalu basah. Kurangi pasokan air agar akar tidak kekurangan oksigen dan buah tidak pecah mendadak.'
+      : isDry
+      ? 'Tanah bedengan tomat kering. Siram teratur di pangkal tanaman. Fluktuasi basah-kering mendadak akan menyebabkan kulit buah merekah retak.'
+      : 'Kelembapan tanah tomat stabil prima. Buah tomat membesar halus dan mulus tanpa retak kulit.';
+
+    const pupukDesc = hst < 35
+      ? 'Fase Percabangan: Berikan NPK berimbang dan lakukan perempelan tunas air wiwil agar nutrisi terfokus pada cabang utama.'
+      : 'Fase Buah: Tambahkan Kalsium-Boron dan Kalium tinggi untuk mencegah busuk pantat buah tomat (blossom end rot) dan menambah bobot buah.';
+
+    const npkKg = Math.max(1, Math.round(220 * areaHa));
+    const komposKg = Math.max(5, Math.round(1000 * areaHa));
+    const khususKg = Math.max(1, Math.round(35 * areaHa));
+
+    return {
+      komoditasClean: 'Tanaman Tomat',
+      category: 'Sayuran & Bumbu',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Kalsium-Boron',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai busuk daun (Phytophthora infestans), busuk ujung pantat buah akibat defisiensi kalsium, dan virus kuning gemini.',
+      tipsFase: 'Ikat batang tomat pada ajir bambu setinggi 1.5 meter dan pangkas daun tua yang menyentuh tanah agar tidak tertular jamur tanah.'
+    };
+  }
+
+  // 6. PADI SAWAH
+  if (c.includes('padi') || c.includes('gabah')) {
+    const siramDesc = isWet
+      ? 'Air sawah sedang menggenang tinggi. Buka saluran pembuangan parit agar tinggi genangan air sawah turun ke batas ideal 2–3 cm (macak-macak).'
+      : isDry
+      ? 'Petakan sawah mulai merekah kering. Alirkan air irigasi secukupnya ke petakan sawah agar perakaran bibit padi tidak stres kekurangan air.'
+      : 'Tata kelola air sawah sangat pas (macak-macak berselang / AWD). Akar leluasa bernapas dan rumpun anakan aktif membelah.';
+
+    const pupukDesc = hst < 30
+      ? 'Fase Anakan Aktif: Tebar pupuk NPK Phonska dan Urea saat air sawah macak-macak dangkal agar anakan produktif bertambah banyak.'
+      : 'Fase Bunting & Pengisian: Semprot pupuk daun Kalium dan silika cair saat fase bunting untuk memperkuat batang dari rebah dan bulir padi terisi bernas.';
+
+    const npkKg = Math.max(1, Math.round(300 * areaHa));
+    const komposKg = Math.max(5, Math.round(1000 * areaHa));
+    const khususKg = Math.max(1, Math.round(50 * areaHa));
+
+    return {
+      komoditasClean: 'Padi Sawah',
+      category: 'Tanaman Pangan',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Pupuk Silika & Kalium',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai penyakit blas daun (Pyricularia oryzae), hawar daun bakteri kresek, sundep/beluk penggerek batang, dan wereng batang cokelat.',
+      tipsFase: 'Keringkan petakan sawah 7–10 hari sebelum panen raya agar pemotongan malai mudah dan tanah tidak becek saat perontokan.'
+    };
+  }
+
+  // 7. JAGUNG
+  if (c.includes('jagung')) {
+    const siramDesc = isWet
+      ? 'Saluran parit guludan jagung tergenang. Buang air genangan agar pangkal batang tidak membusuk.'
+      : isDry
+      ? 'Tanah guludan jagung kering. Alirkan air irigasi di sela parit alur, terutama jika tanaman sedang memasuki fase berbunga dan keluar rambut tongkol.'
+      : 'Kelembapan tanah guludan jagung sangat pas gembur. Akar napas menancap kokoh.';
+
+    const pupukDesc = hst < 35
+      ? 'Fase Pertumbuhan Batang: Lakukan pembumbunan tanah guludan dan taburkan pupuk susulan NPK + Urea di samping pangkal batang.'
+      : 'Fase Pengisian Biji Tongkol: Tambahkan Kalium KCL agar butiran jagung terisi padat bernas hingga ujung tongkol.';
+
+    const npkKg = Math.max(1, Math.round(250 * areaHa));
+    const komposKg = Math.max(5, Math.round(800 * areaHa));
+    const khususKg = Math.max(1, Math.round(40 * areaHa));
+
+    return {
+      komoditasClean: 'Tanaman Jagung',
+      category: 'Tanaman Pangan',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Urea & KCL',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai ulat grayak jagung (Spodoptera frugiperda / FAW) yang memakan titik tumbuh pucuk, serta penyakit bulai.',
+      tipsFase: 'Lakukan pembumbunan tanah setinggi 10 cm di sekitar batang untuk memperkokoh akar tunjang dari terpaan angin kencang.'
+    };
+  }
+
+  // 8. KENTANG
+  if (c.includes('kentang') || c.includes('potato')) {
+    const siramDesc = isWet
+      ? 'Tanah guludan kentang terlalu basah. Buka parit guludan agar air tidak menggenangi zona umbi di dalam tanah.'
+      : isDry
+      ? 'Tanah guludan kentang kering. Siram merata di parit alur agar tanah andosol kembali lembap remah.'
+      : 'Kondisi tanah guludan andosol sangat pas gembur. Calon umbi leluasa membesar.';
+
+    const pupukDesc = hst < 40
+      ? 'Fase Vegetatif: Berikan pupuk NPK seimbang + pupuk kandang matang saat melakukan pembumbunan guludan pertama.'
+      : 'Fase Pembesaran Umbi: Berikan pupuk tinggi Kalium (Kalium Sulfat ZK) dan Fosfat agar umbi kentang berukuran besar dan berkulit mulus.';
+
+    const npkKg = Math.max(1, Math.round(300 * areaHa));
+    const komposKg = Math.max(5, Math.round(2000 * areaHa));
+    const khususKg = Math.max(1, Math.round(60 * areaHa));
+
+    return {
+      komoditasClean: 'Tanaman Kentang',
+      category: 'Sayuran & Bumbu',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: 'Kalium Sulfat (ZK)',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai busuk daun Phytophthora infestans (lodoh) saat cuaca berkabut dingin dan layu bakteri.',
+      tipsFase: 'Lakukan pembumbunan tanah 2–3 kali agar umbi kentang tidak tersengat sinar matahari yang menyebabkan racun solanin/kulit menghijau.'
+    };
+  }
+
+  // FALLBACK UMUM LAINNYA
+  const siramDesc = isWet
+    ? 'Tanah lahan sedang becek tergenang. Buka saluran pembuangan parit agar perakaran tanaman tidak terendam air berlebih.'
+    : isDry
+    ? 'Tanah lahan mulai mengering. Segera siram merata seluas ' + userLuasLabel + ' pada pagi atau sore hari.'
+    : 'Kandungan air tanah sangat pas gembur. Akar tanaman leluasa bernapas dan menyerap nutrisi hara.';
+
+  const pupukDesc = hst < 40
+    ? 'Fase Vegetatif Awal: Berikan pupuk NPK seimbang dan pupuk organik kompos untuk memacu pembentukan akar dan tunas daun baru.'
+    : 'Fase Generatif: Tingkatkan unsur Fosfat dan Kalium serta kurangi Nitrogen berlebih agar tanaman fokus pada pembuahan/pengisian hasil.';
+
+  const npkKg = Math.max(1, Math.round(200 * areaHa));
+  const komposKg = Math.max(5, Math.round(1000 * areaHa));
+  const khususKg = Math.max(1, Math.round(30 * areaHa));
+
+  return {
+    komoditasClean: cropName || 'Tanaman Budidaya',
+    category: 'Umum',
+    siramDesc,
+    pupukDesc,
+    pupukNamaKhusus: 'Pupuk Kalium',
+    userLuasLabel,
+    npkKg,
+    komposKg,
+    khususKg,
+    pestWarning: 'Waspadai jamur daun saat kelembapan udara tinggi dan serangga hama penghisap cairan daun saat cuaca panas terik.',
+    tipsFase: 'Bersihkan rumput liar di sekitar pangkal tanaman agar tidak berebut nutrisi pupuk dan air dengan tanaman utama.'
+  };
 }
 
 export default function MonitoringPage() {
@@ -463,15 +892,33 @@ export default function MonitoringPage() {
     initActiveFarmer();
   }, []);
 
-  // 1. Penguapan Daun & Kebutuhan Air (VPD)
+  // 1. Penguapan Daun & Kebutuhan Air (VPD) dengan Interlock Silang Sensor Tanah
   const vpdAnalysis = useMemo(() => {
     if (!weather) return { vpd: 0.95, status: 'Sangat Ideal', desc: 'Daun membuka pas. Tanaman segar dan lancar menyerap pupuk.' };
     const tempC = weather.suhu;
     const rh = weather.kelembapan_udara;
+    const sm = weather.kelembapan_tanah;
     
     const svp = 0.61078 * Math.exp((17.27 * tempC) / (tempC + 237.3));
     const avp = svp * (rh / 100);
     const vpd = Math.max(0, parseFloat((svp - avp).toFixed(2)));
+
+    // Interlock Tata Kelola Air Padi (AWD / Macak-Macak)
+    if (isPadi) {
+      if (sm < 50) {
+        return { vpd, status: 'Airi Sawah Macak-macak', desc: 'Tanah sawah mulai merekah. Alirkan air irigasi setinggi 2–3 cm lalu biarkan surut alami (metode AWD).' };
+      }
+      return { vpd, status: 'Air Sawah Cukup', desc: 'Kondisi air sawah dalam batas macak-macak optimal untuk anakan padi produktif.' };
+    }
+
+    // Interlock Silang Hortikultura: Cek kejenuhan tanah
+    if (sm >= 82) {
+      return {
+        vpd,
+        status: 'Tanah Jenuh Air (Stop Siram)',
+        desc: 'Tanah sudah sangat basah becek. Dilarang menambah air agar akar tidak mengalami hipoksia dan busuk akar.'
+      };
+    }
 
     if (vpd < 0.45) {
       return {
@@ -483,24 +930,38 @@ export default function MonitoringPage() {
       return {
         vpd,
         status: 'Sangat Ideal',
-        desc: 'Kondisi daun sangat prima untuk menyerap nutrisi dan pupuk cair.'
+        desc: 'Kondisi stomata daun sangat prima untuk menyerap nutrisi dan pupuk cair.'
       };
     } else if (vpd <= 1.65) {
+      if (sm < 65) {
+        return {
+          vpd,
+          status: 'Penguapan Cepat (Waktunya Siram)',
+          desc: 'Udara hangat dan tanah mulai mengering. Tambahkan air penyiraman pada pagi atau sore hari.'
+        };
+      }
       return {
         vpd,
-        status: 'Penguapan Cepat',
-        desc: 'Tanaman menguap agak cepat karena udara hangat. Pastikan pasokan air tanah memadai.'
+        status: 'Penguapan Normal',
+        desc: 'Tanaman menguap agak cepat namun kelembapan tanah di perakaran masih mencukupi.'
       };
     } else {
+      if (sm < 65) {
+        return {
+          vpd,
+          status: 'Udara Kering Terik (Irigasi Diperlukan)',
+          desc: 'Matahari sangat terik dan tanah butuh air. Siram segera agar tanaman tidak layu permanen.'
+        };
+      }
       return {
         vpd,
-        status: 'Udara Kering Terik',
-        desc: 'Matahari sangat panas terik. Daun rentan layu jika tanah kekurangan air.'
+        status: 'Udara Terik (Tanah Masih Lembap)',
+        desc: 'Udara panas menyengat namun tanah masih basah. Cukup jaga kelembapan tanah tanpa siram berlebih.'
       };
     }
-  }, [weather]);
+  }, [weather, isPadi]);
 
-  // 2. Evaluasi Risiko Serangan Jamur & Blas Daun
+  // 2. Evaluasi Risiko Serangan Jamur & Blas Daun (Terproteksi Clamp)
   const fungalRisk = useMemo(() => {
     if (!weather) return { score: 35, level: 'Rendah (Aman)', advice: 'Udara kering dan sehat. Risiko jamur daun minimal.' };
     
@@ -508,18 +969,19 @@ export default function MonitoringPage() {
     const temp = weather.suhu;
     const rainToday = weather.prakiraan_7hari?.[0]?.curah_hujan ?? 0;
 
-    let rhFactor = 0;
-    if (rh >= 60) rhFactor = Math.min(1, (rh - 60) / 30);
+    // Proteksi Matematis: Cegah nilai minus memicu alarm palsu
+    const clamp = (val: number, min = 0, max = 1) => Math.max(min, Math.min(max, val));
+    const rhFactor = clamp((rh - 60) / 30);
+    const tempFactor = clamp(1 - Math.abs(temp - 25) / 11);
 
-    let tempFactor = 0;
-    if (temp >= 18 && temp <= 32) {
-      tempFactor = 1 - Math.abs(temp - 25) / 11;
-    }
-    tempFactor = Math.max(0, tempFactor);
+    // Matriks Kuantitatif Pengali Hujan (mm/hari)
+    let rainMultiplier = 0.9;
+    if (rainToday > 20) rainMultiplier = 1.4;
+    else if (rainToday > 5) rainMultiplier = 1.25;
+    else if (rainToday > 0) rainMultiplier = 1.1;
 
-    const rainMultiplier = rainToday > 0 ? 1.3 : 1.0;
     const rawScore = Math.round(rhFactor * tempFactor * rainMultiplier * 100);
-    const score = Math.max(15, Math.min(96, rawScore));
+    const score = Math.max(10, Math.min(96, rawScore));
 
     if (score >= 70) {
       return {
@@ -657,6 +1119,17 @@ export default function MonitoringPage() {
 
     return { needed: true, kgTotal, sacks, luasM2 };
   }, [weather, activePetani]);
+
+  // 7. Panduan Perawatan Spesifik Komoditas & Dosis Pupuk Riil Berdasarkan Luas Lahan
+  const cropCareGuide = useMemo(() => {
+    return getCropCareGuide(
+      activePetani?.jenis_tanaman || '',
+      Number(activePetani?.luas_tanah) || 1000,
+      activePetani?.satuan_luas || 'm²',
+      weather,
+      gddTracker.days
+    );
+  }, [activePetani?.jenis_tanaman, activePetani?.luas_tanah, activePetani?.satuan_luas, weather, gddTracker.days]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16 space-y-6 text-slate-800">
@@ -974,7 +1447,7 @@ export default function MonitoringPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-2">
                   <span className="font-bold text-slate-900 flex items-center gap-1.5">
                     <Activity className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    Risiko Jamur & Penyakit Daun
+                    Risiko Jamur & Penyakit ({cropCareGuide.komoditasClean})
                   </span>
                   <span className="font-bold text-slate-900 text-xs">
                     {fungalRisk.level}
@@ -983,6 +1456,9 @@ export default function MonitoringPage() {
                 <p className="text-slate-600 text-xs leading-relaxed pt-1">
                   {fungalRisk.advice}
                 </p>
+                <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed">
+                  <strong className="text-slate-700">Peringatan Khusus {activePetani.jenis_tanaman}:</strong> {cropCareGuide.pestWarning}
+                </div>
               </div>
             </div>
           </div>
@@ -1008,31 +1484,44 @@ export default function MonitoringPage() {
                 </div>
               </div>
               <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-                {weather.status_tanah === 'Kering'
-                  ? `Tanah ${lahanTerm} mulai mengering. Segera alirkan air irigasi secukupnya ke parit agar tanaman tidak layu.`
-                  : weather.status_tanah === 'Jenuh Air'
-                  ? `Tanah ${lahanTerm} terlalu becek dan tergenang. Buka saluran parit pembuangan agar akar tanaman tidak terendam dan membusuk.`
-                  : isPadi
-                  ? 'Kandungan air tanah sangat pas (macak-macak). Akar tanaman leluasa bernapas dan menyerap pupuk.'
-                  : 'Kandungan air tanah sangat pas gembur. Akar tanaman leluasa bernapas dan menyerap nutrisi pupuk.'}
+                {cropCareGuide.siramDesc}
               </p>
             </div>
 
             {/* Grid 2 Kartu Pendukung Tanpa Badge */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl border border-slate-200 space-y-2">
+              <div className="p-4 rounded-xl border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <span className="font-bold text-slate-900 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                    Panduan Tebar Pupuk
+                    Panduan Pupuk {cropCareGuide.komoditasClean}
                   </span>
                   <strong className="text-slate-900 text-xs">
                     {leachingAdvisor.status}
                   </strong>
                 </div>
                 <p className="text-slate-600 text-xs leading-relaxed pt-1">
-                  {leachingAdvisor.advice}
+                  {cropCareGuide.pupukDesc}
                 </p>
+                <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200/80 space-y-1.5 text-[11px]">
+                  <span className="font-semibold text-slate-700 block">
+                    Kalkulasi Kebutuhan Pupuk Lahan ({cropCareGuide.userLuasLabel}):
+                  </span>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-white p-2 rounded border border-slate-200/70">
+                      <span className="text-[10px] text-slate-400 block font-medium">Pupuk NPK</span>
+                      <strong className="text-xs sm:text-sm text-slate-900 block font-bold mt-0.5">{cropCareGuide.npkKg} kg</strong>
+                    </div>
+                    <div className="bg-white p-2 rounded border border-slate-200/70">
+                      <span className="text-[10px] text-slate-400 block font-medium">Kompos / Kandang</span>
+                      <strong className="text-xs sm:text-sm text-slate-900 block font-bold mt-0.5">{cropCareGuide.komposKg} kg</strong>
+                    </div>
+                    <div className="bg-white p-2 rounded border border-slate-200/70">
+                      <span className="text-[10px] text-slate-400 block font-medium truncate">{cropCareGuide.pupukNamaKhusus}</span>
+                      <strong className="text-xs sm:text-sm text-slate-900 block font-bold mt-0.5">{cropCareGuide.khususKg} kg</strong>
+                    </div>
+                  </div>
+                </div>
                 <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
                   Hindari tabur pupuk saat air {lahanTerm} mengalir deras agar pupuk tidak terbuang sia-sia.
                 </div>
@@ -1075,7 +1564,7 @@ export default function MonitoringPage() {
             <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 pb-2.5 border-b border-slate-200/70">
                 <div className="space-y-0.5">
-                  <span className="text-[11px] text-slate-500 font-medium block">Tahapan Tanaman Saat Ini</span>
+                  <span className="text-[11px] text-slate-500 font-medium block">Tahapan {cropCareGuide.komoditasClean} Saat Ini</span>
                   <strong className="text-xs sm:text-sm text-slate-900 block font-bold">{gddTracker.phase}</strong>
                 </div>
                 <div className="space-y-0.5">
@@ -1088,6 +1577,12 @@ export default function MonitoringPage() {
               <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
                 {gddTracker.warning}
               </p>
+              {cropCareGuide.tipsFase && (
+                <div className="pt-2 border-t border-slate-200/60 text-xs text-emerald-800 font-medium flex items-center gap-1.5">
+                  <Sprout className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>Tips Agronomis Fase Ini: {cropCareGuide.tipsFase}</span>
+                </div>
+              )}
             </div>
 
             {/* Tahapan Siklus Tanam Ringkas & Rapi */}

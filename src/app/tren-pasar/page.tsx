@@ -70,8 +70,9 @@ const ALL_CATEGORIES: (CommodityCategory | 'Semua')[] = [
   'Tanaman Obat'
 ];
 
-function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur' {
+function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur' | 'Apel' {
   const l = name.toLowerCase();
+  if (l.includes('apel') || l.includes('apple')) return 'Apel';
   if (l.includes('jeruk')) return 'Jeruk';
   if (l.includes('cokelat') || l.includes('kakao')) return 'Cokelat / Kakao';
   if (l.includes('anggur')) return 'Anggur';
@@ -771,6 +772,96 @@ export default function MarketDemandPage() {
           </div>
         </div>
       </div>
+
+      {/* ── 1.5 REKOMENDASI KOMODITAS BERNILAI TINGGI DAERAH (HASIL RISET & ALGORITMA) ── */}
+      {topRecs.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Sprout className="w-4 h-4 text-emerald-700 shrink-0" />
+                <h2 className="text-base font-bold text-slate-900">
+                  Rekomendasi Komoditas Unggulan Wilayah {activePetani.daerah || 'Lahan Anda'}
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Kalkulasi algoritma Kertanusa mencocokkan agroklimat tanah wilayah {activePetani.daerah || 'setempat'} dengan proyeksi daya beli pasar untuk luas lahan Anda ({calcLuas.toLocaleString('id-ID')} m²).
+              </p>
+            </div>
+            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg self-start sm:self-auto shrink-0">
+              Analisis Usahatani Musim Depan
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {topRecs.map((rec, idx) => {
+              const isCurrent = currentDetailItem.komoditas.toLowerCase() === rec.komoditas.toLowerCase();
+              const proj = calculateProfitProjection(calcLuas, rec.komoditas);
+
+              return (
+                <div
+                  key={idx}
+                  className={`p-4 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
+                    isCurrent
+                      ? 'border-emerald-600 bg-emerald-50/40 ring-1 ring-emerald-500/30'
+                      : 'border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                          Pilihan #{idx + 1} • {rec.kategori}
+                        </span>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                          {rec.komoditas}
+                        </h3>
+                      </div>
+                      <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-200 shrink-0">
+                        +{rec.harvestDeltaPct}% Panen
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {rec.alasanSingkat}
+                    </p>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-slate-200/80 space-y-2.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-500">Estimasi Laba Bersih:</span>
+                      <strong className="text-slate-900 font-bold">
+                        Rp {proj.labaBersih.toLocaleString('id-ID')}
+                      </strong>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[11px] text-slate-500">
+                      <span>Proyeksi ROI Modal:</span>
+                      <strong className="text-emerald-700 font-semibold">{proj.roi}%</strong>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedKomoditas(rec.komoditas);
+                        const el = document.getElementById('analisis-komoditas');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer text-center ${
+                        isCurrent
+                          ? 'bg-emerald-700 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-emerald-700 hover:text-white hover:border-emerald-700'
+                      }`}
+                    >
+                      {isCurrent ? 'Sedang Ditampilkan ✓' : 'Simulasi di Kalkulator →'}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── 2. SINYAL PASAR & ANALISIS SIKLUS TANAM-PANEN HISTORIS ── */}
       <div className="space-y-4">

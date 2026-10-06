@@ -392,3 +392,11 @@ ext build), working tree clean, dan verified di browser.
       - Build Next.js 100% sukses (12/12 routes).
       - Service dikelola secara persisten melalui PM2 (kertanusa aktif di port 3002).
       - Port firewall UFW 3002/tcp diizinkan dan terverifikasi sehat (HTTP 200 OK).
+
+148. **Sinkronisasi End-to-End Ekosistem DSS Pertanian Presisi (Zero-Redundancy Pipeline) & Deployment VPS [2026-10-06]**:
+    - **Pintu Masuk Terpadu (Single Source of Truth - /input-lahan)**: Data input petani (Nama, GPS, Luas Lahan, Jenis Tanaman, Waktu Tanam) menjadi acuan otomatis bagi seluruh halaman tanpa duplikasi form.
+    - **Pin Spasial 3D Lahan Terdaftar (Beranda - /)**: Titik GPS lahan petani langsung muncul realtime di peta 3D dengan beacon hijau zamrud (emerald) khusus dan lencana '★ Lahan Anda Terdaftar' serta kartu telemetri lengkap.
+    - **Mikro-Agronomi Spesifik Komoditas (/monitoring)**: Panduan tidak lagi disamaratakan. Ditambahkan siklus 5 fase fenologis, instruksi siram khusus, dan deteksi hama/penyakit presisi untuk Apel, Jeruk, Kentang, Cabai, Bawang, Tomat, Jagung, dan Padi.
+    - **Kalkulator Dosis Pupuk Riil**: Menghitung takaran pasti kebutuhan pupuk (NPK, Kompos Organik, Pupuk Khusus Kalsium/Kalium) secara proporsional sesuai luas lahan riil petani (m² / Ha).
+    - **Rekomendasi Komoditas Bernilai Tinggi Daerah (/tren-pasar)**: Menambahkan kartu rekomendasi 3 komoditas paling menguntungkan yang cocok dengan agroklimat tanah wilayah petani (misal Malang -> Apel, Tomat; Brebes -> Bawang Merah, Cabai) lengkap dengan simulasi 1-klik di kalkulator usahatani (Tonase, HPP, Omset, Laba Bersih, ROI).
+    - **Sanitasi & Produksi**: Build Next.js lokal 100% sukses (14/14 routes), kode ter-push ke GitHub, dan live deploy ke server VPS PM2.

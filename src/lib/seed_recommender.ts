@@ -1,7 +1,7 @@
 export interface SeedVariety {
   id: string;
   nama_varietas: string;
-  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur';
+  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur' | 'Apel';
   pemulia_resmi: string; // BRIN / Balitpa / Balitjestro / Puslitkoka / East West Seed, etc.
   potensi_hasil: string; // e.g. '8.5 - 10.5 Ton/Ha'
   rata_rata_hasil: string; // e.g. '7.2 Ton/Ha'
@@ -32,7 +32,7 @@ export interface SeedVariety {
 
 export interface LandConditionInput {
   daerahNama?: string;
-  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur';
+  komoditas: 'Padi' | 'Cabai Rawit Merah' | 'Bawang Merah' | 'Jagung' | 'Tomat' | 'Jeruk' | 'Cokelat / Kakao' | 'Anggur' | 'Apel';
   ketinggian: 'rendah' | 'sedang' | 'tinggi'; // rendah: 0-400 mdpl, sedang: 400-700 mdpl, tinggi: >700 mdpl
   tipe_lahan: 'irigasi_teknis' | 'tadah_hujan' | 'rawa_pasangsurut' | 'lahan_kering';
   musim: 'hujan' | 'kemarau' | 'pancaroba';
@@ -482,6 +482,79 @@ export const MASTER_VARIETIES: SeedVariety[] = [
     alasan_rekomendasi: 'Varietas komersial dengan nilai estetika dan tonase per pohon tertinggi untuk pengelola kebun modern.',
     kategori_pasar: 'Segmen Premium / Restoran',
     estimasi_harga_jual: 'Rp 60.000 - 85.000 / kg',
+    daya_serap_pasar: 'Tinggi'
+  },
+  // ==================== APEL ====================
+  {
+    id: 'apel-manalagi',
+    nama_varietas: 'Apel Manalagi Super (Balitjestro / Batu)',
+    komoditas: 'Apel',
+    pemulia_resmi: 'Balai Penelitian Tanaman Jeruk & Buah Subtropika (Balitjestro / BRIN)',
+    potensi_hasil: '20 - 28 Ton/Ha',
+    rata_rata_hasil: '22 Ton/Ha',
+    umur_panen: '120 - 135 Hari Pasca Rompes',
+    tekstur_atau_kualitas: 'Daging buah manis renyah dengan aroma harum kuat khas, warna kulit hijau kekuningan saat matang',
+    ketinggian_cocok: ['tinggi', 'sedang'],
+    tipe_lahan_cocok: ['irigasi_teknis', 'lahan_kering'],
+    musim_optimal: ['kemarau', 'pancaroba'],
+    rentang_ph_optimal: [5.5, 6.5],
+    ketahanan_hama_penyakit: [
+      'Tahan Embun Tepung (Podosphaera) dengan fungisida terukur',
+      'Toleran Fluktuasi Suhu Dingin Pegunungan (16 - 24 °C)',
+      'Produktivitas Buah Stabil Sepanjang Musim'
+    ],
+    keunggulan_utama: 'Varietas apel paling ikonik nusantara, rasa manis harum sangat diminati pasar agrowisata dan serapan industri olahan sari apel.',
+    alasan_rekomendasi: 'Pilihan utama petani dataran tinggi Malang & Batu. Sangat adaptif pada tanah andosol vulkanis dengan sistem defoliasi serempak.',
+    kategori_pasar: 'Pasar Umum / Massal',
+    estimasi_harga_jual: 'Rp 28.000 - 38.000 / kg',
+    daya_serap_pasar: 'Sangat Tinggi'
+  },
+  {
+    id: 'apel-rome-beauty',
+    nama_varietas: 'Apel Rome Beauty (Merah Merona)',
+    komoditas: 'Apel',
+    pemulia_resmi: 'Balitjestro & Sentra Penangkar Buah Batu',
+    potensi_hasil: '18 - 25 Ton/Ha',
+    rata_rata_hasil: '20 Ton/Ha',
+    umur_panen: '125 - 140 Hari Pasca Rompes',
+    tekstur_atau_kualitas: 'Kulit buah bersemu merah memikat, rasa segar manis-asam seimbang, tekstur padat agak berair',
+    ketinggian_cocok: ['tinggi'],
+    tipe_lahan_cocok: ['irigasi_teknis'],
+    musim_optimal: ['kemarau'],
+    rentang_ph_optimal: [5.5, 6.5],
+    ketahanan_hama_penyakit: [
+      'Daya Simpan Sangat Tahan (3-4 minggu pasca panen)',
+      'Tahan Lecet dan Benturan Transportasi Antar-Pulau',
+      'Kandungan Pektin & Antioksidan Tinggi'
+    ],
+    keunggulan_utama: 'Warna merah eksotis sangat disukai pasar parcel dan supermarket modern, sangat renyah untuk konsumsi segar dan pai buah.',
+    alasan_rekomendasi: 'Sangat cocok untuk kebun komersial berorientasi pengiriman jarak jauh ke pasar ritel modern Jabodetabek dan luar pulau.',
+    kategori_pasar: 'Segmen Premium / Restoran',
+    estimasi_harga_jual: 'Rp 30.000 - 42.000 / kg',
+    daya_serap_pasar: 'Tinggi'
+  },
+  {
+    id: 'apel-anna',
+    nama_varietas: 'Apel Anna (Adaptif Medium & Genjah)',
+    komoditas: 'Apel',
+    pemulia_resmi: 'Balitjestro BRIN',
+    potensi_hasil: '16 - 22 Ton/Ha',
+    rata_rata_hasil: '18 Ton/Ha',
+    umur_panen: '115 - 125 Hari Pasca Rompes (Genjah)',
+    tekstur_atau_kualitas: 'Bentuk agak lonjong mirip apel impor Red Delicious, semburat merah cerah cepat keluar',
+    ketinggian_cocok: ['sedang', 'tinggi'],
+    tipe_lahan_cocok: ['irigasi_teknis'],
+    musim_optimal: ['kemarau', 'pancaroba'],
+    rentang_ph_optimal: [5.6, 6.8],
+    ketahanan_hama_penyakit: [
+      'Cepat Berbunga Kembali Pasca Panen',
+      'Toleran Elevasi Menengah (600 - 800 mdpl)',
+      'Tahan Sengatan Matahari Sedang'
+    ],
+    keunggulan_utama: 'Siklus panen lebih cepat dibanding varietas lain dan tetap menghasilkan warna merah menawan meski di elevasi medium.',
+    alasan_rekomendasi: 'Cocok untuk lahan kebun dengan ketinggian sedang yang ingin panen apel lebih cepat dengan tampilan buah menarik.',
+    kategori_pasar: 'Pasar Umum / Massal',
+    estimasi_harga_jual: 'Rp 26.000 - 35.000 / kg',
     daya_serap_pasar: 'Tinggi'
   }
 ];

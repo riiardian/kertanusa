@@ -259,7 +259,7 @@ export default function IndonesiaMap3D({
     setIsClient(true);
   }, []);
 
-  // Fetch Petani
+  // Fetch Petani dengan sinkronisasi real-time saat data lahan diinput
   useEffect(() => {
     async function loadData() {
       try {
@@ -273,6 +273,18 @@ export default function IndonesiaMap3D({
       }
     }
     loadData();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', loadData);
+      window.addEventListener('focus', loadData);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', loadData);
+        window.removeEventListener('focus', loadData);
+      }
+    };
   }, []);
 
   // Initialize Leaflet Map with Islands-Only Vector Layers (Pure White Canvas, No Ocean Water)
@@ -511,10 +523,13 @@ export default function IndonesiaMap3D({
 
       dispersedList.forEach((item, idx) => {
         const f = item.farmer;
-        const isHighlight = highlightFarmerId === f.id || selectedFarmer?.id === f.id;
+        const activeFarmerId = typeof window !== 'undefined' ? localStorage.getItem('kertanusa_active_farmer_id') : null;
+        const isUserLahan = Boolean(activeFarmerId && f.id === activeFarmerId);
+        const isHighlight = highlightFarmerId === f.id || selectedFarmer?.id === f.id || isUserLahan;
+        const pinFill = isUserLahan ? '#059669' : (isHighlight ? '#C5221F' : '#EA4335');
         const delay = ((idx * 0.22) % 1.5).toFixed(2);
 
-        // Animated Google-Style Red Pin (Scaled Down for Mobile)
+        // Animated Google-Style Pin (Emerald for user, Red for others)
         const iconHtml = `
           <div style="position: relative; width: ${containerW}px; height: ${containerH}px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer;">
             <!-- Ground Shadow (Clean & Fast) -->
@@ -549,8 +564,8 @@ export default function IndonesiaMap3D({
                 transform: ${isHighlight ? 'scale(1.25)' : 'scale(1)'};
                 transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
               ">
-                <!-- Red Pin Body (Google Red #EA4335) -->
-                <path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.8 10.6 30.6 11.28 31.42C11.66 31.83 12.34 31.83 12.72 31.42C13.4 30.6 24 19.8 24 12C24 5.37258 18.6274 0 12 0Z" fill="${isHighlight ? '#C5221F' : '#EA4335'}"/>
+                <!-- Pin Body -->
+                <path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.8 10.6 30.6 11.28 31.42C11.66 31.83 12.34 31.83 12.72 31.42C13.4 30.6 24 19.8 24 12C24 5.37258 18.6274 0 12 0Z" fill="${pinFill}"/>
                 <!-- Crisp White Center Hole -->
                 <circle cx="12" cy="11.5" r="4.5" fill="#FFFFFF"/>
               </svg>
@@ -574,6 +589,7 @@ export default function IndonesiaMap3D({
           <div style="font-family: inherit; color: #1e293b; text-align: left; padding: 2px;">
             <!-- Header: Nama Petani & Lokasi -->
             <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; padding-right: 22px;">
+              ${isUserLahan ? '<div style="margin-bottom: 4px;"><span style="display: inline-block; background: #059669; color: #ffffff; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700;">★ Lahan Anda Terdaftar</span></div>' : ''}
               <h4 style="font-weight: 700; font-size: 13px; color: #0f172a; margin: 0; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 ${escapeHtml(f.nama_petani)}
               </h4>
