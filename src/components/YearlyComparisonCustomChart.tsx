@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 export interface YearlyComparisonItem {
@@ -67,6 +67,32 @@ export default function YearlyComparisonCustomChart({
   const [activeYear, setActiveYear] = useState<number | null>(() => {
     return data.length > 0 ? data[data.length - 1].tahun : null;
   });
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Auto dismiss card when clicking anywhere outside on the web
+  useEffect(() => {
+    if (activeYear === null) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      // Jika klik di dalam card rincian itu sendiri, jangan tutup
+      if (cardRef.current && cardRef.current.contains(event.target as Node)) {
+        return;
+      }
+      // Jika klik pemicu tahun, biarkan event handler tahun yang mengatur
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('[data-year-trigger]')) {
+        return;
+      }
+      // Klik di bagian mana pun pada web -> tabel penjelasan langsung hilang
+      setActiveYear(null);
+    };
+
+    window.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      window.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [activeYear]);
 
   const { niceMax, ticks } = useMemo(() => getYAxisConfig(data), [data]);
 
@@ -152,6 +178,7 @@ export default function YearlyComparisonCustomChart({
               return (
                 <div
                   key={item.tahun}
+                  data-year-trigger="true"
                   onClick={() =>
                     setActiveYear((prev) => (prev === item.tahun ? null : item.tahun))
                   }
@@ -207,9 +234,10 @@ export default function YearlyComparisonCustomChart({
             })}
           </div>
 
-          {/* Floating Detail Card (Muncul saat kolom diklik / default tahun berjalan) */}
+          {/* Floating Detail Card (Dismisses on clicking anywhere outside or on X) */}
           {activeItem && (
             <div
+              ref={cardRef}
               className="absolute top-2 left-1/2 -translate-x-1/2 z-30 bg-white/95 backdrop-blur-md border border-slate-200/95 rounded-xl shadow-lg p-3 text-xs w-[220px] sm:w-[245px] transition-all select-none animate-in fade-in zoom-in-95 duration-150"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
@@ -290,6 +318,7 @@ export default function YearlyComparisonCustomChart({
             return (
               <button
                 key={item.tahun}
+                data-year-trigger="true"
                 type="button"
                 onClick={() =>
                   setActiveYear((prev) => (prev === item.tahun ? null : item.tahun))

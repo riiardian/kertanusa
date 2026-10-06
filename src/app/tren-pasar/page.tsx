@@ -847,20 +847,30 @@ export default function MarketDemandPage() {
               />
 
               {/* Keterangan Batang & Kesimpulan Panen yang Menyatu Sederhana */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
-                <span className="flex items-center gap-2 font-medium text-slate-700">
-                  <span className="w-3.5 h-3.5 rounded-sm bg-slate-500 inline-block shrink-0" />
-                  <span>Harga Saat Tanam ({multiYearAnalysis.harvestOutlook.plantMonthName})</span>
-                </span>
-                <span className="flex items-center gap-2 font-bold text-emerald-800">
-                  <span className="w-3.5 h-3.5 rounded-sm bg-emerald-700 inline-block shrink-0" />
-                  <span>Harga Saat Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
-                </span>
-                <span className="text-slate-300 hidden sm:inline">•</span>
-                <span className="font-semibold text-emerald-700 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline-block shrink-0" />
-                  <span>{multiYearAnalysis.harvestOutlook.yearsProfitable} dari 5 tahun harga naik saat panen</span>
-                </span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-x-5 gap-y-2 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                  <span className="flex items-center gap-2 font-medium text-slate-700">
+                    <span className="w-3.5 h-3.5 rounded-sm bg-slate-500 inline-block shrink-0" />
+                    <span>Harga Saat Tanam ({multiYearAnalysis.harvestOutlook.plantMonthName})</span>
+                  </span>
+                  <span className="flex items-center gap-2 font-bold text-emerald-800">
+                    <span className="w-3.5 h-3.5 rounded-sm bg-emerald-700 inline-block shrink-0" />
+                    <span>Harga Saat Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
+                  </span>
+                </div>
+                <div className="sm:ml-auto">
+                  <span
+                    className={`font-semibold ${
+                      multiYearAnalysis.harvestOutlook.yearsProfitable >= 3
+                        ? 'text-emerald-700'
+                        : multiYearAnalysis.harvestOutlook.yearsProfitable === 0
+                        ? 'text-rose-600'
+                        : 'text-amber-700'
+                    }`}
+                  >
+                    {multiYearAnalysis.harvestOutlook.yearsProfitable} dari 5 tahun harga naik saat panen
+                  </span>
+                </div>
               </div>
             </div>
           </div>
