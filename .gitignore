@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# persistent database & storage (never overwritten by git deployments)
+/storage/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm

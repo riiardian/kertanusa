@@ -49,6 +49,9 @@ export default function InputLahanPage() {
         if (stored) {
           try {
             parsed = JSON.parse(stored);
+            if (parsed && typeof parsed === 'object') {
+              setSavedData(parsed);
+            }
           } catch {
             parsed = null;
           }
@@ -68,6 +71,19 @@ export default function InputLahanPage() {
             setSavedData(match);
             localStorage.setItem('kertanusa_active_farmer_id', match.id);
             localStorage.setItem('kertanusa_active_farmer_data', JSON.stringify(match));
+          } else if (parsed && parsed.nama_petani && parsed.daerah && parsed.jenis_tanaman) {
+            // Auto-recovery ke SQLite jika server baru restart
+            fetch('/api/petani', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parsed)
+            }).then(r => r.json()).then(rj => {
+              if (rj?.success && rj?.data) {
+                setSavedData(rj.data);
+                localStorage.setItem('kertanusa_active_farmer_id', rj.data.id);
+                localStorage.setItem('kertanusa_active_farmer_data', JSON.stringify(rj.data));
+              }
+            }).catch(console.warn);
           } else {
             // Data sudah dihapus dari riset/database! Bersihkan localStorage
             localStorage.removeItem('kertanusa_active_farmer_id');
