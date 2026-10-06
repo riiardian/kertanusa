@@ -230,3 +230,34 @@ body {
     object-position: center center !important;
   }
 }
+
+/* Recharts Clean Touch & Tap State (Eliminates mobile tap highlight box, focus outline & grey cursor bar) */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+svg.recharts-surface,
+.recharts-responsive-container,
+.recharts-responsive-container:focus,
+.recharts-responsive-container:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+}
+
+.recharts-tooltip-cursor {
+  fill: transparent !important;
+  stroke: transparent !important;
+}
+
+.recharts-tooltip-wrapper,
+.recharts-tooltip-wrapper:focus,
+.recharts-tooltip-wrapper:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+

@@ -426,7 +426,7 @@ const YearlyComparisonTooltip = ({
     const item = payload[0].payload;
     const isUp = item.selisih >= 0;
     return (
-      <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-xs space-y-1.5 min-w-[210px]">
+      <div className="bg-white border border-slate-200/90 rounded-xl shadow-md p-3 text-xs space-y-1.5 min-w-[210px] select-none pointer-events-none outline-none ring-0">
         <div className="font-bold text-slate-800 border-b border-slate-100 pb-1 flex justify-between items-center">
           <span className="text-slate-900 font-bold">Tahun {item.tahun}</span>
           <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${isUp ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
@@ -522,7 +522,7 @@ const MonthlyCycleTooltip = ({
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-xs">
+      <div className="bg-white border border-slate-200/90 rounded-lg shadow-md p-3 text-xs select-none pointer-events-none outline-none ring-0">
         <p className="font-semibold text-slate-700 mb-1">{label}</p>
         <p className="text-slate-900 font-bold">
           Rp {payload[0].value.toLocaleString('id-ID')} / kg
@@ -926,6 +926,8 @@ export default function MarketDemandPage() {
                       tickFormatter={v => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
                     />
                     <Tooltip
+                      cursor={false}
+                      wrapperStyle={{ outline: 'none', pointerEvents: 'none' }}
                       content={
                         <YearlyComparisonTooltip
                           plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
@@ -1560,7 +1562,7 @@ export default function MarketDemandPage() {
                     tickLine={false}
                     tickFormatter={v => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip cursor={false} wrapperStyle={{ outline: 'none', pointerEvents: 'none' }} content={<CustomTooltip />} />
                   <Bar
                     dataKey="harga"
                     radius={[4, 4, 0, 0]}
@@ -1627,7 +1629,7 @@ export default function MarketDemandPage() {
                     tickLine={false}
                     tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip cursor={false} wrapperStyle={{ outline: 'none', pointerEvents: 'none' }} content={<CustomTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="harga"
