@@ -674,6 +674,11 @@ export default function MarketDemandPage() {
     if (targetName) {
       const found = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase() === targetName.toLowerCase());
       if (found) return found;
+      const partialFound = COMMODITY_TRENDS.find(c =>
+        c.komoditas.toLowerCase().includes(targetName.toLowerCase()) ||
+        targetName.toLowerCase().includes(c.komoditas.toLowerCase())
+      );
+      if (partialFound) return partialFound;
       return getUniversalCommodityData(targetName);
     }
     if (searchQuery.trim()) {
@@ -801,20 +806,56 @@ export default function MarketDemandPage() {
 
           {/* Quick Filter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-            {[
-              { label: activePetani.jenis_tanaman || 'Bawang Merah', sub: isUserLahan ? 'Lahan Anda' : 'Default Sistem' },
-              { label: pulse.mostDemanded.komoditas, sub: 'Permintaan Tertinggi' },
-              { label: pulse.fastestRising.komoditas, sub: 'Kenaikan Tercepat' },
-              { label: pulse.mostStable.komoditas, sub: 'Paling Stabil' },
-            ]
-              .filter((tab, idx, arr) => arr.findIndex(t => t.label.toLowerCase() === tab.label.toLowerCase()) === idx)
-              .map(tab => {
-                const isSelected = currentDetailItem.komoditas.toLowerCase() === tab.label.toLowerCase();
+            {(() => {
+              const farmerCrop = activePetani.jenis_tanaman || 'Bawang Merah';
+              const matchedFarmerComm = COMMODITY_TRENDS.find(c =>
+                c.komoditas.toLowerCase() === farmerCrop.toLowerCase() ||
+                c.komoditas.toLowerCase().includes(farmerCrop.toLowerCase()) ||
+                farmerCrop.toLowerCase().includes(c.komoditas.toLowerCase())
+              );
+              const farmerTargetKey = matchedFarmerComm ? matchedFarmerComm.komoditas : farmerCrop;
+
+              const tabs = [
+                {
+                  label: farmerCrop,
+                  targetKey: farmerTargetKey,
+                  sub: isUserLahan ? 'Lahan Anda' : 'Default Sistem'
+                },
+                {
+                  label: pulse.mostDemanded.komoditas,
+                  targetKey: pulse.mostDemanded.komoditas,
+                  sub: 'Permintaan Tertinggi'
+                },
+                {
+                  label: pulse.fastestRising.komoditas,
+                  targetKey: pulse.fastestRising.komoditas,
+                  sub: 'Kenaikan Tercepat'
+                },
+                {
+                  label: pulse.mostStable.komoditas,
+                  targetKey: pulse.mostStable.komoditas,
+                  sub: 'Paling Stabil'
+                },
+              ].filter((tab, idx, arr) => arr.findIndex(t => t.targetKey.toLowerCase() === tab.targetKey.toLowerCase()) === idx);
+
+              return tabs.map(tab => {
+                const currentName = currentDetailItem.komoditas.toLowerCase();
+                const targetKeyLower = tab.targetKey.toLowerCase();
+                const labelLower = tab.label.toLowerCase();
+
+                const isSelected =
+                  currentName === targetKeyLower ||
+                  currentName === labelLower ||
+                  currentName.startsWith(labelLower) ||
+                  currentName.includes(labelLower) ||
+                  targetKeyLower.includes(currentName) ||
+                  labelLower.includes(currentName);
+
                 return (
                   <button
-                    key={tab.label}
+                    key={tab.targetKey}
                     type="button"
-                    onClick={() => setSelectedKomoditas(tab.label)}
+                    onClick={() => setSelectedKomoditas(tab.targetKey)}
                     className={`px-3.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all whitespace-nowrap border ${
                       isSelected
                         ? 'bg-emerald-700 text-white border-emerald-700 font-bold'
@@ -827,7 +868,8 @@ export default function MarketDemandPage() {
                     </span>
                   </button>
                 );
-              })}
+              });
+            })()}
           </div>
         </div>
 
