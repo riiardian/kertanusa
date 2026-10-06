@@ -25,6 +25,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import YearlyComparisonCustomChart from '@/components/YearlyComparisonCustomChart';
 import {
   TrendingUp,
   Search,
@@ -398,66 +399,7 @@ function buildMultiYearHistory(
   };
 }
 
-// Tooltip untuk perbandingan 5 tahun (Tanam vs Panen)
-interface TooltipPayloadEntry {
-  value: number;
-  payload: {
-    tahun: number;
-    hargaTanam: number;
-    hargaPanen: number;
-    selisih: number;
-    persentase: number;
-    isProfit: boolean;
-  };
-}
 
-const YearlyComparisonTooltip = ({
-  active,
-  payload,
-  plantMonth,
-  harvestMonth,
-}: {
-  active?: boolean;
-  payload?: TooltipPayloadEntry[];
-  plantMonth: string;
-  harvestMonth: string;
-}) => {
-  if (active && payload && payload.length) {
-    const item = payload[0].payload;
-    const isUp = item.selisih >= 0;
-    return (
-      <div className="bg-white border border-slate-200/90 rounded-xl shadow-md p-3 text-xs space-y-1.5 min-w-[210px] select-none pointer-events-none outline-none ring-0">
-        <div className="font-bold text-slate-800 border-b border-slate-100 pb-1 flex justify-between items-center">
-          <span className="text-slate-900 font-bold">Tahun {item.tahun}</span>
-          <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${isUp ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-            {isUp ? `+${item.persentase}%` : `${item.persentase}%`}
-          </span>
-        </div>
-        <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-slate-500 inline-block" />
-            Tanam ({plantMonth}):
-          </span>
-          <span className="font-semibold text-slate-900">Rp {item.hargaTanam.toLocaleString('id-ID')}</span>
-        </div>
-        <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-700 inline-block" />
-            Panen ({harvestMonth}):
-          </span>
-          <span className="font-bold text-emerald-700">Rp {item.hargaPanen.toLocaleString('id-ID')}</span>
-        </div>
-        <div className="border-t border-slate-100 pt-1 text-[11px] flex justify-between items-center text-slate-500">
-          <span>Selisih Harga:</span>
-          <span className={`font-bold ${isUp ? 'text-emerald-700' : 'text-rose-600'}`}>
-            {isUp ? `+Rp ${item.selisih.toLocaleString('id-ID')}` : `-Rp ${Math.abs(item.selisih).toLocaleString('id-ID')}`} / kg
-          </span>
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
 
 // Tooltip untuk siklus 12 bulan
 interface MonthlyPayloadEntry {
@@ -896,62 +838,13 @@ export default function MarketDemandPage() {
               </span>
             </div>
 
-            {/* Chart Area - Clean & Natural */}
+            {/* Chart Area - Clean & Natural Custom Chart */}
             <div className="border border-slate-200 rounded-2xl bg-white p-3 sm:p-5 space-y-3">
-              <div className="h-[250px] sm:h-[280px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={multiYearAnalysis.yearlyComparison}
-                    margin={
-                      isMobile
-                        ? { top: 16, right: 6, left: -14, bottom: 0 }
-                        : { top: 20, right: 12, left: -6, bottom: 0 }
-                    }
-                    barCategoryGap={isMobile ? '32%' : '26%'}
-                    barGap={isMobile ? 2 : 4}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis
-                      dataKey="tahun"
-                      tick={{ fontSize: isMobile ? 11 : 12, fill: '#334155', fontWeight: 700 }}
-                      axisLine={{ stroke: '#cbd5e1' }}
-                      tickLine={false}
-                      dy={4}
-                    />
-                    <YAxis
-                      width={isMobile ? 42 : 48}
-                      tick={{ fontSize: 10, fill: '#94a3b8' }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={v => v === 0 ? '0' : `${(v / 1000).toFixed(0)}k`}
-                    />
-                    <Tooltip
-                      cursor={false}
-                      wrapperStyle={{ outline: 'none', pointerEvents: 'none' }}
-                      content={
-                        <YearlyComparisonTooltip
-                          plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
-                          harvestMonth={multiYearAnalysis.harvestOutlook.harvestMonthName}
-                        />
-                      }
-                    />
-                    <Bar
-                      dataKey="hargaTanam"
-                      name={`Harga Saat Tanam (${multiYearAnalysis.harvestOutlook.plantMonthName})`}
-                      fill="#64748b"
-                      radius={isMobile ? [3, 3, 0, 0] : [5, 5, 0, 0]}
-                      maxBarSize={isMobile ? 14 : 26}
-                    />
-                    <Bar
-                      dataKey="hargaPanen"
-                      name={`Harga Saat Panen (${multiYearAnalysis.harvestOutlook.harvestMonthName})`}
-                      fill="#047857"
-                      radius={isMobile ? [3, 3, 0, 0] : [5, 5, 0, 0]}
-                      maxBarSize={isMobile ? 14 : 26}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <YearlyComparisonCustomChart
+                data={multiYearAnalysis.yearlyComparison}
+                plantMonth={multiYearAnalysis.harvestOutlook.plantMonthName}
+                harvestMonth={multiYearAnalysis.harvestOutlook.harvestMonthName}
+              />
 
               {/* Keterangan Batang & Kesimpulan Panen yang Menyatu Sederhana */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
