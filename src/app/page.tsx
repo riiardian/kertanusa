@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import IndonesiaMap3D from '@/components/IndonesiaMap3D';
+import MapFarmlandFAQ from '@/components/MapFarmlandFAQ';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
 import { useEffect, useState } from 'react';
@@ -253,6 +254,9 @@ export default function HomePage() {
           </div>
 
           <IndonesiaMap3D />
+
+          {/* FAQ Pemetaan Lahan & Koordinat */}
+          <MapFarmlandFAQ />
         </section>
 
       </div>

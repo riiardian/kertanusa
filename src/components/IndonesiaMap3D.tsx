@@ -677,6 +677,7 @@ export default function IndonesiaMap3D({
         <div ref={mapContainerRef} className="w-full h-full z-0 bg-transparent" style={{ background: 'transparent' }}></div>
 
         {/* Clean Seamless Zoom & Reset Controls (Zero White Box, Blends with Canvas) */}
+        {/* Clean Seamless Zoom, Reset & Mobile Lock Controls (Aligned Top-Right, Zero White Box) */}
         <div className="absolute right-2.5 top-2.5 z-20 flex flex-col gap-1">
           <button
             onClick={() => mapInstanceRef.current?.zoomIn()}
@@ -713,29 +714,18 @@ export default function IndonesiaMap3D({
           >
             <Compass className="w-4.5 h-4.5" />
           </button>
-        </div>
 
-        {/* Mobile Smooth Scroll Shield / Pan Toggle (Gembok Terkunci & Gembok Terbuka) */}
-        <div className={`absolute bottom-3 right-3 z-20 md:hidden ${selectedFarmer ? 'hidden' : 'block'}`}>
+          {/* Gembok Kunci/Buka Geser Peta (Ikon Saja di Mobile, Sejajar dengan Zoom) */}
           <button
             onClick={toggleMobileDrag}
-            className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer ${
-              isTouchPanEnabled 
-                ? 'bg-emerald-100/80 text-emerald-800 border border-emerald-300/80' 
-                : 'bg-slate-200/50 text-slate-700 border border-slate-300/60'
-            }`}
-            title={isTouchPanEnabled ? "Kunci Geser Peta" : "Buka Geser Peta"}
+            className="w-8 h-8 rounded-xl bg-transparent hover:bg-slate-200/60 flex items-center justify-center transition-all cursor-pointer active:scale-95 md:hidden"
+            title={isTouchPanEnabled ? "Kunci Geser Peta (Scroll Halaman Aktif)" : "Buka Geser Peta (Navigasi Peta Aktif)"}
+            aria-label={isTouchPanEnabled ? "Kunci Geser Peta" : "Buka Geser Peta"}
           >
             {isTouchPanEnabled ? (
-              <>
-                <Unlock className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Geser Aktif</span>
-              </>
+              <Unlock className="w-4.5 h-4.5 text-emerald-600" />
             ) : (
-              <>
-                <Lock className="w-3.5 h-3.5 text-slate-500" />
-                <span>Peta Terkunci</span>
-              </>
+              <Lock className="w-4.5 h-4.5 text-slate-600" />
             )}
           </button>
         </div>
