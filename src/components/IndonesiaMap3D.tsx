@@ -275,7 +275,7 @@ export default function IndonesiaMap3D({
     loadData();
   }, []);
 
-  // Initialize Leaflet Map with Natural Esri Satellite Imagery
+  // Initialize Leaflet Map with Islands-Only Vector Layers (Pure White Canvas, No Ocean Water)
   useEffect(() => {
     if (!isClient || !mapContainerRef.current || mapInstanceRef.current) return;
 
@@ -291,7 +291,7 @@ export default function IndonesiaMap3D({
         center: [-2.2, 118.0],
         zoom: isMobileDevice ? 4.5 : 5,
         minZoom: 4,
-        maxZoom: 18,
+        maxZoom: 11,
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
@@ -301,11 +301,59 @@ export default function IndonesiaMap3D({
 
       mapInstanceRef.current = map;
 
-      // Natural High-Resolution Satellite Layer (Esri World Imagery)
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18,
-        keepBuffer: 8
-      }).addTo(map);
+      // Constrain view to Indonesian archipelago bounds to keep view focused
+      const southWest = L.latLng(-12.5, 93.0);
+      const northEast = L.latLng(7.5, 142.5);
+      const bounds = L.latLngBounds(southWest, northEast);
+      map.setMaxBounds(bounds.pad(0.08));
+
+      // Load and render Islands of Indonesia directly over pure white background (No ocean water)
+      try {
+        const geoRes = await fetch('/indonesia-islands.json');
+        if (geoRes.ok && isMounted) {
+          const geoData = await geoRes.json();
+          const geoLayer = L.geoJSON(geoData, {
+            style: () => ({
+              fillColor: '#e8f5e9', // Soft natural pastoral green (clean & fertile land)
+              fillOpacity: 0.95,
+              color: '#cbd5e1',     // Subtle, crisp boundary outline
+              weight: 1,
+              opacity: 0.9
+            }),
+            onEachFeature: (feature: any, layer: any) => {
+              const provName = feature.properties?.Propinsi || 'Indonesia';
+              layer.bindTooltip(
+                `<div style="font-weight: 600; font-size: 11px; color: #0f172a; text-transform: capitalize;">${provName.toLowerCase()}</div>`,
+                {
+                  sticky: true,
+                  direction: 'top',
+                  className: 'island-province-tooltip'
+                }
+              );
+
+              layer.on({
+                mouseover: (e: any) => {
+                  const l = e.target;
+                  l.setStyle({
+                    fillColor: '#bbf7d0', // Fresh emerald hover highlight
+                    color: '#059669',     // Emerald outline on hover
+                    weight: 1.5,
+                    fillOpacity: 1
+                  });
+                },
+                mouseout: (e: any) => {
+                  geoLayer.resetStyle(e.target);
+                }
+              });
+            }
+          }).addTo(map);
+
+          // Keep GeoJSON at bottom layer under telemetry lines and markers
+          geoLayer.bringToBack();
+        }
+      } catch (err) {
+        console.warn('Failed to load indonesia-islands.json', err);
+      }
 
       // Network Lines Layer Group (Rendered under markers)
       const networkLinesGroup = L.layerGroup([]).addTo(map);
@@ -321,12 +369,12 @@ export default function IndonesiaMap3D({
         map.closePopup();
       });
 
-      // Clean Equator Khatulistiwa line
+      // Clean Equator Khatulistiwa line (0° Latitude)
       L.polyline([[0, 94], [0, 142]], {
         color: '#0284c7',
-        weight: 1.5,
-        dashArray: '6, 8',
-        opacity: 0.5
+        weight: 1.2,
+        dashArray: '5, 7',
+        opacity: 0.45
       }).addTo(map);
 
       setTimeout(() => {
@@ -383,13 +431,13 @@ export default function IndonesiaMap3D({
       const dynamicLines = computeDynamicMeshLines(farmers, filterRegion, isRegionJawa);
 
       dynamicLines.forEach(({ points, isBackbone }) => {
-        // Clean Crisp White Telemetry Line (Hardware Accelerated, Smooth 60fps)
+        // Clean Crisp Emerald Telemetry Line across Archipelago (60fps GPU)
         L.polyline(points, {
           className: 'telemetry-network-line',
-          color: '#ffffff',
-          weight: isBackbone ? 1.5 : 1.2,
-          opacity: isBackbone ? 0.85 : 0.75,
-          dashArray: isBackbone ? undefined : '5, 7',
+          color: isBackbone ? '#059669' : '#10b981',
+          weight: isBackbone ? 1.6 : 1.2,
+          opacity: isBackbone ? 0.75 : 0.5,
+          dashArray: isBackbone ? '6, 6' : '4, 6',
           smoothFactor: 1.5
         }).addTo(linesGroup);
       });
@@ -562,11 +610,11 @@ export default function IndonesiaMap3D({
           if (isMobile) {
             // Mobile: Close popup, fly camera slightly south so pin is nicely visible in top-half of map above bottom card
             mapInstanceRef.current?.closePopup();
-            mapInstanceRef.current?.flyTo([item.renderLat - 0.0035, item.renderLon], 14, { duration: 1.2 });
+            mapInstanceRef.current?.flyTo([item.renderLat - 0.2, item.renderLon], 6.5, { duration: 1.2 });
           } else {
             // Desktop: Open side popup and fly camera centered with right offset
             marker.openPopup();
-            mapInstanceRef.current?.flyTo([item.renderLat, item.renderLon + 0.0045], 14, { duration: 1.2 });
+            mapInstanceRef.current?.flyTo([item.renderLat, item.renderLon + 0.35], 7, { duration: 1.2 });
           }
         });
 
@@ -585,7 +633,7 @@ export default function IndonesiaMap3D({
     if (!mapInstanceRef.current) return;
 
     if (region === 'jawa') {
-      mapInstanceRef.current.flyTo([-7.3, 110.0], 7, { duration: 1.2 });
+      mapInstanceRef.current.flyTo([-7.3, 110.0], 6.5, { duration: 1.2 });
     } else if (region === 'luar-jawa') {
       mapInstanceRef.current.flyTo([-0.5, 117.0], 5, { duration: 1.2 });
     } else {
@@ -599,9 +647,9 @@ export default function IndonesiaMap3D({
   return (
     <div className="w-full space-y-2 text-slate-800">
       
-      {/* Real Satellite Map Area */}
-      <div className="w-full relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm h-[390px] sm:h-[480px] md:h-[580px]" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
-        <div ref={mapContainerRef} className="w-full h-full z-0 rounded-xl"></div>
+      {/* Islands-Only Vector Map Area (Pure White Canvas, No Ocean Water) */}
+      <div className="w-full relative rounded-2xl overflow-hidden border border-slate-200/60 shadow-xs h-[390px] sm:h-[480px] md:h-[580px] bg-white" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
+        <div ref={mapContainerRef} className="w-full h-full z-0 rounded-xl bg-white" style={{ background: '#ffffff' }}></div>
 
         {/* Island Filter Tabs (Clean Floating Top-Left on Map) */}
         <div className="absolute left-2.5 top-2.5 z-20 flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-sm text-[10px] sm:text-[11px]">

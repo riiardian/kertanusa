@@ -1,9 +1,24 @@
 @import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
-/* Satellite Map Theme: Dark Ocean Canvas (Prevents White Flashes during Zoom Out) */
+/* Clean Natural Vector Map Theme: Pure White Canvas (Islands float seamlessly on white background) */
 .leaflet-container {
-  background: #081a28 !important;
+  background: #ffffff !important;
+}
+
+/* Island Province Tooltip */
+.island-province-tooltip {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08) !important;
+}
+.island-province-tooltip:before {
+  border-top-color: #ffffff !important;
 }
 :root {
   --background: #f8fafc;
