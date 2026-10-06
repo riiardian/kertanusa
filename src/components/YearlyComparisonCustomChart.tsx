@@ -63,10 +63,13 @@ export default function YearlyComparisonCustomChart({
   plantMonth,
   harvestMonth,
 }: YearlyComparisonCustomChartProps) {
-  // Default active year is the latest year
-  const [activeYear, setActiveYear] = useState<number | null>(() => {
-    return data.length > 0 ? data[data.length - 1].tahun : null;
-  });
+  // Default active year adalah null (hanya terbuka jika pengguna mengklik batang tahun)
+  const [activeYear, setActiveYear] = useState<number | null>(null);
+
+  // Reset popup jika komoditas atau jadwal tanam-panen berganti
+  useEffect(() => {
+    setActiveYear(null);
+  }, [plantMonth, harvestMonth]);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
