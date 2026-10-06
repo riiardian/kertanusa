@@ -668,35 +668,6 @@ export default function IndonesiaMap3D({
     });
   }, [farmers, filterRegion, highlightFarmerId, mapReady]);
 
-  // Region Focus
-  function handleFocusRegion(region: 'semua' | 'jawa' | 'luar-jawa') {
-    setSelectedFarmer(null);
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.closePopup();
-    }
-    setFilterRegion(region);
-    if (!mapInstanceRef.current) return;
-
-    const isMob = typeof window !== 'undefined' && window.innerWidth < 768;
-    const indonesiaBounds = [
-      [-11.2, 94.8],
-      [6.2, 141.2]
-    ];
-
-    if (region === 'jawa') {
-      mapInstanceRef.current.flyTo([-7.4, 110.2], isMob ? 5.5 : 6.6, { duration: 1.2 });
-    } else if (region === 'luar-jawa') {
-      mapInstanceRef.current.flyTo([-0.8, 118.0], isMob ? 3.4 : 4.8, { duration: 1.2 });
-    } else {
-      mapInstanceRef.current.fitBounds(indonesiaBounds, {
-        padding: isMob ? [8, 8] : [24, 24],
-        duration: 1.2
-      });
-    }
-  }
-
-  const countJawa = farmers.filter(f => isRegionJawa(f.daerah)).length;
-  const countLuarJawa = farmers.filter(f => !isRegionJawa(f.daerah)).length;
 
   return (
     <div className="w-full space-y-2 text-slate-800">
@@ -705,55 +676,21 @@ export default function IndonesiaMap3D({
       <div className="w-full relative rounded-2xl overflow-hidden h-[330px] sm:h-[440px] md:h-[540px] bg-transparent" style={{ isolation: 'isolate', transform: 'translateZ(0)' }}>
         <div ref={mapContainerRef} className="w-full h-full z-0 bg-transparent" style={{ background: 'transparent' }}></div>
 
-        {/* Island Filter Tabs (Clean Floating Top-Left on Map) */}
-        <div className="absolute left-2.5 top-2.5 z-20 flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-slate-200 shadow-sm text-[10px] sm:text-[11px]">
-          <button
-            onClick={() => handleFocusRegion('semua')}
-            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-              filterRegion === 'semua'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Semua {farmers.length > 0 && `(${farmers.length})`}
-          </button>
-          <button
-            onClick={() => handleFocusRegion('jawa')}
-            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-              filterRegion === 'jawa'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Jawa {farmers.length > 0 && `(${countJawa})`}
-          </button>
-          <button
-            onClick={() => handleFocusRegion('luar-jawa')}
-            className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-              filterRegion === 'luar-jawa'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Luar Jawa {farmers.length > 0 && `(${countLuarJawa})`}
-          </button>
-        </div>
-
-        {/* Clean Natural Zoom & Reset Controls */}
-        <div className="absolute right-2.5 top-2.5 z-20 flex flex-col gap-1.5">
+        {/* Clean Seamless Zoom & Reset Controls (Zero White Box, Blends with Canvas) */}
+        <div className="absolute right-2.5 top-2.5 z-20 flex flex-col gap-1">
           <button
             onClick={() => mapInstanceRef.current?.zoomIn()}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/95 hover:bg-white text-slate-700 border border-slate-200 flex items-center justify-center shadow-sm transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-transparent hover:bg-slate-200/60 text-slate-700 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer active:scale-95"
             title="Perbesar Peta"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ZoomIn className="w-4.5 h-4.5" />
           </button>
           <button
             onClick={() => mapInstanceRef.current?.zoomOut()}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/95 hover:bg-white text-slate-700 border border-slate-200 flex items-center justify-center shadow-sm transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-transparent hover:bg-slate-200/60 text-slate-700 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer active:scale-95"
             title="Perkecil Peta"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ZoomOut className="w-4.5 h-4.5" />
           </button>
           <button
             onClick={() => {
@@ -771,10 +708,10 @@ export default function IndonesiaMap3D({
                 });
               }
             }}
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/95 hover:bg-white text-emerald-600 border border-slate-200 flex items-center justify-center shadow-sm transition-colors cursor-pointer"
-            title="Reset Tampilan Nusantara"
+            className="w-8 h-8 rounded-xl bg-transparent hover:bg-slate-200/60 text-emerald-700 hover:text-emerald-800 flex items-center justify-center transition-all cursor-pointer active:scale-95"
+            title="Reset Tampilan Peta Nusantara"
           >
-            <Compass className="w-4 h-4" />
+            <Compass className="w-4.5 h-4.5" />
           </button>
         </div>
 
@@ -782,10 +719,10 @@ export default function IndonesiaMap3D({
         <div className={`absolute bottom-3 right-3 z-20 md:hidden ${selectedFarmer ? 'hidden' : 'block'}`}>
           <button
             onClick={toggleMobileDrag}
-            className={`px-2.5 py-1.5 rounded-xl border shadow-md text-[10.5px] font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer ${
+            className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-semibold flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer ${
               isTouchPanEnabled 
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300' 
-                : 'bg-white/95 text-slate-700 border-slate-200/90'
+                ? 'bg-emerald-100/80 text-emerald-800 border border-emerald-300/80' 
+                : 'bg-slate-200/50 text-slate-700 border border-slate-300/60'
             }`}
             title={isTouchPanEnabled ? "Kunci Geser Peta" : "Buka Geser Peta"}
           >
