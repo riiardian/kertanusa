@@ -620,12 +620,29 @@ export function isRecognizedCrop(namaTanaman: string): boolean {
   if (!q) return false;
 
   const validKeywords = [
-    'padi', 'beras', 'gabah', 'jagung', 'bawang', 'cabai', 'cabe', 'lombok',
-    'tomat', 'nanas', 'nenas', 'durian', 'duren', 'mangga', 'pisang', 'jeruk',
-    'apel', 'kentang', 'wortel', 'singkong', 'ubi', 'kacang', 'kedelai', 'kopi',
-    'kakao', 'cokelat', 'tebu', 'teh', 'tembakau', 'sawit', 'karet', 'jahe',
-    'kunyit', 'kencur', 'kapulaga', 'vanili', 'porang', 'sorgum', 'semangka',
-    'melon', 'pepaya', 'alpukat', 'bayam', 'kangkung', 'terong', 'kubis', 'kol'
+    // Pangan & Palawija
+    'padi', 'beras', 'gabah', 'ketan', 'jagung', 'singkong', 'ubi', 'talas', 'keladi',
+    'kedelai', 'edamame', 'kacang', 'porang', 'sorgum', 'garut', 'ganyong', 'suweg', 'hanjeli', 'jelai',
+    // Sayuran
+    'bawang', 'cabai', 'cabe', 'rawit', 'lombok', 'tomat', 'kentang', 'wortel', 'kubis', 'kol',
+    'buncis', 'kangkung', 'bayam', 'terong', 'timun', 'mentimun', 'jamur', 'pakcoy', 'caisim', 'sawi',
+    'brokoli', 'kembang kol', 'selada', 'lettuce', 'labu', 'jipang', 'waluh', 'pare', 'paria', 'gambas', 'oyong',
+    'rebung', 'paprika', 'asparagus',
+    // Buah-buahan
+    'nanas', 'nenas', 'durian', 'duren', 'mangga', 'pisang', 'jeruk', 'lemon', 'nipis', 'purut',
+    'apel', 'anggur', 'semangka', 'melon', 'pepaya', 'alpukat', 'naga', 'rambutan', 'manggis', 'salak',
+    'kelengkeng', 'lengkeng', 'jambu', 'sirsak', 'belimbing', 'nangka', 'sukun', 'sawo', 'kedondong',
+    'markisa', 'cempedak', 'duku', 'langsat', 'matoa', 'stroberi', 'strawberry', 'kurma', 'srikaya',
+    // Rempah & Bumbu
+    'jahe', 'kunyit', 'kencur', 'kapulaga', 'vanili', 'lada', 'merica', 'cengkeh', 'cengkih', 'pala',
+    'kayu manis', 'temulawak', 'lengkuas', 'laos', 'serai', 'sereh', 'ketumbar', 'kemiri', 'andaliman',
+    'asam jawa', 'bunga lawang', 'pekak', 'salam',
+    // Perkebunan
+    'kopi', 'kakao', 'cokelat', 'sawit', 'karet', 'tembakau', 'tebu', 'teh', 'kelapa', 'kopyor',
+    'aren', 'enau', 'nilam', 'mete', 'pinang', 'gambir', 'kayu putih',
+    // Tanaman Obat
+    'temu kunci', 'bangle', 'temu ireng', 'kumis kucing', 'sambiloto', 'meniran', 'pegagan', 'antanan',
+    'sirih', 'mahkota dewa', 'brotowali', 'mengkudu', 'pace', 'kejibeling', 'rosella', 'stevia', 'kelor', 'aloe'
   ];
 
   return validKeywords.some(kw => q.includes(kw));
