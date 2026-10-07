@@ -1,6 +1,20 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+157. **Pembersihan Navigasi Publik: Hapus Menu Dokumentasi & Privatisasi Riset Petani sebagai Admin Panel [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Menu "Dokumentasi" di hamburger menu dihapus agar navigasi ringkas dan fokus.
+      - Menu "Riset Petani" dihilangkan dari navigasi publik (baik di desktop maupun hamburger menu mobile), karena halaman `/riset-petani` diperuntukkan sebagai panel monitoring internal admin/peneliti untuk memantau data petani terdaftar, bukan menu publik umum.
+    - **Aksi & Solusi**:
+      1. **Pembaruan Navigasi Desktop (`src/components/Navbar.tsx`)**:
+         - Menghapus item `{ href: '/riset-petani', label: 'Riset Petani' }` dari `desktopNavItems`.
+      2. **Pembaruan Navigasi Mobile Hamburger Menu (`src/components/Navbar.tsx`)**:
+         - Menghapus link menu "Riset Petani" dan link menu "Dokumentasi".
+         - Merapikan import ikon yang tidak lagi digunakan (`Users`, `BookOpen`).
+         - Rute `/riset-petani` tetap aktif dan berfungsi 100% saat diakses langsung via URL oleh admin.
+    - **Validasi Build**:
+      - TypeScript compiler lulus 100% tanpa error.
+
 156. **Penyelarasan FAQ Presisi Petani: Badge Kotak Sejajar, Centering Judul, & Kurasi 4 Tanya-Jawab Riil Petani [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Badge hijau aktif sebelumnya menggunakan sudut melengkung berlebihan (*rounded siku-siku*) dan padding yang membuat teks menjorok ke dalam (tidak sejajar dengan pertanyaan lainnya).

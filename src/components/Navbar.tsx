@@ -13,8 +13,6 @@ import {
   TrendingUp,
   PlusCircle, 
   ScanSearch, 
-  Users, 
-  BookOpen, 
   HelpCircle 
 } from 'lucide-react';
 
@@ -72,7 +70,6 @@ export default function Navbar() {
     { href: '/monitoring', label: 'Iklim & pH' },
     { href: '/scan-ai', label: 'Scan AI & Panen' },
     { href: '/tren-pasar', label: 'Daya Beli Pasar' },
-    { href: '/riset-petani', label: 'Riset Petani' },
   ];
 
   return (
@@ -273,33 +270,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 5. Riset Petani */}
-              <div className="py-3">
-                <Link
-                  href="/riset-petani"
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3.5 py-1 transition-colors ${
-                    pathname === '/riset-petani' ? 'text-emerald-700 font-bold' : 'text-slate-800 font-semibold hover:text-emerald-600'
-                  }`}
-                >
-                  <Users className={`w-5 h-5 stroke-[1.8] ${pathname === '/riset-petani' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                  <span className="text-[15px]">Riset Petani</span>
-                </Link>
-              </div>
-
-              {/* 6. Dokumentasi */}
-              <div className="py-3">
-                <Link
-                  href="/#riset"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3.5 py-1 text-slate-800 font-semibold hover:text-emerald-600 transition-colors"
-                >
-                  <BookOpen className="w-5 h-5 stroke-[1.8] text-slate-400" />
-                  <span className="text-[15px]">Dokumentasi</span>
-                </Link>
-              </div>
-
-              {/* 7. FAQ */}
+              {/* 5. FAQ */}
               <div className="py-3">
                 <Link
                   href="/#faq"
