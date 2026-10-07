@@ -1,6 +1,16 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+159. **Pembersihan Halaman Tren Pasar: Hapus Seksi Rekomendasi Komoditas Unggulan Wilayah [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Seksi kartu banner "Rekomendasi Komoditas Unggulan Wilayah" yang berada tepat di bawah Rincian Lahan pada halaman Daya Beli Pasar (`/tren-pasar`) dihapus permanen agar tata letak halaman lebih ringkas, fokus, dan tidak redundan.
+    - **Aksi & Solusi**:
+      1. **Pembersihan Komponen UI (`src/app/tren-pasar/page.tsx`)**:
+         - Menghapus blok kartu rekomendasi komoditas unggulan wilayah (3 kartu pilihan: Cokelat, Cabai Rawit, Bawang Merah).
+         - Halaman langsung mengalir rapi dari Kartu Rincian Lahan menuju Sinyal Pasar & Analisis Siklus Tanam-Panen Historis.
+    - **Validasi Build**:
+      - TypeScript compiler & Next.js production build lulus 100% tanpa error.
+
 158. **Implementasi Animasi Smooth Scrolling Halus dari Hamburger Menu ke Seksi FAQ [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Ketika user berada di Hero section lalu membuka hamburger menu mobile dan mengklik menu FAQ, layar berpindah secara instan dan terasa kaku (*instant jump*).
