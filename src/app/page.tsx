@@ -103,15 +103,30 @@ export default function HomePage() {
       initData();
     };
 
+    // Smooth scroll saat hash #faq dipicu
+    const handleHash = () => {
+      if (typeof window !== 'undefined' && window.location.hash === '#faq') {
+        const faqElem = document.getElementById('faq');
+        if (faqElem) {
+          faqElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('storage', handleSync);
       window.addEventListener('focus', handleSync);
+      window.addEventListener('hashchange', handleHash);
+      if (window.location.hash === '#faq') {
+        setTimeout(handleHash, 250);
+      }
     }
 
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('storage', handleSync);
         window.removeEventListener('focus', handleSync);
+        window.removeEventListener('hashchange', handleHash);
       }
     };
   }, []);

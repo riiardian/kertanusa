@@ -1,6 +1,22 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+158. **Implementasi Animasi Smooth Scrolling Halus dari Hamburger Menu ke Seksi FAQ [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Ketika user berada di Hero section lalu membuka hamburger menu mobile dan mengklik menu FAQ, layar berpindah secara instan dan terasa kaku (*instant jump*).
+      - User meminta adanya transisi animasi *smooth scrolling* yang halus dan mengalir anggun dari atas ke bawah.
+    - **Aksi & Solusi**:
+      1. **Aturan Global Smooth Scroll (`src/app/globals.css` & `src/app/layout.tsx`)**:
+         - Menambahkan `html { scroll-behavior: smooth !important; }` di `globals.css`.
+         - Menambahkan kelas utilitas `scroll-smooth` pada elemen root `<html>` di `layout.tsx`.
+      2. **Transisi Delay & Programmatic Smooth Scroll (`src/components/Navbar.tsx`)**:
+         - Menambahkan handler `handleFaqClick` pada link FAQ mobile menu.
+         - Drawer menu mobile ditutup terlebih dahulu secara instan, lalu diberi jeda 100ms agar rendering frame bebas hambatan, kemudian memanggil `faqElement.scrollIntoView({ behavior: 'smooth', block: 'start' })`.
+      3. **Hash Synchronizer (`src/app/page.tsx`)**:
+         - Menambahkan listener event `hashchange` dan initial load detector untuk `#faq` sehingga navigasi dari rute mana pun selalu bergeser mulus tanpa patah-patah.
+    - **Validasi Build**:
+      - TypeScript compiler lulus 100% tanpa error.
+
 157. **Pembersihan Navigasi Publik: Hapus Menu Dokumentasi & Privatisasi Riset Petani sebagai Admin Panel [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Menu "Dokumentasi" di hamburger menu dihapus agar navigasi ringkas dan fokus.

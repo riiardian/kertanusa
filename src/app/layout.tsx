@@ -51,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${jakarta.variable} ${lora.variable} ${outfit.variable}`}>
+    <html lang="id" className={`${jakarta.variable} ${lora.variable} ${outfit.variable} scroll-smooth`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.png" type="image/png" />

@@ -72,6 +72,19 @@ export default function Navbar() {
     { href: '/tren-pasar', label: 'Daya Beli Pasar' },
   ];
 
+  const handleFaqClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setMobileOpen(false);
+    if (pathname === '/') {
+      e.preventDefault();
+      setTimeout(() => {
+        const faqElement = document.getElementById('faq');
+        if (faqElement) {
+          faqElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  };
+
   return (
     <>
       {/* Main Floating Navbar Header (Bentuk Kapsul Melayang) */}
@@ -274,8 +287,8 @@ export default function Navbar() {
               <div className="py-3">
                 <Link
                   href="/#faq"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3.5 py-1 text-slate-800 font-semibold hover:text-emerald-600 transition-colors"
+                  onClick={handleFaqClick}
+                  className="flex items-center gap-3.5 py-1 text-slate-800 font-semibold hover:text-emerald-600 transition-colors cursor-pointer"
                 >
                   <HelpCircle className="w-5 h-5 stroke-[1.8] text-slate-400" />
                   <span className="text-[15px]">FAQ</span>
