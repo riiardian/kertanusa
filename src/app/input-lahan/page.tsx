@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { RefreshCw, MapPin, Check, ChevronDown, Trash2 } from 'lucide-react';
 import { REGIONS } from '@/lib/agro_regions';
-import { getCropInfo, isRecognizedCrop, SUPPORTED_CROP_NAMES } from '@/lib/crops';
+import { getCropInfo, isRecognizedCrop, SUPPORTED_CROP_NAMES, searchCropSuggestions } from '@/lib/crops';
 import LottieAnimation from '@/components/LottieAnimation';
 import loadingAnimation from '../../../public/growingplant.json';
 
@@ -33,6 +33,7 @@ export default function InputLahanPage() {
   const [error, setError] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCropFocused, setIsCropFocused] = useState(false);
 
   // Cek apakah user sudah pernah mendaftarkan lahan sebelumnya dan validasi dengan database
   useEffect(() => {
@@ -220,6 +221,12 @@ export default function InputLahanPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    if (!isRecognizedCrop(formData.jenis_tanaman)) {
+      setError(`Komoditas "${formData.jenis_tanaman}" tidak dikenali sebagai tanaman budidaya pertanian/hortikultura. Silakan masukkan nama tanaman budidaya yang valid (contoh: Cabai, Bawang Merah, Padi, Nanas, Durian, Jagung, Kacang Tanah, dll).`);
+      return;
+    }
+
     setLoading(true);
 
     const minLoadingTime = new Promise(resolve => setTimeout(resolve, 2000));
@@ -455,25 +462,68 @@ export default function InputLahanPage() {
             )}
           </div>
 
-          {/* Jenis Tanaman (Input Bebas Manual dengan Rekomendasi Datalist & Validasi Riset) */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-slate-700">
-              Jenis Tanaman / Komoditas <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              list="tanaman-options"
-              required
-              placeholder="Ketik jenis tanaman (contoh: Nanas Madu, Durian Montong, Cabai Rawit, Bawang Merah...)"
-              value={formData.jenis_tanaman}
-              onChange={(e) => setFormData({ ...formData, jenis_tanaman: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 text-sm outline-none transition-all duration-200 text-slate-900 placeholder:text-slate-400 font-medium"
-            />
-            <datalist id="tanaman-options">
-              {SUPPORTED_CROP_NAMES.map(c => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
+          {/* Jenis Tanaman (Input Bebas Manual dengan Rekomendasi Interaktif & Validasi Riset) */}
+          <div className="space-y-1.5 relative">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-slate-700">
+                Jenis Tanaman / Komoditas <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-[11px] text-slate-400">Pilih opsi atau ketik manual</span>
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                list="tanaman-options"
+                required
+                placeholder="Ketik jenis tanaman (contoh: Durian, Nanas Madu, Cabai Rawit, Padi, Bawang, Kacang Tanah...)"
+                value={formData.jenis_tanaman}
+                onFocus={() => setIsCropFocused(true)}
+                onBlur={() => setTimeout(() => setIsCropFocused(false), 250)}
+                onChange={(e) => {
+                  setFormData({ ...formData, jenis_tanaman: e.target.value });
+                  setIsCropFocused(true);
+                }}
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 text-sm outline-none transition-all duration-200 text-slate-900 placeholder:text-slate-400 font-medium"
+              />
+              <datalist id="tanaman-options">
+                {SUPPORTED_CROP_NAMES.map(c => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+
+              {/* Dropdown Rekomendasi Cepat / Autocomplete Responsif */}
+              {isCropFocused && (
+                <div className="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-y-auto divide-y divide-slate-100">
+                  {searchCropSuggestions(formData.jenis_tanaman).map((crop) => (
+                    <button
+                      key={crop.name}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setFormData(prev => ({ ...prev, jenis_tanaman: crop.name }));
+                        setIsCropFocused(false);
+                      }}
+                      className="w-full text-left px-3.5 py-2 hover:bg-emerald-50/70 transition-colors flex items-center justify-between gap-2 text-xs group cursor-pointer"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-800 group-hover:text-emerald-800">
+                          {crop.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400">
+                          {crop.is_tanaman_tahunan
+                            ? `Pohon Tahunan • Panen Perdana ~${crop.umur_panen_hari} HST (±${Math.round(crop.umur_panen_hari / 365)} Thn)`
+                            : `Tanaman Semusim • Umur Panen ~${crop.umur_panen_hari} HST`}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600 group-hover:bg-emerald-100 group-hover:text-emerald-700 shrink-0">
+                        {crop.category}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Indikator Validasi & Estimasi Panen Berdasarkan Riset Agronomi */}
             {formData.jenis_tanaman.trim().length > 1 && (() => {
@@ -481,20 +531,36 @@ export default function InputLahanPage() {
               const isValid = isRecognizedCrop(formData.jenis_tanaman);
               if (isValid) {
                 return (
-                  <div className="flex items-center gap-2 p-2 bg-emerald-50/90 border border-emerald-200 rounded-lg text-emerald-800 text-[11px] font-medium">
-                    <span>🌱</span>
-                    <span>
-                      Terdeteksi: <strong>{detected.nama}</strong> • Estimasi Umur Panen: <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST</strong> (Sesuai Riset Agronomi Balitbangtan)
-                    </span>
+                  <div className="p-2.5 bg-emerald-50/90 border border-emerald-200 rounded-lg text-emerald-800 text-[11px] font-medium space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <span>🌱</span>
+                      <span>
+                        Terdeteksi: <strong>{detected.nama}</strong> ({detected.kategori})
+                      </span>
+                    </div>
+                    <div className="pl-5 text-emerald-700 text-[11px] leading-relaxed">
+                      {detected.is_tanaman_tahunan ? (
+                        <span>
+                          🌳 <strong>Tanaman Tahunan (Pohon):</strong> Estimasi panen perdana dari bibit sambung/okulasi adalah <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST (±{Math.round(detected.umur_panen_hari / 365)} Tahun)</strong>. Pohon dewasa berbuah berulang dengan siklus musim <strong>~{detected.siklus_buah_hari || 120} hari</strong>.
+                        </span>
+                      ) : (
+                        <span>
+                          🌾 <strong>Tanaman Semusim:</strong> Estimasi panen: <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST</strong> (±{detected.umur_panen_hari >= 30 ? (detected.umur_panen_hari / 30).toFixed(1) + ' Bulan' : detected.umur_panen_hari + ' Hari'}) sesuai data riset Balitbangtan.
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               }
               return (
-                <div className="flex items-center gap-2 p-2 bg-amber-50/90 border border-amber-200 rounded-lg text-amber-800 text-[11px] font-medium">
-                  <span>⚠️</span>
-                  <span>
-                    Komoditas <strong>&quot;{formData.jenis_tanaman}&quot;</strong> belum terdaftar dalam basis riset agronomi nasional. Pastikan Anda memasukkan nama tanaman budidaya yang valid.
-                  </span>
+                <div className="flex items-start gap-2 p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-[11px] font-medium">
+                  <span className="text-base leading-none">⚠️</span>
+                  <div>
+                    <strong className="block text-rose-900">Komoditas &quot;{formData.jenis_tanaman}&quot; tidak dikenali</strong>
+                    <span>
+                      Sistem hanya memproses tanaman budidaya pertanian/hortikultura resmi (contoh: <em>Cabai, Bawang Merah, Padi, Nanas, Durian, Jagung, Kacang Tanah</em>). Input yang bukan tanaman tidak dapat disimpan.
+                    </span>
+                  </div>
                 </div>
               );
             })()}
@@ -550,7 +616,7 @@ export default function InputLahanPage() {
           <div className="pt-2 space-y-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (formData.jenis_tanaman.trim().length > 1 && !isRecognizedCrop(formData.jenis_tanaman))}
               className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>{isEditing ? 'Perbarui Data Lahan' : 'Simpan Data Lahan'}</span>

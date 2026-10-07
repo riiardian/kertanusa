@@ -14,6 +14,7 @@ import {
 import { recommendBestSeeds } from '@/lib/seed_recommender';
 import { REGIONS } from '@/lib/agro_regions';
 import { PetaniRecord } from '@/lib/types';
+import { isRecognizedCrop } from '@/lib/crops';
 import {
   AreaChart,
   Area,
@@ -87,7 +88,7 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
 function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
   if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset hortikultura)
-  if (lower.includes('durian') || lower.includes('duren')) return 120; // 4 bulan (siklus bunga anthesis ke matang petik 110-130 HST)
+  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 tahun dari bibit sambung pucuk hingga panen perdana (4-6 tahun riil). Siklus bunga→buah hanya 110-130 HST untuk pohon DEWASA
   if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke matang petik 110-130 HST)
   if (lower.includes('apel') || lower.includes('apple')) return 130; // ~4.3 bulan (Siklus bunga ke matang petik 120-140 HST)
   if (lower.includes('jeruk') || lower.includes('citrus')) return 240; // 8 bulan
@@ -542,6 +543,16 @@ export default function MarketDemandPage() {
   const [calcLuas, setCalcLuas] = useState<number>(10000);
   const [daysPassed, setDaysPassed] = useState<number>(0);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
+
+  const searchSuggestions = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return [];
+    return COMMODITY_TRENDS.filter(c =>
+      c.komoditas.toLowerCase().includes(q) ||
+      c.kategori.toLowerCase().includes(q)
+    ).slice(0, 6);
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -767,6 +778,18 @@ export default function MarketDemandPage() {
             </span>
           </div>
         </div>
+
+        {isUserLahan && !isRecognizedCrop(activePetani.jenis_tanaman) && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block text-amber-950">Komoditas &ldquo;{activePetani.jenis_tanaman}&rdquo; tidak terdaftar resmi</strong>
+              <span>
+                Nama ini tidak dikenali sebagai tanaman budidaya pertanian/hortikultura. Grafik dan proyeksi pasar di bawah menggunakan komoditas acuan <strong>{currentDetailItem.komoditas}</strong>. Anda dapat memperbarui data di menu Pendaftaran Lahan.
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── 2. SINYAL PASAR & ANALISIS SIKLUS TANAM-PANEN HISTORIS ── */}
@@ -1053,20 +1076,25 @@ export default function MarketDemandPage() {
           </div>
 
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10" />
             <input
               type="text"
-              placeholder="Ketik tanaman (contoh: Nanas, Durian, Cabai Rawit, Bawang Merah, Padi, Jagung, Kacang Tanah)..."
+              placeholder="Ketik tanaman (contoh: Durian, Nanas, Cabai Rawit, Bawang Merah, Padi, Jagung, Kacang Tanah)..."
               value={searchQuery}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
               onChange={e => {
                 const val = e.target.value;
                 setSearchQuery(val);
+                setIsSearchFocused(true);
                 const q = val.trim().toLowerCase();
                 if (q) {
-                  // Hanya ubah komoditas aktif jika input persis cocok dengan komoditas terdaftar
-                  const exact = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase() === q);
-                  if (exact) {
-                    setSelectedKomoditas(exact.komoditas);
+                  const matched = COMMODITY_TRENDS.find(c => {
+                    const k = c.komoditas.toLowerCase();
+                    return k === q || k.startsWith(q) || (q.length >= 4 && k.includes(q));
+                  });
+                  if (matched) {
+                    setSelectedKomoditas(matched.komoditas);
                   }
                 }
               }}
@@ -1076,10 +1104,54 @@ export default function MarketDemandPage() {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer z-10"
               >
                 <X className="w-4 h-4" />
               </button>
+            )}
+
+            {/* Dropdown Saran Komoditas Responsif */}
+            {isSearchFocused && searchQuery.trim().length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white border border-slate-200 rounded-xl shadow-xl max-h-64 overflow-y-auto divide-y divide-slate-100">
+                {searchSuggestions.length > 0 ? (
+                  searchSuggestions.map((item) => (
+                    <button
+                      key={item.komoditas}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSelectedKomoditas(item.komoditas);
+                        setSearchQuery(item.komoditas);
+                        setIsSearchFocused(false);
+                        const el = document.getElementById('analisis-komoditas');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-50/60 transition-colors flex items-center justify-between gap-3 text-xs group cursor-pointer"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-800 group-hover:text-emerald-900">
+                          {item.komoditas}
+                        </span>
+                        <span className="text-[10px] text-slate-500">
+                          {item.umur_panen}
+                        </span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-bold text-slate-900 block">
+                          Rp {item.harga_saat_ini.toLocaleString('id-ID')}/kg
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium group-hover:bg-emerald-100 group-hover:text-emerald-800">
+                          {item.kategori}
+                        </span>
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="p-3 text-center text-xs text-slate-500">
+                    Tidak ditemukan komoditas budidaya resmi &quot;{searchQuery}&quot;.
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

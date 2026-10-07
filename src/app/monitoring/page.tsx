@@ -9,6 +9,7 @@ import {
 import { WeatherData, PetaniRecord } from '@/lib/types';
 import { REGIONS } from '@/lib/agro_regions';
 import { getFallbackWeatherData } from '@/lib/weather';
+import { isRecognizedCrop } from '@/lib/crops';
 
 const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
   id: 'benchmark-brebes',
@@ -83,43 +84,46 @@ function getCropStages(cropName: string): CropGrowthStage[] {
     ];
   }
 
-  // Durian (Montong / Bawor / Musang King)
+  // Durian (Montong / Bawor / Musang King) — SIKLUS POHON PENUH DARI BIBIT
+  // KOREKSI AGRONOMI: Durian adalah tanaman TAHUNAN (perennial tree crop)
+  // Bibit sambung pucuk → panen perdana = 4-6 TAHUN (bukan 4 bulan!)
+  // 110-130 HST hanya berlaku untuk siklus bunga → buah pada pohon DEWASA
   if (c.includes('durian') || c.includes('duren')) {
     return [
       {
-        title: 'Inisiasi Kuncup Bunga di Dahan',
-        hstRange: 'HST 1 – 25',
+        title: 'Adaptasi Bibit & Perakaran Awal',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
         minHst: 1,
-        maxHst: 25,
-        warning: 'Kuncup bunga durian mulai membesar di dahan utama. Hentikan pemupukan unsur nitrogen dan jaga kelembapan tanah sedang di bawah tajuk.'
+        maxHst: 365,
+        warning: 'Bibit sambung pucuk bersertifikat ditanam di lubang 60×60×60 cm dengan jarak 10×10 m. Isi 20 kg pupuk kandang matang/lubang. Jaga kelembapan tanah tanpa tergenang. Pasang ajir dan naungan sementara dari pelepah daun.'
       },
       {
-        title: 'Bunga Mekar (Anthesis) & Penyerbukan',
-        hstRange: 'HST 26 – 45',
-        minHst: 26,
-        maxHst: 45,
-        warning: 'Bunga durian mekar pada malam hari. Semprot unsur Kalsium dan Boron untuk memperkokoh tangkai bunga agar tidak gugur massal.'
+        title: 'Pembentukan Tajuk & Cabang Primer',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Bentuk arsitektur tajuk piramida dengan pemangkasan terencana. Buang cabang silang atau tumbuh ke bawah. Berikan NPK 15-15-15 sebanyak 200 g/pohon tiap 3 bulan. Waspadai penggerek batang (Batocera sp.) yang melubangi batang muda.'
       },
       {
-        title: 'Pentil Duri & Seleksi Buah (Thinning)',
-        hstRange: 'HST 46 – 75',
-        minHst: 46,
-        maxHst: 75,
-        warning: 'Pentil buah sebesar bola tenis. Lakukan penjarangan buah: sisakan 2–3 buah terbaik per dompolan di dahan utama agar mencapai bobot Grade A.'
+        title: 'Pertumbuhan Vegetatif Aktif & Penguatan Batang',
+        hstRange: 'Tahun 3 (HST 731 – 1.095)',
+        minHst: 731,
+        maxHst: 1095,
+        warning: 'Pohon tumbuh membesar pesat. Tingkatkan NPK menjadi 500 g/pohon tiap 3 bulan. Tambahkan pupuk mikro Boron dan Zink untuk menyiapkan kualitas bunga. Kurangi nitrogen bertahap di penghujung tahun ke-3 untuk persiapan generatif.'
       },
       {
-        title: 'Pembesaran Buah & Pengikatan Tali Dahan',
-        hstRange: 'HST 76 – 105',
-        minHst: 76,
-        maxHst: 105,
-        warning: 'Buah durian membesar pesat. Pasang tali pengikat dahan dan buah ke batang utama untuk mencegah dahan patah atau buah jatuh sebelum waktunya.'
+        title: 'Inisiasi Generatif & Percobaan Bunga Perdana',
+        hstRange: 'Tahun 4–5 (HST 1.096 – 1.825)',
+        minHst: 1096,
+        maxHst: 1825,
+        warning: 'Fase kritis menuju berbuah pertama kali. Lakukan stres air (water stress) 3–4 minggu di musim kemarau untuk merangsang inisiasi bunga. Ganti ke pupuk tinggi Kalium dan Fosfat. Kuncup "mata kepiting" akan mulai muncul di dahan utama — tanda pohon siap berbuah!'
       },
       {
-        title: 'Pematangan Daging Buah & Masak Jatuh/Petik',
-        hstRange: 'HST 106 – 120+',
-        minHst: 106,
-        maxHst: 999,
-        warning: 'Juring durian mengembang, duri melunak lentur, dan tercium aroma harum khas (~120 HST). Buah siap dipetik bertali atau tunggu masak jatuh alami.'
+        title: 'Pohon Dewasa Produktif — Siklus Buah Rutin',
+        hstRange: 'Tahun 5+ (HST 1.826+)',
+        minHst: 1826,
+        maxHst: 99999,
+        warning: 'Pohon durian dewasa berbuah 1–2 kali per tahun secara rutin. Setiap siklus: bunga mekar → buah masak = 110–130 hari. Lakukan penjarangan buah (sisakan 2–3 terbaik per dahan) dan pasang tali pengikat dahan. Pohon produktif dapat bertahan 20–50 tahun.'
       }
     ];
   }
@@ -585,39 +589,52 @@ function getCropCareGuide(cropName: string, luasTanah: number, satuanLuas: strin
     };
   }
 
-  // 0B. DURIAN
+  // 0B. DURIAN — Tanaman Tahunan (Perennial Tree Crop)
+  // Bibit sambung pucuk → panen perdana = 4-6 tahun
+  // Siklus bunga → buah (untuk pohon dewasa) = 110-130 HST
   if (c.includes('durian') || c.includes('duren')) {
-    const isAnthesis = hst <= 45;
-    const isPentil = hst > 45 && hst <= 75;
+    const isTahunPertama = hst <= 365;
+    const isTahunKedua = hst > 365 && hst <= 730;
+    const isTahunKetiga = hst > 730 && hst <= 1095;
+    const isPreGeneratif = hst > 1095 && hst <= 1825;
+    const isPohonDewasa = hst > 1825;
 
     const siramDesc = isWet
       ? 'Lahan kebun durian becek tergenang! Buat saluran parit pembuangan air di luar piringan tajuk. Genangan air memicu jamur mematikan kanker batang Phytophthora palmivora.'
       : isDry
-      ? 'Tanah piringan pohon durian kering. Alirkan irigasi piringan di bawah kanopi luar tajuk seluas ' + userLuasLabel + '. Pohon durian sangat membutuhkan air saat pembesaran buah.'
+      ? 'Tanah piringan pohon durian kering. Alirkan irigasi piringan di bawah kanopi luar tajuk seluas ' + userLuasLabel + '. Pohon durian butuh air cukup untuk pertumbuhan vegetatif dan pengisian buah.'
       : 'Kondisi air tanah kebun durian sangat pas gembur berdrainase prima. Perakaran menyerap nutrisi hara secara optimal.';
 
-    const pupukDesc = isAnthesis
-      ? 'Fase Bunga Mekar (Anthesis): Semprot unsur Kalsium dan Boron di tangkai bunga dan kurangi penyiraman berlebih untuk mencegah kerontokan bunga massal.'
-      : isPentil
-      ? 'Fase Pentil Buah: Lakukan seleksi penjarangan (sisakan 2–3 buah terbaik per dahan) dan berikan NPK 16-16-16 + Kalsium Nitrat untuk kekuatan sel buah.'
-      : 'Fase Pembesaran & Pengisian Daging Buah: Berikan Kalium tinggi (Kalium Sulfat ZK / KNO3 Putih) di lingkar tajuk agar daging buah durian pulen, manis, dan bertekstur mentega.';
+    const pupukDesc = isTahunPertama
+      ? 'Tahun 1 — Adaptasi Bibit: Berikan pupuk organik (pupuk kandang + kompos) di piringan lubang tanam. Mulai pupuk NPK ringan 50-100 g/pohon/bulan untuk memacu pertumbuhan akar & tunas daun.'
+      : isTahunKedua
+      ? 'Tahun 2 — Pembentukan Tajuk: Berikan NPK 15-15-15 sebanyak 200 g/pohon tiap 3 bulan. Tambahkan Kalsium-Boron untuk arsitektur dahan yang kuat. Pangkas cabang tumbuh ke dalam/bawah.'
+      : isTahunKetiga
+      ? 'Tahun 3 — Vegetatif Aktif: Naikkan dosis NPK menjadi 500 g/pohon/3 bulan. Mulai kurangi nitrogen (N) secara bertahap. Tambah pupuk Kalium dan Fosfat untuk persiapan fase generatif berbunga.'
+      : isPreGeneratif
+      ? 'Tahun 4–5 — Induksi Generatif: STOP pemupukan N tinggi. Lakukan stres air 3–4 minggu kemarau untuk memaksa inisiasi bunga. Berikan Kalium Sulfat ZK + MKP (Mono Kalium Fosfat) untuk kuncup bunga berkualitas.'
+      : 'Pohon Dewasa Produktif: Fase pembesaran & pengisian daging buah — berikan Kalium tinggi (Kalium Sulfat ZK / KNO3 Putih) di lingkar tajuk agar daging buah durian pulen, manis, dan bertekstur mentega.';
 
-    const npkKg = Math.max(1, Math.round(300 * areaHa));
+    const npkKg = Math.max(1, Math.round((isPohonDewasa ? 300 : isTahunPertama ? 80 : 200) * areaHa));
     const komposKg = Math.max(5, Math.round(2000 * areaHa));
-    const khususKg = Math.max(1, Math.round(50 * areaHa));
+    const khususKg = Math.max(1, Math.round((isPohonDewasa ? 50 : 30) * areaHa));
 
     return {
       komoditasClean: 'Pohon Durian (Montong / Bawor / Musang King)',
       category: 'Buah',
       siramDesc,
       pupukDesc,
-      pupukNamaKhusus: isAnthesis ? 'Boron & Kalsium' : 'Kalium Sulfat (ZK)',
+      pupukNamaKhusus: isPohonDewasa || isPreGeneratif ? 'Kalium Sulfat (ZK) / MKP' : isTahunPertama ? 'Pupuk Kandang + Kompos' : 'NPK 15-15-15 + Kalsium',
       userLuasLabel,
       npkKg,
       komposKg,
       khususKg,
-      pestWarning: 'Waspadai ulat penggerek buah (Conogethes punctiferalis), penggerek batang (Batocera sp.), dan jamur kanker batang Phytophthora palmivora.',
-      tipsFase: 'Pasang tali pengikat dahan dan buah ke cabang utama untuk mencegah dahan patah atau buah durian jatuh prematur membentur tanah.'
+      pestWarning: 'Waspadai ulat penggerek buah (Conogethes punctiferalis), penggerek batang (Batocera sp.), dan jamur kanker batang Phytophthora palmivora. Durian adalah investasi jangka panjang (4-6 tahun hingga panen perdana).',
+      tipsFase: isTahunPertama
+        ? 'Pastikan bibit yang ditanam adalah bibit SAMBUNG PUCUK (okulasi) bersertifikat dari varietas unggul (Montong / Bawor / Musang King). Bibit dari biji bisa membutuhkan 8-15 tahun untuk berbuah!'
+        : isPohonDewasa
+        ? 'Pasang tali pengikat dahan dan buah ke cabang utama untuk mencegah dahan patah atau buah durian jatuh prematur membentur tanah.'
+        : 'Durian adalah tanaman investasi jangka panjang. Perawatan konsisten di tahun-tahun vegetatif menentukan produktivitas puluhan tahun ke depan.'
     };
   }
 
@@ -1378,6 +1395,18 @@ export default function MonitoringPage() {
             </span>
           </div>
         </div>
+
+        {isUserLahan && !isRecognizedCrop(activePetani.jenis_tanaman) && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block text-amber-950">Komoditas &ldquo;{activePetani.jenis_tanaman}&rdquo; tidak terdaftar resmi</strong>
+              <span>
+                Nama ini tidak dikenali sebagai tanaman budidaya pertanian/hortikultura. Rekomendasi di bawah menggunakan parameter acuan tanaman umum. Silakan perbarui data di menu Pendaftaran Lahan agar jadwal dan dosis pupuk sesuai kebutuhan spesifik tanaman Anda.
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 3. GRID 4 PARAMETER UTAMA (KELEMBAPAN TANAH, SUHU, PENGUAPAN DAUN, pH TANAH) */}

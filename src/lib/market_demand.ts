@@ -756,7 +756,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(65000, [12, 1, 2, 7], 0.35),
     karakteristik_tanah: 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m), lereng berdrainase prima tanpa air menggenang',
     ph_ideal: 'pH 6.0 - 6.8',
-    umur_panen: '110 - 130 HST (Siklus Bunga Mekar ke Masak Petik / Jatuh ~4 Bulan)',
+    umur_panen: 'Bibit Sambung Pucuk: 4–6 Tahun hingga Panen Perdana | Siklus Buah per Musim: 110–130 HST (Bunga Mekar → Masak Petik)',
     potensi_hasil_per_ha: '10 - 18 Ton Buah Durian per Ha per tahun pada tanaman dewasa produktif',
     estimasi_biaya_per_ha: 45000000,
     tips_agronomis: 'Lakukan penjarangan buah (fruit thinning) dengan menyisakan 2-3 buah terbaik per dahan saat pentil sebesar bola tenis. Pasang tali pengikat dahan dan buah agar dahan tidak patah serta buah tidak jatuh membentur tanah saat masak fisiologis.'
@@ -1139,7 +1139,7 @@ export interface MarketIntelligenceScore {
 function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
   if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset Balitbangtan)
-  if (lower.includes('durian') || lower.includes('duren')) return 120; // 4 bulan (siklus bunga anthesis ke matang petik 110-130 HST)
+  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 tahun dari bibit sambung pucuk hingga panen perdana (4-6 tahun riil). BUKAN 120 hari - itu hanya siklus bunga ke buah untuk pohon DEWASA
   if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke petik buah 110-130 HST)
   if (lower.includes('apel') || lower.includes('apple')) return 130;
   if (lower.includes('jeruk') || lower.includes('citrus')) return 240;

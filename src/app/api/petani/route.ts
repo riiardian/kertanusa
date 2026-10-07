@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAllPetani, addPetani, deletePetani } from '@/lib/db';
+import { isRecognizedCrop } from '@/lib/crops';
 
 export async function GET() {
   try {
@@ -19,6 +20,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ 
         success: false, 
         message: 'Mohon lengkapi 5 parameter wajib: Nama, Luas Tanah, Daerah, Jenis Tanaman, dan Waktu Tanam.' 
+      }, { status: 400 });
+    }
+
+    if (!isRecognizedCrop(jenis_tanaman)) {
+      return NextResponse.json({
+        success: false,
+        message: `Komoditas "${jenis_tanaman}" tidak dikenali sebagai tanaman budidaya pertanian/hortikultura resmi. Silakan masukkan nama tanaman yang valid (misal: Cabai, Bawang Merah, Padi, Nanas, Durian, Jagung, Kacang Tanah, dll).`
       }, { status: 400 });
     }
 

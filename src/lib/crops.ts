@@ -1,7 +1,13 @@
 export interface CropInfo {
   nama: string;
   kategori: 'Hortikultura' | 'Pangan' | 'Palawija' | 'Perkebunan';
-  umur_panen_hari: number;
+  umur_panen_hari: number; // HST dari tanam bibit hingga PERTAMA KALI panen
+  // Untuk tanaman pohon/tahunan (durian, mangga, jeruk, dll) ini adalah
+  // hari hingga pertama kali berbuah dari bibit. Berbeda dengan tanaman
+  // semusim yang panen sekali habis.
+  is_tanaman_tahunan?: boolean; // true = pohon tahunan (berbuah berulang setelah dewasa)
+  siklus_buah_hari?: number;   // Hanya untuk tanaman tahunan: durasi bunga mekar → buah masak (misal durian 110-130 HST)
+  keterangan_umur?: string;    // Keterangan lebih lengkap tentang siklus tanam
   ph_optimal_min: number;
   ph_optimal_max: number;
   kelembapan_optimal_min: number;
@@ -39,7 +45,13 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
   'Durian (Montong / Bawor / Musang King)': {
     nama: 'Durian (Montong / Bawor / Musang King)',
     kategori: 'Hortikultura',
-    umur_panen_hari: 120, // Siklus bunga anthesis ke buah masak petik/jatuh: 110 - 130 HST (rata-rata 120 HST)
+    // KOREKSI AGRONOMI: Dari BIBIT SAMBUNG PUCUK ditanam hingga PERTAMA KALI BERBUAH = 4-6 TAHUN
+    // Referensi: Balitbangtan / Kontan / pertanian.go.id - rata-rata 5 tahun (1825 hari)
+    // Catatan: 110-130 HST adalah siklus BUNGA MEKAR → BUAH MASAK (hanya untuk pohon SUDAH DEWASA)
+    umur_panen_hari: 1825, // 5 tahun dari bibit sambung pucuk hingga panen perdana
+    is_tanaman_tahunan: true,
+    siklus_buah_hari: 120, // Siklus bunga anthesis ke buah matang petik/jatuh: 110-130 HST per musim
+    keterangan_umur: 'Bibit sambung pucuk: 4–6 tahun hingga panen perdana. Dari biji: 8–15 tahun. Siklus per musim buah (bunga mekar → masak): 110–130 HST. Pohon produktif berbuah 1–2 kali per tahun.',
     ph_optimal_min: 6.0,
     ph_optimal_max: 6.8,
     kelembapan_optimal_min: 65,
@@ -48,11 +60,12 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
     suhu_optimal_max: 32,
     kebutuhan_air_harian_liter_m2: 5.0,
     tahap_pertumbuhan: [
-      { nama: 'Inisiasi Kuncup Bunga di Dahan', rentang_hari: [1, 25], panduan: 'Mata kepiting kuncup bunga membesar di dahan utama. Hentikan pemupukan nitrogen dan jaga kelembapan tanah sedang.' },
-      { nama: 'Bunga Mekar (Anthesis) & Penyerbukan', rentang_hari: [26, 45], panduan: 'Bunga durian mekar malam hari dan dibantu lebah/kelelawar. Semprot Boron + Kalsium agar tangkai bunga tidak rontok.' },
-      { nama: 'Pentil Duri & Seleksi Buah', rentang_hari: [46, 75], panduan: 'Pentil durian sebesar telur/bola tenis. Lakukan penjarangan buah (fruit thinning): sisakan 2–3 buah terbaik per dompolan.' },
-      { nama: 'Pembesaran Buah & Pengikatan Tali', rentang_hari: [76, 105], panduan: 'Buah durian membesar pesat. Pasang tali pengikat dahan dan buah ke batang utama agar dahan tidak patah menopang bobot.' },
-      { nama: 'Pematangan Daging Buah & Panen', rentang_hari: [106, 120], panduan: 'Juring durian mengembang, duri lentur, dan tercium aroma harum khas. Panen petik bertali atau tunggu masak jatuh alami.' }
+      // Tahapan DARI TANAM BIBIT sampai PERTAMA KALI BERBUAH (siklus pohon penuh)
+      { nama: 'Adaptasi Bibit & Perakaran Awal (Tahun 1)', rentang_hari: [1, 365], panduan: 'Bibit sambung pucuk bersertifikat ditanam dengan jarak 10×10 m di lubang 60×60×60 cm. Pupuk kandang matang 20 kg/lubang. Jaga tanah lembap tanpa tergenang. Pasang ajir penyangga dan naungan sementara.' },
+      { nama: 'Pembentukan Tajuk & Cabang Primer (Tahun 2)', rentang_hari: [366, 730], panduan: 'Pembentukan arsitektur tajuk piramida. Pangkas cabang yang saling silang atau tumbuh ke bawah. NPK 15-15-15 dosis 200 g/pohon tiap 3 bulan. Waspadai penggerek batang (Batocera sp.) sejak dini.' },
+      { nama: 'Pertumbuhan Vegetatif Aktif & Penguatan Batang (Tahun 3)', rentang_hari: [731, 1095], panduan: 'Pohon membesar pesat. Tingkatkan dosis pupuk NPK menjadi 500 g/pohon/3 bulan. Lakukan aplikasi pupuk mikro Boron dan Zink agar bunga nanti kompak. Mulai kurangi nitrogen secara bertahap di akhir tahun ke-3.' },
+      { nama: 'Inisiasi Generatif & Percobaan Bunga Pertama (Tahun 4-5)', rentang_hari: [1096, 1825], panduan: 'Pohon siap memasuki fase generatif. Lakukan stres air (water stress) selama 3–4 minggu di musim kemarau untuk merangsang inisiasi bunga. Berikan pupuk tinggi Kalium dan Fosfat. Kuncup bunga (mata kepiting) mulai muncul di dahan utama.' },
+      { nama: 'Panen Perdana & Siklus Buah Rutin (Tahun 5+)', rentang_hari: [1826, 99999], panduan: 'Bunga mekar → buah masak membutuhkan 110–130 hari (siklus per musim). Lakukan penjarangan buah (sisakan 2–3 terbaik per dahan). Pasang tali pengikat dahan. Panen petik bertali atau tunggu masak jatuh alami. Pohon produktif 20–50 tahun.' }
     ]
   },
   'Cabai Rawit Merah': {
@@ -254,7 +267,10 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
   'Jeruk (Siam / Keprok)': {
     nama: 'Jeruk (Siam / Keprok)',
     kategori: 'Hortikultura',
-    umur_panen_hari: 210, // ~7 bulan siklus bunga ke masak sari
+    umur_panen_hari: 900, // ~2.5 - 3 tahun dari bibit okulasi hingga panen perdana
+    is_tanaman_tahunan: true,
+    siklus_buah_hari: 210, // ~7 bulan siklus bunga ke masak sari
+    keterangan_umur: 'Bibit okulasi: 2.5–3 tahun hingga panen perdana. Siklus per musim buah (bunga mekar → panen petik): 210–240 HST. Pohon produktif berbuah 1–2 kali per tahun.',
     ph_optimal_min: 5.8,
     ph_optimal_max: 6.8,
     kelembapan_optimal_min: 60,
@@ -273,7 +289,10 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
   'Mangga (Harum Manis / Gedong Gincu)': {
     nama: 'Mangga (Harum Manis / Gedong Gincu)',
     kategori: 'Hortikultura',
-    umur_panen_hari: 120, // 110 - 130 hari siklus bunga ke petik
+    umur_panen_hari: 1200, // ~3-4 tahun dari bibit okulasi hingga panen perdana
+    is_tanaman_tahunan: true,
+    siklus_buah_hari: 120, // 110 - 130 hari siklus bunga ke petik
+    keterangan_umur: 'Bibit okulasi: 3–4 tahun hingga panen perdana. Siklus per musim buah (bunga mekar → masak petik): 110–130 HST. Pohon produktif tahunan.',
     ph_optimal_min: 5.5,
     ph_optimal_max: 7.0,
     kelembapan_optimal_min: 50,
@@ -310,7 +329,10 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
   'Kopi Arabika': {
     nama: 'Kopi Arabika',
     kategori: 'Perkebunan',
-    umur_panen_hari: 220, // Siklus bunga mekar ke ceri merah: 210 - 240 HST
+    umur_panen_hari: 900, // ~2.5 - 3 tahun dari bibit hingga panen perdana
+    is_tanaman_tahunan: true,
+    siklus_buah_hari: 220, // Siklus bunga mekar ke ceri merah: 210 - 240 HST
+    keterangan_umur: 'Bibit semaian/sambung: 2.5–3 tahun hingga panen perdana. Siklus bunga mekar → ceri merah matang: 210–240 HST.',
     ph_optimal_min: 5.5,
     ph_optimal_max: 6.5,
     kelembapan_optimal_min: 65,
@@ -328,7 +350,10 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
   'Cokelat / Kakao': {
     nama: 'Cokelat / Kakao',
     kategori: 'Perkebunan',
-    umur_panen_hari: 165, // 150 - 180 HST siklus buah matang
+    umur_panen_hari: 800, // ~2 - 2.5 tahun dari bibit sambung pucuk hingga panen perdana
+    is_tanaman_tahunan: true,
+    siklus_buah_hari: 165, // 150 - 180 HST siklus buah matang
+    keterangan_umur: 'Bibit sambung pucuk: 2–2.5 tahun hingga panen perdana. Siklus bunga → polong masak: 150–180 HST.',
     ph_optimal_min: 6.0,
     ph_optimal_max: 7.0,
     kelembapan_optimal_min: 70,
@@ -346,6 +371,79 @@ export const CROPS_CATALOG: Record<string, CropInfo> = {
 };
 
 export const SUPPORTED_CROP_NAMES: string[] = Object.keys(CROPS_CATALOG);
+
+export interface CropSuggestion {
+  name: string;
+  category: string;
+  umur_panen_hari: number;
+  is_tanaman_tahunan?: boolean;
+  siklus_buah_hari?: number;
+  keterangan_umur?: string;
+}
+
+/**
+ * Mencari saran komoditas secara responsif berdasarkan input teks
+ */
+export function searchCropSuggestions(query: string, limit = 8): CropSuggestion[] {
+  const q = (query || '').toLowerCase().trim();
+  const allList: CropSuggestion[] = Object.values(CROPS_CATALOG).map(c => ({
+    name: c.nama,
+    category: c.kategori,
+    umur_panen_hari: c.umur_panen_hari,
+    is_tanaman_tahunan: c.is_tanaman_tahunan,
+    siklus_buah_hari: c.siklus_buah_hari,
+    keterangan_umur: c.keterangan_umur
+  }));
+
+  if (!q) return allList.slice(0, limit);
+
+  const matched: CropSuggestion[] = [];
+  const seen = new Set<string>();
+
+  // 1. Exact or startsWith match (prioritas teratas)
+  for (const item of allList) {
+    const n = item.name.toLowerCase();
+    if (n.startsWith(q)) {
+      matched.push(item);
+      seen.add(item.name);
+    }
+  }
+
+  // 2. Keyword / Substring match (contoh: "durian" cocok dengan "Durian (Montong...)")
+  for (const item of allList) {
+    if (seen.has(item.name)) continue;
+    const n = item.name.toLowerCase();
+    if (n.includes(q)) {
+      matched.push(item);
+      seen.add(item.name);
+    }
+  }
+
+  // 3. Synonym matching untuk istilah tani umum
+  if ((q.includes('duren') || q.includes('durian')) && !seen.has('Durian (Montong / Bawor / Musang King)')) {
+    const c = CROPS_CATALOG['Durian (Montong / Bawor / Musang King)'];
+    if (c) {
+      matched.push({ name: c.nama, category: c.kategori, umur_panen_hari: c.umur_panen_hari, is_tanaman_tahunan: c.is_tanaman_tahunan, siklus_buah_hari: c.siklus_buah_hari, keterangan_umur: c.keterangan_umur });
+      seen.add(c.nama);
+    }
+  }
+  if ((q.includes('nenas') || q.includes('nanas')) && !seen.has('Nanas (Madu Subang / Honi)')) {
+    const c = CROPS_CATALOG['Nanas (Madu Subang / Honi)'];
+    if (c) {
+      matched.push({ name: c.nama, category: c.kategori, umur_panen_hari: c.umur_panen_hari, is_tanaman_tahunan: c.is_tanaman_tahunan, siklus_buah_hari: c.siklus_buah_hari, keterangan_umur: c.keterangan_umur });
+      seen.add(c.nama);
+    }
+  }
+  if (q.includes('tanah') && !seen.has('Kacang Tanah')) {
+    const c = CROPS_CATALOG['Kacang Tanah'];
+    if (c) {
+      matched.push({ name: c.nama, category: c.kategori, umur_panen_hari: c.umur_panen_hari });
+      seen.add(c.nama);
+    }
+  }
+
+  return matched.slice(0, limit);
+}
 
 /**
  * Mencari data agronomis tanaman terdaftar berdasarkan pencarian nama atau sinonim
@@ -406,3 +504,4 @@ export function isRecognizedCrop(namaTanaman: string): boolean {
 
   return validKeywords.some(kw => q.includes(kw));
 }
+
