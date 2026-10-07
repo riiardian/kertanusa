@@ -1,6 +1,25 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+155. **Penyempurnaan FAQ: Full Background Putih Dasar, Hapus Tombol, & Single Smooth Accordion [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Batas latar belakang putih tulang (`bg-slate-50`) dibatasi hanya sampai peta sebaran lahan 3D; bagian FAQ ke bawah harus menjadi full-width background putih murni (`bg-white`) tanpa terpotong kartu nested.
+      - Tombol "Hubungi kami" di kolom kiri dihapus agar tampilan lebih bersih dan lapang.
+      - Ketika sebuah pertanyaan diklik dan tab terbuka, lalu user mengklik pertanyaan lain, tab yang sebelumnya terbuka harus otomatis tertutup dengan transisi halus dan mulus (*single active accordion*), disertai styling kartu hijau lembut (`#f0fdf4`) untuk tab aktif sesuai referensi.
+    - **Aksi & Solusi**:
+      1. **Arsitektur Background Full-Width (`src/app/page.tsx`)**:
+         - Menutup container `max-w-7xl` bertema putih tulang tepat setelah section peta sebaran 3D.
+         - Menjadikan section `#faq` berlebar penuh (`w-full bg-white border-t border-slate-200/70 pt-12 sm:pt-16 pb-20 sm:pb-28`), membentang penuh hingga dasar halaman.
+      2. **Pembersihan Elemen (`src/components/MapFarmlandFAQ.tsx`)**:
+         - Menghapus tombol "Hubungi kami" di kolom kiri.
+         - Menghapus container border/shadow nested agar FAQ menyatu natural dengan latar putih halaman.
+      3. **Single Smooth Accordion (`src/components/MapFarmlandFAQ.tsx`)**:
+         - Mengganti state multi-open menjadi state tunggal (`openId: string | null`).
+         - Menggunakan transisi CSS modern `grid-template-rows` (`grid-rows-[1fr]` vs `grid-rows-[0fr]`) dengan `overflow-hidden` untuk animasi buka-tutup yang sangat halus (60fps tanpa jank).
+         - Mengaplikasikan styling aktif hijau lembut (`bg-[#f0fdf4] text-emerald-700`) saat tab terbuka sesuai referensi.
+    - **Validasi Build**:
+      - Next.js build sukses 100% tanpa error TypeScript.
+
 154. **Redesain 2-Kolom Minimalis & Natural Bagian FAQ (KERTANUSA) [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Desain FAQ sebelumnya berupa card terkotak-kotak bertingkat dengan banyak ikon berwarna yang terasa ramai (*cluttered*).

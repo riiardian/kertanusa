@@ -48,49 +48,41 @@ const FAQ_LIST: FAQItem[] = [
 ];
 
 export default function MapFarmlandFAQ() {
-  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
+  // Hanya 1 tab yang bisa terbuka sekaligus (single accordion)
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const toggleItem = (id: string) => {
-    setOpenIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
+    setOpenId((prev) => (prev === id ? null : id));
   };
 
   return (
-    <div className="w-full bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/80 shadow-xs">
+    <div className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-        {/* Kolom Kiri: Judul, Deskripsi, Tombol Aksi */}
+        {/* Kolom Kiri: Judul & Deskripsi (Tanpa Tombol Hubungi) */}
         <div className="lg:col-span-5 lg:sticky lg:top-24">
-          <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-slate-900 tracking-tight leading-[1.18]">
+          <h2 className="text-2xl sm:text-3xl lg:text-[38px] font-extrabold text-slate-900 tracking-tight leading-[1.18]">
             Masih Punya <br className="hidden sm:inline" />
             Pertanyaan?
           </h2>
-          <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mt-3.5 sm:mt-4 max-w-sm">
+          <p className="text-slate-500 text-xs sm:text-sm lg:text-[15px] leading-relaxed mt-3.5 sm:mt-4 max-w-sm">
             Jika Anda belum menemukan jawaban yang dicari, tim agronomis & riset teknologi KERTANUSA siap membantu kendala registrasi lahan, integrasi sensor telemetri, atau konsultasi kebutuhan budidaya presisi Anda.
           </p>
-          <a
-            href="https://wa.me/6281234567890?text=Halo%20Tim%20KERTANUSA,%20saya%20ingin%20konsultasi%20seputar%20sistem%20pertanian%20presisi%20dan%20pendaftaran%20lahan"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-6 sm:px-7 py-3 bg-[#10b981] hover:bg-[#059669] active:scale-98 text-white font-semibold text-xs sm:text-sm rounded-full shadow-xs hover:shadow-md transition-all duration-200 mt-6 sm:mt-8 cursor-pointer select-none"
-          >
-            Hubungi kami
-          </a>
         </div>
 
-        {/* Kolom Kanan: List Accordion Bersih & Minimalis */}
-        <div className="lg:col-span-7 divide-y divide-slate-100">
-          {FAQ_LIST.map((item) => {
-            const isOpen = openIds.has(item.id);
+        {/* Kolom Kanan: List Accordion Bersih & Minimalis dengan Transisi Halus */}
+        <div className="lg:col-span-7">
+          {FAQ_LIST.map((item, idx) => {
+            const isOpen = openId === item.id;
 
             return (
-              <div key={item.id} className="py-4 sm:py-5 first:pt-0 last:pb-0">
+              <div
+                key={item.id}
+                className={`transition-all duration-300 ease-in-out ${
+                  isOpen
+                    ? 'bg-[#f0fdf4] rounded-xl sm:rounded-2xl p-4 sm:p-5 my-2 border border-emerald-100/90 shadow-xs'
+                    : `py-4 sm:py-5 border-b border-slate-100 ${idx === 0 ? 'pt-0' : ''}`
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => toggleItem(item.id)}
@@ -98,26 +90,33 @@ export default function MapFarmlandFAQ() {
                   aria-expanded={isOpen}
                 >
                   <span
-                    className={`text-[14px] sm:text-[15px] font-bold transition-colors leading-snug ${
+                    className={`text-[14.5px] sm:text-[15.5px] font-bold transition-colors leading-snug ${
                       isOpen ? 'text-emerald-700 font-extrabold' : 'text-slate-900 group-hover:text-emerald-600'
                     }`}
                   >
                     {item.question}
                   </span>
-                  <div className="shrink-0 p-1 text-slate-400 group-hover:text-slate-600 transition-colors">
+                  <div className="shrink-0 p-1 transition-colors">
                     <ChevronDown
-                      className={`w-4.5 h-4.5 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180 text-emerald-600' : ''
+                      className={`w-4.5 h-4.5 transition-transform duration-300 ease-in-out ${
+                        isOpen ? 'rotate-180 text-emerald-700' : 'text-slate-400 group-hover:text-slate-600'
                       }`}
                     />
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed pr-6 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <p>{item.answer}</p>
+                {/* Smooth Accordion Collapse/Expand Animation via CSS Grid Rows */}
+                <div
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="pt-2.5 sm:pt-3 text-xs sm:text-sm text-slate-600 leading-relaxed pr-2">
+                      <p>{item.answer}</p>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

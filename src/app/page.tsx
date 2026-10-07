@@ -127,7 +127,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="w-full pb-14 text-slate-800">
+    <div className="w-full text-slate-800">
       
       {/* 1. HERO BANNER FULL-WIDTH DENGAN TINGGI IDEAL & PROPORSIONAL */}
       <section className="relative w-full min-h-[700px] sm:min-h-[740px] md:min-h-[780px] flex items-stretch overflow-hidden">
@@ -233,8 +233,8 @@ export default function HomePage() {
 
       </section>
 
-      {/* Konten Utama di Bawah Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+      {/* Konten Utama di Bawah Banner (Batas latar putih tulang hingga peta sebaran) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-14 space-y-10">
 
         {/* 2. STATISTIK PANEN & PASOKAN PANGAN NASIONAL */}
         <section>
@@ -256,12 +256,14 @@ export default function HomePage() {
           <IndonesiaMap3D />
         </section>
 
-        {/* 4. PERTANYAAN YANG SERING DIAJUKAN (FAQ) */}
-        <section id="faq" className="scroll-mt-24 sm:scroll-mt-28">
-          <MapFarmlandFAQ />
-        </section>
-
       </div>
+
+      {/* 4. PERTANYAAN YANG SERING DIAJUKAN (FAQ) - FULL BACKGROUND PUTIH SAMPAI PALING BAWAH */}
+      <section id="faq" className="w-full bg-white border-t border-slate-200/70 pt-12 sm:pt-16 pb-20 sm:pb-28 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <MapFarmlandFAQ />
+        </div>
+      </section>
     </div>
   );
 }
