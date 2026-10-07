@@ -607,22 +607,17 @@ export default function MarketDemandPage() {
   const pulse = useMemo(() => getMarketPulse(activePetani?.daerah), [activePetani?.daerah]);
 
   const filteredCommodities = useMemo(() => {
-    if (!searchQuery.trim() && activeCategory === 'Semua') {
-      return [];
-    }
-
     let list = COMMODITY_TRENDS;
     if (activeCategory !== 'Semua') {
       list = list.filter(c => c.kategori === activeCategory);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      const filtered = list.filter(c =>
+      return list.filter(c =>
         c.komoditas.toLowerCase().includes(q) ||
         c.kategori.toLowerCase().includes(q) ||
         c.alasan_permintaan.toLowerCase().includes(q)
       );
-      return filtered;
     }
     return list;
   }, [activeCategory, searchQuery]);
@@ -985,33 +980,33 @@ export default function MarketDemandPage() {
       </div>
 
       {/* ── 3. DIREKTORI & PENCARIAN ── */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
 
         <div className="p-5 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Search className="w-4 h-4 text-slate-500" />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 flex items-center justify-center text-emerald-700 shrink-0">
+                <Search className="w-4 h-4" />
+              </div>
               <div>
-                <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Pencarian Intelijen Komoditas
+                <h2 className="text-sm font-bold text-slate-900">
+                  Katalog & Pencarian Komoditas
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Ketik nama tanaman, buah, sayur, rempah, atau tanaman obat apapun.
+                <p className="text-xs text-slate-500">
+                  Pilih atau cari komoditas untuk memuat perbandingan harga historis dan kalender panen.
                 </p>
               </div>
             </div>
-            {filteredCommodities.length > 0 && (
-              <span className="text-xs text-slate-500 font-medium">
-                <strong className="text-slate-900">{filteredCommodities.length}</strong> komoditas ditemukan
-              </span>
-            )}
+            <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-medium self-start sm:self-auto">
+              <strong className="font-bold text-emerald-950">{filteredCommodities.length}</strong> Komoditas
+            </span>
           </div>
 
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 z-10" />
+            <Search className="w-4 h-4 text-emerald-700/60 absolute left-3.5 top-1/2 -translate-y-1/2 z-10" />
             <input
               type="text"
-              placeholder="Ketik tanaman (contoh: Durian, Nanas, Cabai Rawit, Bawang Merah, Padi, Jagung, Kacang Tanah)..."
+              placeholder="Cari tanaman (contoh: Durian, Nanas, Cabai Rawit, Bawang Merah, Padi, Jagung)..."
               value={searchQuery}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
@@ -1030,13 +1025,14 @@ export default function MarketDemandPage() {
                   }
                 }
               }}
-              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none transition-all placeholder:text-slate-400 bg-white"
+              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 outline-none transition-all placeholder:text-slate-400"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer z-10"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer z-10 p-1"
+                aria-label="Hapus pencarian"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1058,7 +1054,7 @@ export default function MarketDemandPage() {
                         const el = document.getElementById('sinyal-pasar-card');
                         if (el) el.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-50/60 transition-colors flex items-center justify-between gap-3 text-xs group cursor-pointer"
+                      className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-50/70 transition-colors flex items-center justify-between gap-3 text-xs group cursor-pointer"
                     >
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-800 group-hover:text-emerald-900">
@@ -1072,7 +1068,7 @@ export default function MarketDemandPage() {
                         <span className="text-xs font-bold text-slate-900 block">
                           Rp {item.harga_saat_ini.toLocaleString('id-ID')}/kg
                         </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium group-hover:bg-emerald-100 group-hover:text-emerald-800">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-100/60 font-medium">
                           {item.kategori}
                         </span>
                       </div>
@@ -1080,7 +1076,7 @@ export default function MarketDemandPage() {
                   ))
                 ) : (
                   <div className="p-3 text-center text-xs text-slate-500">
-                    Tidak ditemukan komoditas budidaya resmi &quot;{searchQuery}&quot;.
+                    Tidak ditemukan komoditas resmi &quot;{searchQuery}&quot;.
                   </div>
                 )}
               </div>
@@ -1099,69 +1095,80 @@ export default function MarketDemandPage() {
               'Kopi Arabika',
               'Kacang Tanah',
               'Porang (Amorphophallus muelleri)'
-            ].map(pill => (
-              <button
-                key={pill}
-                type="button"
-                onClick={() => {
-                  setSearchQuery(pill);
-                  setSelectedKomoditas(pill);
-                  const el = document.getElementById('sinyal-pasar-card');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer border ${
-                  searchQuery.toLowerCase() === pill.toLowerCase()
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
-                }`}
-              >
-                {pill.includes('(') ? pill.split('(')[0].trim() : pill}
-              </button>
-            ))}
+            ].map(pill => {
+              const cleanName = pill.includes('(') ? pill.split('(')[0].trim() : pill;
+              const isSelected = selectedKomoditas?.toLowerCase() === cleanName.toLowerCase() ||
+                searchQuery.toLowerCase() === pill.toLowerCase();
+              return (
+                <button
+                  key={pill}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(pill);
+                    setSelectedKomoditas(pill);
+                    const el = document.getElementById('sinyal-pasar-card');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border ${
+                    isSelected
+                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                      : 'bg-white hover:bg-emerald-50/70 hover:text-emerald-900 hover:border-emerald-200 text-slate-600 border-slate-200/80'
+                  }`}
+                >
+                  {cleanName}
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-slate-100">
-            {ALL_CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => {
-                  setActiveCategory(cat);
-                  if (cat === 'Semua') {
+            {ALL_CATEGORIES.map(cat => {
+              const isActive = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(cat);
                     setSearchQuery('');
-                  } else {
-                    setSearchQuery(cat);
-                  }
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
-                  activeCategory === cat
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-all border ${
+                    isActive
+                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                      : 'bg-slate-50/90 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-200 text-slate-600 border-slate-200/70'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {filteredCommodities.length > 0 ? (
-          <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/30 space-y-2.5">
+          <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/40 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700">
-                Hasil Pencarian ({filteredCommodities.length} Komoditas):
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-800">
+                  Daftar Komoditas Pertanian
+                </span>
+                <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
+                  {filteredCommodities.length} komoditas
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400 hidden sm:inline">
+                Klik baris komoditas untuk memperbarui grafik tren & analisis
               </span>
-              <span className="text-[11px] text-slate-400">Klik baris untuk memuat analisis detail</span>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white max-h-80 overflow-y-auto">
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white max-h-96 overflow-y-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 sticky top-0 border-b border-slate-200 text-slate-500 font-semibold z-10">
+                <thead className="bg-slate-50/90 sticky top-0 border-b border-slate-200 text-slate-600 font-semibold z-10">
                   <tr>
                     <th className="py-2.5 px-3.5">Komoditas</th>
                     <th className="py-2.5 px-3 hidden sm:table-cell">Kategori</th>
                     <th className="py-2.5 px-3 text-right">Harga Pasar</th>
-                    <th className="py-2.5 px-3 text-right">Tren</th>
+                    <th className="py-2.5 px-3 text-right">Tren Mingguan</th>
                     <th className="py-2.5 px-3 text-center">Aksi</th>
                   </tr>
                 </thead>
@@ -1176,32 +1183,57 @@ export default function MarketDemandPage() {
                           const el = document.getElementById('sinyal-pasar-card');
                           if (el) el.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className={`transition-colors cursor-pointer hover:bg-slate-50 ${
-                          isSelected ? 'bg-slate-50' : ''
+                        className={`transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-emerald-50/70'
+                            : 'hover:bg-slate-50/70'
                         }`}
                       >
                         <td className="py-2.5 px-3.5">
-                          <div className={`font-bold ${isSelected ? 'text-slate-900' : 'text-slate-800'}`}>{c.komoditas}</div>
-                          <div className="text-[10px] text-slate-400 font-normal sm:hidden">{c.kategori}</div>
+                          <div className="flex items-center gap-2">
+                            {isSelected && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                            )}
+                            <div>
+                              <div className={`font-bold ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-800'}`}>
+                                {c.komoditas}
+                              </div>
+                              <div className="text-[10px] text-slate-400 font-normal sm:hidden">
+                                {c.kategori}
+                              </div>
+                            </div>
+                          </div>
                         </td>
-                        <td className="py-2.5 px-3 text-slate-500 hidden sm:table-cell">
-                          {c.kategori}
+                        <td className="py-2.5 px-3 hidden sm:table-cell">
+                          <span className="text-[11px] px-2 py-0.5 rounded-md font-medium bg-slate-100 text-slate-600 border border-slate-200/50">
+                            {c.kategori}
+                          </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right font-semibold text-slate-900">
-                          Rp {c.harga_saat_ini.toLocaleString('id-ID')}/kg
+                        <td className="py-2.5 px-3 text-right font-bold text-slate-900">
+                          Rp {c.harga_saat_ini.toLocaleString('id-ID')}
+                          <span className="text-[10px] text-slate-400 font-normal"> /kg</span>
                         </td>
                         <td className="py-2.5 px-3 text-right text-xs font-semibold">
-                          {c.tren_mingguan === 'Naik'
-                            ? <span className="text-slate-700">+{c.persentase_tren}%</span>
-                            : <span className="text-slate-500">Stabil</span>
-                          }
+                          {c.tren_mingguan === 'Naik' ? (
+                            <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md inline-block">
+                              +{c.persentase_tren}%
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md inline-block">
+                              Stabil
+                            </span>
+                          )}
                         </td>
                         <td className="py-2.5 px-3 text-center">
                           <button
                             type="button"
-                            className="text-[11px] font-bold text-slate-700 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                            className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-emerald-700 text-white shadow-xs'
+                                : 'text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/60'
+                            }`}
                           >
-                            Pilih
+                            {isSelected ? 'Terpilih' : 'Pilih'}
                           </button>
                         </td>
                       </tr>
@@ -1211,24 +1243,14 @@ export default function MarketDemandPage() {
               </table>
             </div>
           </div>
-        ) : searchQuery.trim() ? (
-          <div className="p-8 border-t border-slate-100 bg-white text-center space-y-2.5">
-            <AlertCircle className="w-6 h-6 text-amber-500 mx-auto" />
+        ) : (
+          <div className="p-8 border-t border-slate-100 bg-slate-50/50 text-center space-y-2">
+            <AlertCircle className="w-5 h-5 text-amber-500 mx-auto" />
             <h3 className="text-xs sm:text-sm font-bold text-slate-800">
               Komoditas &quot;{searchQuery}&quot; Tidak Ditemukan
             </h3>
-            <p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
-              Kertanusa hanya menganalisis komoditas pangan, hortikultura, perkebunan, dan rempah resmi berbasis data riset agronomi nasional. Silakan masukkan nama tanaman budidaya yang valid seperti <strong>Cabai, Bawang Merah, Padi, Nanas, Durian, Jagung, Kacang Tanah</strong>, dll.
-            </p>
-          </div>
-        ) : (
-          <div className="p-6 border-t border-slate-100 bg-slate-50/40 text-center space-y-2">
-            <Sprout className="w-6 h-6 text-slate-400 mx-auto" />
-            <h3 className="text-xs sm:text-sm font-bold text-slate-800">
-              Pencarian Intelijen Komoditas Pertanian
-            </h3>
-            <p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
-              Ketik nama tanaman, buah, sayur, atau rempah pada kolom di atas atau pilih salah satu kategori untuk memuat data harga pasar, estimasi panen, dan panduan agronomis.
+            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+              Silakan periksa ejaan atau klik salah satu kategori di atas untuk melihat daftar tanaman budidaya resmi.
             </p>
           </div>
         )}
