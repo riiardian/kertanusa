@@ -254,8 +254,10 @@ export default function HomePage() {
           </div>
 
           <IndonesiaMap3D />
+        </section>
 
-          {/* FAQ Pemetaan Lahan & Koordinat */}
+        {/* 4. PERTANYAAN YANG SERING DIAJUKAN (FAQ) */}
+        <section id="faq" className="scroll-mt-24 sm:scroll-mt-28">
           <MapFarmlandFAQ />
         </section>
 

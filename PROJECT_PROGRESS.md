@@ -1,6 +1,21 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+154. **Redesain 2-Kolom Minimalis & Natural Bagian FAQ (KERTANUSA) [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Desain FAQ sebelumnya berupa card terkotak-kotak bertingkat dengan banyak ikon berwarna yang terasa ramai (*cluttered*).
+      - User meminta desain diselaraskan dengan referensi (2 kolom: Kiri "Masih Punya Pertanyaan?" + deskripsi + tombol pill "Hubungi kami"; Kanan accordion minimalis dengan garis pemisah tipis tanpa ikon baris).
+      - Konten pertanyaan dan jawaban tetap relevan dan berakar pada tema agroteknologi, IoT telemetri, dan presisi DSS KERTANUSA.
+    - **Aksi & Solusi**:
+      1. **Arsitektur Layout 2-Kolom Modern (`src/components/MapFarmlandFAQ.tsx`)**:
+         - Mengadopsi container kartu putih bersih (`bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-slate-200/80 shadow-xs`).
+         - **Kolom Kiri**: Tipografi tebal tegas (*Masih Punya Pertanyaan?*), teks pengantar agronomis ramah, dan tombol pill CTA hijau zamrud (`#10b981`) "Hubungi kami" yang terhubung ke kanal konsultasi.
+         - **Kolom Kanan**: Accordion bersih dengan pemisah garis horizontal halus (`divide-y divide-slate-100`), teks pertanyaan bold tanpa ikon ramai, dan indikator chevron rotasi mulus.
+      2. **Penyempurnaan Navigasi (`src/app/page.tsx`)**:
+         - Memisahkan komponen FAQ ke dalam section terdedikasi ber-id `#faq` (`scroll-mt-24 sm:scroll-mt-28`), menyelaraskan link menu navigasi Navbar (`/#faq`) agar langsung menggulir secara presisi.
+    - **Validasi Build**:
+      - Next.js build sukses 100% tanpa error TypeScript.
+
 153. **Optimasi Fokus Gambar Hero Pertanian pada Tampilan Mobile [2026-09-30]**:
     - **Diagnosa Masukan User**:
       - Pada tampilan layar HP (mobile), gambar banner hero pertanian 4K (`hero-pertanian-4k.webp`) terpotong di tengah (*object-center*) sehingga hanya menampilkan ayam-ayam di pematang sawah, sementara sosok petani bertopi caping yang berada di sisi kanan gambar terpotong ke luar layar.
