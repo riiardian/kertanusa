@@ -17,7 +17,6 @@ import {
   X,
   ChevronRight,
   BarChart2,
-  Activity,
   CheckCircle,
   Info,
   Calendar,
@@ -722,16 +721,13 @@ export default function MarketDemandPage() {
       <div className="space-y-4">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-slate-700" />
-            <div>
-              <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Sinyal Pasar & Proyeksi Siklus Tanam-Panen (Multi-Tahun)
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Perhitungan historis 5 tahun dari bulan tanam hingga panen untuk memastikan komoditas aman ditanam saat ini.
-              </p>
-            </div>
+          <div>
+            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              Sinyal Pasar & Proyeksi Siklus Tanam-Panen (Multi-Tahun)
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Perhitungan historis 5 tahun dari bulan tanam hingga panen untuk memastikan komoditas aman ditanam saat ini.
+            </p>
           </div>
 
           {/* Quick Filter Tabs */}
