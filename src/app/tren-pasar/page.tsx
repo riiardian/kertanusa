@@ -983,23 +983,13 @@ export default function MarketDemandPage() {
       <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
 
         <div className="p-5 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 flex items-center justify-center text-emerald-700 shrink-0">
-                <Search className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-sm font-bold text-slate-900">
-                  Katalog & Pencarian Komoditas
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Pilih atau cari komoditas untuk memuat perbandingan harga historis dan kalender panen.
-                </p>
-              </div>
-            </div>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-medium self-start sm:self-auto">
-              <strong className="font-bold text-emerald-950">{filteredCommodities.length}</strong> Komoditas
-            </span>
+          <div className="pb-2 border-b border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900">
+              Katalog & Pencarian Komoditas
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Pilih atau cari komoditas untuk memuat perbandingan harga historis dan kalender panen.
+            </p>
           </div>
 
           <div className="relative">
@@ -1083,45 +1073,7 @@ export default function MarketDemandPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap text-xs pt-0.5">
-            <span className="text-slate-400 text-[11px] font-medium mr-1">Contoh Cepat:</span>
-            {[
-              'Bawang Merah',
-              'Cabai Rawit Merah',
-              'Padi Sawah',
-              'Nanas (Madu Subang / Honi)',
-              'Durian (Montong / Bawor / Musang King)',
-              'Jagung Manis',
-              'Kopi Arabika',
-              'Kacang Tanah',
-              'Porang (Amorphophallus muelleri)'
-            ].map(pill => {
-              const cleanName = pill.includes('(') ? pill.split('(')[0].trim() : pill;
-              const isSelected = selectedKomoditas?.toLowerCase() === cleanName.toLowerCase() ||
-                searchQuery.toLowerCase() === pill.toLowerCase();
-              return (
-                <button
-                  key={pill}
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery(pill);
-                    setSelectedKomoditas(pill);
-                    const el = document.getElementById('sinyal-pasar-card');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border ${
-                    isSelected
-                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                      : 'bg-white hover:bg-emerald-50/70 hover:text-emerald-900 hover:border-emerald-200 text-slate-600 border-slate-200/80'
-                  }`}
-                >
-                  {cleanName}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-slate-100">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1">
             {ALL_CATEGORIES.map(cat => {
               const isActive = activeCategory === cat;
               return (
