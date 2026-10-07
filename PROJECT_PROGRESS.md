@@ -1,6 +1,25 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+156. **Penyelarasan FAQ Presisi Petani: Badge Kotak Sejajar, Centering Judul, & Kurasi 4 Tanya-Jawab Riil Petani [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Badge hijau aktif sebelumnya menggunakan sudut melengkung berlebihan (*rounded siku-siku*) dan padding yang membuat teks menjorok ke dalam (tidak sejajar dengan pertanyaan lainnya).
+      - Bagian judul kiri "Masih Punya Pertanyaan?" posisinya terlalu tinggi di atas; diminta diturunkan pas di tengah vertikal (*vertical center*).
+      - Pertanyaan teknis seperti akurasi koordinat GPS tanpa satelit berbayar dihapus karena tidak relevan dan bukan bahasa riil petani; jumlah pertanyaan dikurangi menjadi 4 pertanyaan inti yang benar-benar dibutuhkan petani di lapangan.
+    - **Aksi & Solusi**:
+      1. **Penyelarasan Teks 100% Simetris & Badge Kotak Bersih (`src/components/MapFarmlandFAQ.tsx`)**:
+         - Menetapkan padding horizontal seragam (`px-4 sm:px-5`) untuk seluruh item tertutup maupun terbuka, sehingga pertanyaan dan jawaban berada pada garis vertikal yang persis sejajar tanpa pergeseran inden (*indent shift*).
+         - Mengubah badge aktif menjadi bentuk persegi datar presisi (*clean rectangular stripe* `#f0fdf4` dengan pembatas `divide-y divide-slate-100`).
+      2. **Posisi Tengah Vertikal (`src/components/MapFarmlandFAQ.tsx`)**:
+         - Mengubah flex grid menjadi `lg:items-center` dan melepas sticky top, sehingga kolom kiri duduk pas seimbang di tengah vertikal relatif terhadap daftar pertanyaan di kanan.
+      3. **4 Tanya-Jawab Riil Petani Indonesia**:
+         - 1: Biaya (Gratis 100% untuk seluruh petani & kelompok tani).
+         - 2: Cara mendaftarkan lahan sawah (Langkah mudah via menu Input Lahan + GPS).
+         - 3: Panduan penyiraman & pemupukan (AWD macak-macak padi, kelembapan tanah hortikultura, dosis proporsional).
+         - 4: Mengetahui tanaman paling menguntungkan di daerah setempat (Daya Beli Pasar, simulasi modal & laba).
+    - **Validasi Build**:
+      - TypeScript compiler lulus 100% tanpa error.
+
 155. **Penyempurnaan FAQ: Full Background Putih Dasar, Hapus Tombol, & Single Smooth Accordion [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Batas latar belakang putih tulang (`bg-slate-50`) dibatasi hanya sampai peta sebaran lahan 3D; bagian FAQ ke bawah harus menjadi full-width background putih murni (`bg-white`) tanpa terpotong kartu nested.
