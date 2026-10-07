@@ -53,10 +53,10 @@ export default function Navbar() {
     // Update document title dynamically on client navigation
     const routeTitles: Record<string, string> = {
       '/': 'Beranda | KERTANUSA',
-      '/input-lahan': 'Input Lahan | KERTANUSA',
-      '/monitoring': 'Iklim & pH | KERTANUSA',
-      '/scan-ai': 'Scan AI & Panen | KERTANUSA',
-      '/tren-pasar': 'Daya Beli Pasar | KERTANUSA',
+      '/input-lahan': 'Kelola Lahan | KERTANUSA',
+      '/monitoring': 'Agroklimat | KERTANUSA',
+      '/scan-ai': 'Pindai Tanaman | KERTANUSA',
+      '/tren-pasar': 'Harga Pasar | KERTANUSA',
       '/riset-petani': 'Riset Petani | KERTANUSA',
     };
     if (routeTitles[pathname]) {
@@ -66,10 +66,10 @@ export default function Navbar() {
 
   const desktopNavItems = [
     { href: '/', label: 'Beranda' },
-    { href: '/input-lahan', label: 'Input Lahan' },
-    { href: '/monitoring', label: 'Iklim & pH' },
-    { href: '/scan-ai', label: 'Scan AI & Panen' },
-    { href: '/tren-pasar', label: 'Daya Beli Pasar' },
+    { href: '/input-lahan', label: 'Kelola Lahan' },
+    { href: '/monitoring', label: 'Agroklimat' },
+    { href: '/scan-ai', label: 'Pindai Tanaman' },
+    { href: '/tren-pasar', label: 'Harga Pasar' },
   ];
 
   const handleFaqClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -222,7 +222,7 @@ export default function Navbar() {
                 </Link>
               </div>
 
-              {/* 2. Input Lahan (DI LUAR KATEGORI MONITORING) */}
+              {/* 2. Kelola Lahan (DI LUAR KATEGORI MONITORING) */}
               <div className="py-3">
                 <Link
                   href="/input-lahan"
@@ -232,11 +232,11 @@ export default function Navbar() {
                   }`}
                 >
                   <PlusCircle className={`w-5 h-5 stroke-[1.8] ${pathname === '/input-lahan' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                  <span className="text-[15px]">Input Lahan</span>
+                  <span className="text-[15px]">Kelola Lahan</span>
                 </Link>
               </div>
 
-              {/* 3. Group MONITORING (Hanya Iklim & Cuaca + Daya Beli Pasar) */}
+              {/* 3. Group MONITORING (Hanya Agroklimat + Harga Pasar) */}
               <div className="py-3 space-y-1">
                 <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 pt-0.5 pb-1">
                   <Activity className="w-3.5 h-3.5 text-slate-400 stroke-[2]" />
@@ -253,7 +253,7 @@ export default function Navbar() {
                     }`}
                   >
                     <CloudSun className={`w-4 h-4 stroke-[1.8] ${pathname === '/monitoring' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                    <span>Iklim & Cuaca</span>
+                    <span>Agroklimat</span>
                   </Link>
 
                   <Link
@@ -264,12 +264,12 @@ export default function Navbar() {
                     }`}
                   >
                     <TrendingUp className={`w-4 h-4 stroke-[1.8] ${pathname === '/tren-pasar' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                    <span>Daya Beli Pasar</span>
+                    <span>Harga Pasar</span>
                   </Link>
                 </div>
               </div>
 
-              {/* 4. Scan AI Tanaman (DI LUAR KATEGORI MONITORING) */}
+              {/* 4. Pindai Tanaman (DI LUAR KATEGORI MONITORING) */}
               <div className="py-3">
                 <Link
                   href="/scan-ai"
@@ -279,7 +279,7 @@ export default function Navbar() {
                   }`}
                 >
                   <ScanSearch className={`w-5 h-5 stroke-[1.8] ${pathname === '/scan-ai' ? 'text-emerald-600' : 'text-slate-400'}`} />
-                  <span className="text-[15px]">Scan AI Tanaman</span>
+                  <span className="text-[15px]">Pindai Tanaman</span>
                 </Link>
               </div>
 

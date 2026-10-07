@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Daya Beli Pasar',
+  title: 'Harga Pasar | KERTANUSA',
   description: 'Sinyal pasar, analisis historis siklus tanam-panen, dan panduan harga komoditas Kertanusa.',
 };
 

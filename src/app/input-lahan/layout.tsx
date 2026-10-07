@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Input Lahan',
-  description: 'Form pendaftaran dan pemetaan parameter tanah sawah Kertanusa.',
+  title: 'Kelola Lahan | KERTANUSA',
+  description: 'Pendaftaran dan pemetaan parameter tanah sawah presisi Kertanusa.',
 };
 
 export default function InputLahanLayout({ children }: { children: React.ReactNode }) {
