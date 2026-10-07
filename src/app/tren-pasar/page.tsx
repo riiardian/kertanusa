@@ -14,7 +14,6 @@ import { isRecognizedCrop } from '@/lib/crops';
 import YearlyComparisonCustomChart from '@/components/YearlyComparisonCustomChart';
 import {
   Search,
-  Sprout,
   X,
   ChevronRight,
   BarChart2,
@@ -843,16 +842,13 @@ export default function MarketDemandPage() {
 
           {/* Catatan Agroklimat Wilayah */}
           {!regionalSuitability.isSuitable && (
-            <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-slate-50/80 flex items-start gap-3 text-xs">
-              <Sprout className="w-5 h-5 text-slate-600 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <strong className="text-slate-900 font-bold block text-sm">
-                  Karakteristik Wilayah: {currentDetailItem.komoditas} di {activePetani.daerah}
-                </strong>
-                <p className="text-slate-600 leading-relaxed">
-                  {regionalSuitability.alasan}
-                </p>
-              </div>
+            <div className="space-y-1 text-xs">
+              <strong className="text-slate-900 font-bold block text-sm">
+                Karakteristik Wilayah: {currentDetailItem.komoditas} di {activePetani.daerah}
+              </strong>
+              <p className="text-slate-600 leading-relaxed">
+                {regionalSuitability.alasan}
+              </p>
             </div>
           )}
 
