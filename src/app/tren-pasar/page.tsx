@@ -370,9 +370,12 @@ function buildMultiYearHistory(
     if (pp >= pt) yearsProfitable++;
   }
 
+  // Helper modulo aman agar selalu bernilai 0..11 positif
+  const safeMonth = (idx: number): number => ((idx % 12) + 12) % 12;
+
   // Menghitung Siklus Terbaik (Bulan Puncak Harga & Waktu Tanam Optimal Biar Untung)
   let maxPrice = -Infinity;
-  let optimalHarvestMonthIdx = harvestMonth;
+  let optimalHarvestMonthIdx = safeMonth(harvestMonth);
   item.historis_bulanan.forEach((h, idx) => {
     if (h.harga > maxPrice) {
       maxPrice = h.harga;
@@ -380,10 +383,18 @@ function buildMultiYearHistory(
     }
   });
 
-  // Waktu tanam terbaik dihitung mundur dari bulan panen puncak
-  const optimalPlantMonthIdx = (optimalHarvestMonthIdx - harvestMonthOffset + 12) % 12;
+  // Waktu tanam terbaik:
+  // - Untuk pohon tahunan/perkebunan: awal musim hujan (Oktober - November)
+  // - Untuk tanaman semusim: hitung mundur modulo dari puncak panen
+  const optimalPlantMonthIdx = isPerennial
+    ? 9 // Oktober (awal musim hujan terbaik tanam pohon)
+    : safeMonth(optimalHarvestMonthIdx - (harvestMonthOffset % 12));
+
+  const optimalPlantMonthName = bulanList[optimalPlantMonthIdx] || 'Oktober';
+  const optimalHarvestMonthName = bulanList[safeMonth(optimalHarvestMonthIdx)] || 'November';
+
   const optimalPlantPrice = item.historis_bulanan[optimalPlantMonthIdx]?.harga || item.harga_saat_ini;
-  const optimalPeakPrice = maxPrice;
+  const optimalPeakPrice = maxPrice > 0 ? maxPrice : item.harga_saat_ini;
   const optimalDelta = optimalPeakPrice - optimalPlantPrice;
   const optimalDeltaPct = optimalPlantPrice > 0 ? Math.round(((optimalPeakPrice - optimalPlantPrice) / optimalPlantPrice) * 100) : 0;
 
@@ -396,7 +407,7 @@ function buildMultiYearHistory(
 
   const hppBatasAman = Math.round(avgPanen * 0.52);
 
-  if (isProfit && deltaPct >= 10 && yearsProfitable >= 3) {
+  if (deltaPct >= 10 && yearsProfitable >= 3) {
     statusType = 'aman';
     statusBadgeText = isPerennial ? 'Rekomendasi Investasi Pohon' : 'Rekomendasi Tanam';
     keputusanSistem = isPerennial
@@ -423,7 +434,7 @@ function buildMultiYearHistory(
           : `Jaga kestabilan kelembapan dan pH tanah secara rutin, serta gunakan benih unggul adaptif cuaca untuk memastikan tonase hasil panen maksimal.`,
       }
     ];
-  } else if (isProfit && deltaPct >= 0) {
+  } else if (deltaPct >= 0 || yearsProfitable >= 3) {
     statusType = 'stabil';
     statusBadgeText = isPerennial ? 'Investasi Pohon Stabil' : 'Siklus Stabil';
     keputusanSistem = isPerennial
@@ -452,19 +463,19 @@ function buildMultiYearHistory(
     statusType = 'waspada';
     statusBadgeText = 'Penyesuaian Jadwal Tanam';
     keputusanSistem = isPerennial
-      ? `Disarankan Tanam di Awal Musim Hujan ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`
-      : `Disarankan Tunda Tanam Bulan Ini ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`;
-    kesimpulan = `Data historis 5 tahun menunjukkan jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, harga pasar saat panen (${bulanList[harvestMonth]}) cenderung mengalami koreksi turun rata-rata ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik) akibat banjir pasokan panen serentak. Agar modal petani terlindungi, sistem menyarankan menyesuaikan jadwal tanam ke bulan ${bulanList[optimalPlantMonthIdx]} saat pasokan pasar lebih seimbang.`;
+      ? `Disarankan Tanam di Awal Musim Hujan ➔ Jadwal Terbaik: Bulan ${optimalPlantMonthName}`
+      : `Disarankan Tunda Tanam Bulan Ini ➔ Jadwal Terbaik: Bulan ${optimalPlantMonthName}`;
+    kesimpulan = `Data historis 5 tahun menunjukkan jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, harga pasar saat panen (${bulanList[harvestMonth]}) cenderung mengalami koreksi turun rata-rata ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik) akibat banjir pasokan panen serentak. Agar modal petani terlindungi, sistem menyarankan menyesuaikan jadwal tanam ke bulan ${optimalPlantMonthName} saat pasokan pasar lebih seimbang.`;
     arahanLangkah = [
       {
         kategori: '1. Penyesuaian Jadwal Tanam',
         arahan: isPerennial
-          ? `Waktu penanaman bibit pohon terbaik adalah awal musim hujan (bulan ${bulanList[optimalPlantMonthIdx]}) agar perakaran kuat sebelum kemarau.`
-          : `Tunda tanam di bulan ${bulanList[plantMonth]}. Waktu tanam terbaik adalah bulan ${bulanList[optimalPlantMonthIdx]} (~${harvestDays} HST) agar waktu panen tiba di bulan ${bulanList[optimalHarvestMonthIdx]}.`,
+          ? `Waktu penanaman bibit pohon terbaik adalah awal musim hujan (bulan ${optimalPlantMonthName}) agar perakaran kuat sebelum kemarau.`
+          : `Tunda tanam di bulan ${bulanList[plantMonth]}. Waktu tanam terbaik adalah bulan ${optimalPlantMonthName} (~${harvestDays} HST) agar waktu panen tiba di bulan ${optimalHarvestMonthName}.`,
       },
       {
         kategori: '2. Proyeksi Penjualan Hasil',
-        arahan: `Menanam di bulan ${bulanList[optimalPlantMonthIdx]} membidik estimasi harga puncak panen historis di kisaran Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg (potensi surplus +${Math.max(15, optimalDeltaPct)}%).`,
+        arahan: `Menanam di bulan ${optimalPlantMonthName} membidik estimasi harga puncak panen historis di kisaran Rp ${optimalPeakPrice.toLocaleString('id-ID')} / kg (potensi surplus +${Math.max(15, optimalDeltaPct)}%).`,
       },
       {
         kategori: '3. Pengelolaan Lahan & Tanah',
@@ -499,8 +510,8 @@ function buildMultiYearHistory(
       risikoFluktuasi,
       keputusanSistem,
       arahanLangkah,
-      optimalPlantMonthName: bulanList[optimalPlantMonthIdx],
-      optimalHarvestMonthName: bulanList[optimalHarvestMonthIdx],
+      optimalPlantMonthName,
+      optimalHarvestMonthName,
       optimalPeakPrice,
       optimalDeltaPct,
     },
@@ -966,11 +977,6 @@ export default function MarketDemandPage() {
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-700 text-white">
                   {currentDetailItem.kategori}
                 </span>
-                {multiYearAnalysis.harvestOutlook.isPerennial && (
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-amber-600 text-white flex items-center gap-1 shadow-sm">
-                    🌳 Pohon Buah / Tanaman Tahunan (±{multiYearAnalysis.harvestOutlook.yearsOffset} Tahun Menuju Panen Perdana)
-                  </span>
-                )}
                 {!regionalSuitability.isSuitable && (
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-slate-700 text-white">
                     Kurang Cocok di {activePetani.daerah || 'Wilayah Anda'}
@@ -980,14 +986,6 @@ export default function MarketDemandPage() {
               <p className="text-xs text-slate-600">
                 Jadwal Tanam: <strong className="text-slate-900">{multiYearAnalysis.harvestOutlook.plantScheduleText}</strong> ➔ {multiYearAnalysis.harvestOutlook.isPerennial ? 'Estimasi Panen Perdana:' : 'Estimasi Panen:'} <strong className="text-slate-900">{multiYearAnalysis.harvestOutlook.harvestScheduleText}</strong>
               </p>
-              {multiYearAnalysis.harvestOutlook.isPerennial && (
-                <div className="text-[11px] text-amber-900 bg-amber-50/90 border border-amber-200 rounded-xl px-3 py-1.5 mt-1 flex items-start gap-1.5 leading-relaxed">
-                  <span className="text-sm shrink-0">ℹ️</span>
-                  <span>
-                    <strong>Siklus Pohon Produktif:</strong> Waktu tunggu dari tanam bibit okulasi/sambung pucuk hingga panen perdana adalah <strong>±{multiYearAnalysis.harvestOutlook.yearsOffset} tahun</strong> (~{multiYearAnalysis.harvestOutlook.harvestDays.toLocaleString('id-ID')} HST). Setelah pohon dewasa produktif, pemanenan berlangsung rutin setiap tahun pada musim raya ({currentDetailItem.musim_puncak || 'musim panen tahunan'}).
-                  </span>
-                </div>
-              )}
             </div>
 
             <div className="flex items-center gap-4">
