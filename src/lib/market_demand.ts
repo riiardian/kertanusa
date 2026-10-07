@@ -723,6 +723,44 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     estimasi_biaya_per_ha: 45000000,
     tips_agronomis: 'Gunakan lampu penerangan LED di malam hari saat musim non-bunga untuk memacu pembungaan di luar musim (off-season).'
   },
+  {
+    komoditas: 'Nanas (Madu Subang / Honi)',
+    kategori: 'Buah-Buahan',
+    icon: '',
+    harga_saat_ini: 9500,
+    tren_mingguan: 'Naik',
+    persentase_tren: 4.8,
+    musim_puncak: 'Juni - Agustus (Musim Kemarau/Piknik) & Desember (Tahun Baru)',
+    bulan_harga_tertinggi: ['Juni', 'Juli', 'Agustus', 'Desember'],
+    alasan_permintaan: 'Nanas madu memiliki serapan industri olahan selai, keripik buah, sari buah kemasan, konsumsi buah potong segar, dan pasar ekspor nanas kaleng yang stabil tinggi.',
+    rekomendasi_waktu_tanam: 'Tanam bibit tunas batang (suckers) atau tunas buah (slips) pada awal musim hujan agar perakaran kuat sebelum fase induksi pembungaan.',
+    historis_bulanan: make12MonthCurve(9500, [6, 7, 8, 12], 0.22),
+    karakteristik_tanah: 'Tanah lempung berpasir gembur tebal kaya bahan organik, drainase sangat lancar tanpa genangan air, toleran lahan masam khas tropis',
+    ph_ideal: 'pH 4.5 - 5.5',
+    umur_panen: '270 - 300 HST (Rata-rata 285 HST / 9 - 10 Bulan)',
+    potensi_hasil_per_ha: '45 - 65 Ton Buah Segar',
+    estimasi_biaya_per_ha: 28000000,
+    tips_agronomis: 'Lakukan induksi pembungaan (forcing dengan zat etilen/karbit) pada umur 6-7 bulan setelah kanopi memiliki minimal 35 helai daun aktif. Panen petik dilakukan tepat saat 25%-50% mata nanas di pangkal buah berubah kuning keemasan (285 HST) untuk rasa manis brix optimal.'
+  },
+  {
+    komoditas: 'Durian (Montong / Bawor / Musang King)',
+    kategori: 'Buah-Buahan',
+    icon: '',
+    harga_saat_ini: 65000,
+    tren_mingguan: 'Naik',
+    persentase_tren: 6.5,
+    musim_puncak: 'November - Februari (Musim Panen Raya Durian Nusantara & Liburan Tahun Baru)',
+    bulan_harga_tertinggi: ['Desember', 'Januari', 'Februari', 'Juli'],
+    alasan_permintaan: 'Sebagai "Raja Buah" (King of Fruits), durian memiliki nilai ekonomi sangat tinggi dengan pasar domestik tak terbatas dan prospek ekspor buah beku/pasta ke Tiongkok dan Singapura.',
+    rekomendasi_waktu_tanam: 'Tanam bibit okulasi unggul bersertifikat di awal musim hujan dengan jarak tanam 10x10 meter. Induksi pembungaan pohon dewasa dilakukan dengan periode pengeringan tanah (water stress) selama 3-4 minggu di musim kemarau.',
+    historis_bulanan: make12MonthCurve(65000, [12, 1, 2, 7], 0.35),
+    karakteristik_tanah: 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m), lereng berdrainase prima tanpa air menggenang',
+    ph_ideal: 'pH 6.0 - 6.8',
+    umur_panen: '110 - 130 HST (Siklus Bunga Mekar ke Masak Petik / Jatuh ~4 Bulan)',
+    potensi_hasil_per_ha: '10 - 18 Ton Buah Durian per Ha per tahun pada tanaman dewasa produktif',
+    estimasi_biaya_per_ha: 45000000,
+    tips_agronomis: 'Lakukan penjarangan buah (fruit thinning) dengan menyisakan 2-3 buah terbaik per dahan saat pentil sebesar bola tenis. Pasang tali pengikat dahan dan buah agar dahan tidak patah serta buah tidak jatuh membentur tanah saat masak fisiologis.'
+  },
 
   // ==================== REMPAH & BUMBU ====================
   {
@@ -1100,6 +1138,8 @@ export interface MarketIntelligenceScore {
 
 function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
+  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset Balitbangtan)
+  if (lower.includes('durian') || lower.includes('duren')) return 120; // 4 bulan (siklus bunga anthesis ke matang petik 110-130 HST)
   if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke petik buah 110-130 HST)
   if (lower.includes('apel') || lower.includes('apple')) return 130;
   if (lower.includes('jeruk') || lower.includes('citrus')) return 240;
@@ -1426,7 +1466,26 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   );
   if (direct) return direct;
 
-  // 2. Jika tidak ada di list statis, generate agronomical data cerdas berbasis botani
+  // 2. Validasi apakah input berkaitan dengan istilah botani/pertanian.
+  // Jika input sama sekali bukan komoditas pertanian (misal: "cacing", "mobil", "laptop"),
+  // kembalikan komoditas patokan default terpercaya dan JANGAN memalsukan data.
+  const isBotanical = 
+    lower.includes('buah') || lower.includes('sayur') || lower.includes('padi') ||
+    lower.includes('bawang') || lower.includes('cabai') || lower.includes('cabe') ||
+    lower.includes('kopi') || lower.includes('teh') || lower.includes('kakao') ||
+    lower.includes('sawit') || lower.includes('singkong') || lower.includes('ubi') ||
+    lower.includes('jagung') || lower.includes('tomat') || lower.includes('kentang') ||
+    lower.includes('nanas') || lower.includes('durian') || lower.includes('mangga') ||
+    lower.includes('pisang') || lower.includes('jeruk') || lower.includes('apel') ||
+    lower.includes('daun') || lower.includes('akar') || lower.includes('umbi') ||
+    lower.includes('kacang') || lower.includes('rempah') || lower.includes('obat') ||
+    lower.includes('tanaman') || lower.includes('herbal') || lower.includes('bunga');
+
+  if (!isBotanical) {
+    return COMMODITY_TRENDS.find(c => c.komoditas === 'Bawang Merah') || COMMODITY_TRENDS[0];
+  }
+
+  // 3. Jika botani belum ada di list statis, generate agronomical data cerdas berbasis botani
   let category: CommodityCategory = 'Sayuran';
   let basePrice = 25000;
   let harvestAge = '70 - 90 HST';

@@ -1,6 +1,30 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+160. **Validasi Presisi Data Agronomi Riset: Integrasi Nanas (285 HST), Durian (120 HST), & Eliminasi Bug Fabrikasi Komoditas Non-Pertanian [2026-10-07]**:
+    - **Diagnosa Masukan User**:
+      - Waktu tanam dan estimasi panen nanas sebelumnya tidak akurat (di lapangan rata-rata 270–300 HST atau ~285 HST, bukan estimasi pendek tak realistis).
+      - Komoditas penting bernilai tinggi seperti **Durian** sebelumnya tidak muncul dalam pencarian komoditas dan katalog sistem.
+      - Terdapat celah fatal di mana input kata asal non-tanaman (contoh: "cacing") justru memunculkan data komoditas palsu (diklasifikasikan sebagai sayuran, harga Rp 25.000/kg, dan grafik panen fiktif).
+    - **Aksi & Solusi**:
+      1. **Eliminasi Fabrikasi Data Palsu (`src/lib/market_demand.ts` & `src/app/tren-pasar/page.tsx`)**:
+         - Menghapus pembuatan item universal fiktif ketika hasil pencarian kosong (`filtered.length === 0`).
+         - Menghilangkan mutasi otomatis `selectedKomoditas` pada saat mengetik huruf acak di form pencarian; analisis chart hanya diperbarui saat pengguna mengklik komoditas resmi atau kata kunci persis cocok dengan basis data terdaftar.
+         - Menyajikan *empty state* informatif yang ramah ketika kata kunci tidak ditemukan, mengarahkan petani pada komoditas resmi.
+      2. **Integrasi Profil Agronomi Resmi Nanas & Durian (`src/lib/market_demand.ts`)**:
+         - Menambahkan komoditas **Nanas (Madu Subang / Honi)** dengan umur panen akurat **270 – 300 HST (rata-rata 285 HST / 9.5 bulan)**, karakteristik tanah lempung berpasir masam (pH 4.5–5.5), dan panduan induksi pembungaan (forcing).
+         - Menambahkan komoditas **Durian (Montong / Bawor / Musang King)** dengan umur siklus pematangan buah **110 – 130 HST (rata-rata 120 HST / ~4 bulan dari anthesis bunga mekar)**.
+         - Memperbarui fungsi `parseHarvestDaysApprox` dan `parseHarvestDays` agar secara presisi membaca nanas (285 HST) dan durian (120 HST).
+      3. **Ekspansi Katalog Budidaya & Validasi Real-Time Petani (`src/lib/crops.ts` & `src/app/input-lahan/page.tsx`)**:
+         - Memperluas `CROPS_CATALOG` dari semula hanya 5 tanaman menjadi mencakup puluhan komoditas unggulan nasional lengkap dengan fase pertumbuhan dan kebutuhan air/pupuk.
+         - Menambahkan fitur `<datalist id="tanaman-options">` pada form pendaftaran lahan agar petani mendapat rekomendasi instan saat mengetik ("nan" -> Nanas Madu, "dur" -> Durian, "tanah" -> Kacang Tanah).
+         - Menambahkan badge feedback validasi langsung di bawah input jenis tanaman yang menampilkan konfirmasi nama botani dan umur panen terverifikasi Balitbangtan, atau peringatan jika nama yang dimasukkan bukan tanaman pertanian.
+      4. **Panduan Pemantauan Khusus Nanas & Durian (`src/app/monitoring/page.tsx`)**:
+         - Menambahkan 5 tahapan fase pertumbuhan spesifik nanas (hingga 285 HST) dan durian (hingga 120 HST) pada `getCropStages`.
+         - Menambahkan panduan penyiraman anti busuk hati/kanker batang serta panduan pemupukan khusus (etilen/karbit, kalsium-boron, kalium tinggi KNO3 Putih/ZK) pada `getCropCareGuide`.
+    - **Validasi Build**:
+      - Turbopack Next.js build 100% clean (14/14 static & dynamic pages) tanpa error.
+
 159. **Pembersihan Halaman Tren Pasar: Hapus Seksi Rekomendasi Komoditas Unggulan Wilayah [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Seksi kartu banner "Rekomendasi Komoditas Unggulan Wilayah" yang berada tepat di bawah Rincian Lahan pada halaman Daya Beli Pasar (`/tren-pasar`) dihapus permanen agar tata letak halaman lebih ringkas, fokus, dan tidak redundan.

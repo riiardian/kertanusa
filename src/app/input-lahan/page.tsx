@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { RefreshCw, MapPin, Check, ChevronDown, Trash2 } from 'lucide-react';
 import { REGIONS } from '@/lib/agro_regions';
+import { getCropInfo, isRecognizedCrop, SUPPORTED_CROP_NAMES } from '@/lib/crops';
 import LottieAnimation from '@/components/LottieAnimation';
 import loadingAnimation from '../../../public/growingplant.json';
 
@@ -454,19 +455,49 @@ export default function InputLahanPage() {
             )}
           </div>
 
-          {/* Jenis Tanaman (Input Bebas Manual 100% Tanpa Dropdown) */}
+          {/* Jenis Tanaman (Input Bebas Manual dengan Rekomendasi Datalist & Validasi Riset) */}
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-slate-700">
               Jenis Tanaman / Komoditas <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
+              list="tanaman-options"
               required
-              placeholder="Ketik jenis tanaman (contoh: Padi Inpari, Cabai Rawit, Bawang Merah...)"
+              placeholder="Ketik jenis tanaman (contoh: Nanas Madu, Durian Montong, Cabai Rawit, Bawang Merah...)"
               value={formData.jenis_tanaman}
               onChange={(e) => setFormData({ ...formData, jenis_tanaman: e.target.value })}
               className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 text-sm outline-none transition-all duration-200 text-slate-900 placeholder:text-slate-400 font-medium"
             />
+            <datalist id="tanaman-options">
+              {SUPPORTED_CROP_NAMES.map(c => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+
+            {/* Indikator Validasi & Estimasi Panen Berdasarkan Riset Agronomi */}
+            {formData.jenis_tanaman.trim().length > 1 && (() => {
+              const detected = getCropInfo(formData.jenis_tanaman);
+              const isValid = isRecognizedCrop(formData.jenis_tanaman);
+              if (isValid) {
+                return (
+                  <div className="flex items-center gap-2 p-2 bg-emerald-50/90 border border-emerald-200 rounded-lg text-emerald-800 text-[11px] font-medium">
+                    <span>🌱</span>
+                    <span>
+                      Terdeteksi: <strong>{detected.nama}</strong> • Estimasi Umur Panen: <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST</strong> (Sesuai Riset Agronomi Balitbangtan)
+                    </span>
+                  </div>
+                );
+              }
+              return (
+                <div className="flex items-center gap-2 p-2 bg-amber-50/90 border border-amber-200 rounded-lg text-amber-800 text-[11px] font-medium">
+                  <span>⚠️</span>
+                  <span>
+                    Komoditas <strong>&quot;{formData.jenis_tanaman}&quot;</strong> belum terdaftar dalam basis riset agronomi nasional. Pastikan Anda memasukkan nama tanaman budidaya yang valid.
+                  </span>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Luas Lahan & Satuan Luas (Icon Chevron Terpusat Rapi) */}

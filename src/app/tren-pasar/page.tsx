@@ -37,6 +37,7 @@ import {
   CheckCircle,
   Info,
   Calendar,
+  AlertCircle,
 } from 'lucide-react';
 
 const DEFAULT_BENCHMARK_FARMER: PetaniRecord = {
@@ -85,6 +86,8 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
 
 function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
+  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset hortikultura)
+  if (lower.includes('durian') || lower.includes('duren')) return 120; // 4 bulan (siklus bunga anthesis ke matang petik 110-130 HST)
   if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke matang petik 110-130 HST)
   if (lower.includes('apel') || lower.includes('apple')) return 130; // ~4.3 bulan (Siklus bunga ke matang petik 120-140 HST)
   if (lower.includes('jeruk') || lower.includes('citrus')) return 240; // 8 bulan
@@ -645,10 +648,6 @@ export default function MarketDemandPage() {
         c.kategori.toLowerCase().includes(q) ||
         c.alasan_permintaan.toLowerCase().includes(q)
       );
-      if (filtered.length === 0) {
-        const universalItem = getUniversalCommodityData(searchQuery);
-        return [universalItem];
-      }
       return filtered;
     }
     return list;
@@ -664,15 +663,12 @@ export default function MarketDemandPage() {
         targetName.toLowerCase().includes(c.komoditas.toLowerCase())
       );
       if (partialFound) return partialFound;
-      return getUniversalCommodityData(targetName);
     }
-    if (searchQuery.trim()) {
-      const found = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase().includes(searchQuery.toLowerCase()));
-      if (found) return found;
-      return getUniversalCommodityData(searchQuery);
-    }
-    return getUniversalCommodityData(DEFAULT_BENCHMARK_FARMER.jenis_tanaman);
-  }, [selectedKomoditas, activePetani, searchQuery]);
+    const fallbackName = activePetani?.jenis_tanaman || DEFAULT_BENCHMARK_FARMER.jenis_tanaman;
+    return COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase().includes(fallbackName.toLowerCase()))
+      || COMMODITY_TRENDS.find(c => c.komoditas === 'Bawang Merah')
+      || COMMODITY_TRENDS[0];
+  }, [selectedKomoditas, activePetani]);
 
   const currentProjection = useMemo(() => {
     return calculateProfitProjection(calcLuas, currentDetailItem.komoditas);
@@ -1060,13 +1056,18 @@ export default function MarketDemandPage() {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Ketik tanaman apapun (contoh: Porang, Vanili, Stevia, Sorgum, Buah Naga, dll)..."
+              placeholder="Ketik tanaman (contoh: Nanas, Durian, Cabai Rawit, Bawang Merah, Padi, Jagung, Kacang Tanah)..."
               value={searchQuery}
               onChange={e => {
                 const val = e.target.value;
                 setSearchQuery(val);
-                if (val.trim()) {
-                  setSelectedKomoditas(val.trim());
+                const q = val.trim().toLowerCase();
+                if (q) {
+                  // Hanya ubah komoditas aktif jika input persis cocok dengan komoditas terdaftar
+                  const exact = COMMODITY_TRENDS.find(c => c.komoditas.toLowerCase() === q);
+                  if (exact) {
+                    setSelectedKomoditas(exact.komoditas);
+                  }
                 }
               }}
               className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-200 outline-none transition-all placeholder:text-slate-400 bg-white"
@@ -1084,7 +1085,17 @@ export default function MarketDemandPage() {
 
           <div className="flex items-center gap-1.5 flex-wrap text-xs pt-0.5">
             <span className="text-slate-400 text-[11px] font-medium mr-1">Contoh Cepat:</span>
-            {['Porang', 'Vanili', 'Stevia', 'Sorgum', 'Cabai Rawit Merah', 'Bawang Merah', 'Buah Naga Merah', 'Kopi Arabika'].map(pill => (
+            {[
+              'Bawang Merah',
+              'Cabai Rawit Merah',
+              'Padi Sawah',
+              'Nanas (Madu Subang / Honi)',
+              'Durian (Montong / Bawor / Musang King)',
+              'Jagung Manis',
+              'Kopi Arabika',
+              'Kacang Tanah',
+              'Porang (Amorphophallus muelleri)'
+            ].map(pill => (
               <button
                 key={pill}
                 type="button"
@@ -1100,7 +1111,7 @@ export default function MarketDemandPage() {
                     : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
                 }`}
               >
-                {pill}
+                {pill.includes('(') ? pill.split('(')[0].trim() : pill}
               </button>
             ))}
           </div>
@@ -1196,6 +1207,16 @@ export default function MarketDemandPage() {
               </table>
             </div>
           </div>
+        ) : searchQuery.trim() ? (
+          <div className="p-8 border-t border-slate-100 bg-white text-center space-y-2.5">
+            <AlertCircle className="w-6 h-6 text-amber-500 mx-auto" />
+            <h3 className="text-xs sm:text-sm font-bold text-slate-800">
+              Komoditas &quot;{searchQuery}&quot; Tidak Ditemukan
+            </h3>
+            <p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
+              Kertanusa hanya menganalisis komoditas pangan, hortikultura, perkebunan, dan rempah resmi berbasis data riset agronomi nasional. Silakan masukkan nama tanaman budidaya yang valid seperti <strong>Cabai, Bawang Merah, Padi, Nanas, Durian, Jagung, Kacang Tanah</strong>, dll.
+            </p>
+          </div>
         ) : (
           <div className="p-6 border-t border-slate-100 bg-slate-50/40 text-center space-y-2">
             <Sprout className="w-6 h-6 text-slate-400 mx-auto" />
@@ -1203,7 +1224,7 @@ export default function MarketDemandPage() {
               Pencarian Intelijen Komoditas Pertanian
             </h3>
             <p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
-              Ketik nama tumbuhan, sayuran, buah, atau tanaman obat pada kolom di atas untuk memuat data harga pasar, estimasi panen, dan panduan agronomis secara otomatis.
+              Ketik nama tanaman, buah, sayur, atau rempah pada kolom di atas atau pilih salah satu kategori untuk memuat data harga pasar, estimasi panen, dan panduan agronomis.
             </p>
           </div>
         )}

@@ -42,6 +42,122 @@ interface CropGrowthStage {
 function getCropStages(cropName: string): CropGrowthStage[] {
   const c = (cropName || '').toLowerCase();
 
+  // Nanas (Madu Subang / Honi)
+  if (c.includes('nanas') || c.includes('nenas') || c.includes('pineapple')) {
+    return [
+      {
+        title: 'Adaptasi Bibit Tunas Batang & Perakaran',
+        hstRange: 'HST 1 – 60',
+        minHst: 1,
+        maxHst: 60,
+        warning: 'Bibit tunas batang (suckers/slips) beradaptasi dengan bedengan. Jaga drainase bedengan agar pangkal bibit tidak tergenang dan terhindar dari busuk hati Phytophthora.'
+      },
+      {
+        title: 'Pertumbuhan Vegetatif Daun Sukulen',
+        hstRange: 'HST 61 – 180',
+        minHst: 61,
+        maxHst: 180,
+        warning: 'Pembentukan roset daun sukulen berlilin. Lakukan pemupukan NPK berimbang rutin untuk memacu penambahan helai daun minimal 35 helai sebelum masa induksi bunga.'
+      },
+      {
+        title: 'Induksi Pembungaan (Forcing)',
+        hstRange: 'HST 181 – 220',
+        minHst: 181,
+        maxHst: 220,
+        warning: 'Tanaman siap diinduksi pembungaan buatan (forcing dengan zat etilen/karbit). Kuncup bunga mahkota merah mulai menyembul dari pusat tajuk daun.'
+      },
+      {
+        title: 'Pembesaran Buah Nanas & Mahkota',
+        hstRange: 'HST 221 – 260',
+        minHst: 221,
+        maxHst: 260,
+        warning: 'Mata buah nanas membesar padat dan mahkota daun terbentuk kokoh. Berikan pupuk tinggi Kalium (KNO3 Putih) dan lindungi dari terik matahari berlebih (sunscald).'
+      },
+      {
+        title: 'Pematangan Mata Buah & Panen Petik',
+        hstRange: 'HST 261 – 285+',
+        minHst: 261,
+        maxHst: 999,
+        warning: 'Sekitar 25%–50% mata nanas di pangkal buah berubah warna kuning keemasan (~285 HST) dengan aroma harum manis brix tinggi. Petik dengan tangkai 2 cm di pagi hari.'
+      }
+    ];
+  }
+
+  // Durian (Montong / Bawor / Musang King)
+  if (c.includes('durian') || c.includes('duren')) {
+    return [
+      {
+        title: 'Inisiasi Kuncup Bunga di Dahan',
+        hstRange: 'HST 1 – 25',
+        minHst: 1,
+        maxHst: 25,
+        warning: 'Kuncup bunga durian mulai membesar di dahan utama. Hentikan pemupukan unsur nitrogen dan jaga kelembapan tanah sedang di bawah tajuk.'
+      },
+      {
+        title: 'Bunga Mekar (Anthesis) & Penyerbukan',
+        hstRange: 'HST 26 – 45',
+        minHst: 26,
+        maxHst: 45,
+        warning: 'Bunga durian mekar pada malam hari. Semprot unsur Kalsium dan Boron untuk memperkokoh tangkai bunga agar tidak gugur massal.'
+      },
+      {
+        title: 'Pentil Duri & Seleksi Buah (Thinning)',
+        hstRange: 'HST 46 – 75',
+        minHst: 46,
+        maxHst: 75,
+        warning: 'Pentil buah sebesar bola tenis. Lakukan penjarangan buah: sisakan 2–3 buah terbaik per dompolan di dahan utama agar mencapai bobot Grade A.'
+      },
+      {
+        title: 'Pembesaran Buah & Pengikatan Tali Dahan',
+        hstRange: 'HST 76 – 105',
+        minHst: 76,
+        maxHst: 105,
+        warning: 'Buah durian membesar pesat. Pasang tali pengikat dahan dan buah ke batang utama untuk mencegah dahan patah atau buah jatuh sebelum waktunya.'
+      },
+      {
+        title: 'Pematangan Daging Buah & Masak Jatuh/Petik',
+        hstRange: 'HST 106 – 120+',
+        minHst: 106,
+        maxHst: 999,
+        warning: 'Juring durian mengembang, duri melunak lentur, dan tercium aroma harum khas (~120 HST). Buah siap dipetik bertali atau tunggu masak jatuh alami.'
+      }
+    ];
+  }
+
+  // Kacang Tanah
+  if (c.includes('kacang tanah')) {
+    return [
+      {
+        title: 'Perkecambahan & Vegetatif Awal',
+        hstRange: 'HST 1 – 25',
+        minHst: 1,
+        maxHst: 25,
+        warning: 'Bibit bertunas dengan daun majemuk 4 helai. Lakukan penyiangan gulma di sekitar lubang tanam.'
+      },
+      {
+        title: 'Pembungaan & Penusukan Ginofor',
+        hstRange: 'HST 26 – 50',
+        minHst: 26,
+        maxHst: 50,
+        warning: 'Bunga kuning mekar dan jarum ginofor menusuk ke dalam tanah. Lakukan pembumbunan tanah gembur di sekitar tanaman.'
+      },
+      {
+        title: 'Pembentukan Polong di Dalam Tanah',
+        hstRange: 'HST 51 – 75',
+        minHst: 51,
+        maxHst: 75,
+        warning: 'Polong membesar di bawah tanah. Berikan kalsium/dolomit untuk mencegah polong hampa (pop-pods).'
+      },
+      {
+        title: 'Pematangan Polong & Panen Cabut',
+        hstRange: 'HST 76 – 95+',
+        minHst: 76,
+        maxHst: 999,
+        warning: 'Sebagian besar daun menguning dan rontok (~95 HST). Cek sampel: kulit polong keras berserat cokelat. Cabut dan jemur tiris.'
+      }
+    ];
+  }
+
   // Cabai / Cabe / Lombok
   if (c.includes('cabai') || c.includes('cabe') || c.includes('chili') || c.includes('lombok')) {
     return [
@@ -432,6 +548,78 @@ function getCropCareGuide(cropName: string, luasTanah: number, satuanLuas: strin
 
   const isDry = (weather?.kelembapan_tanah ?? 55) < 50;
   const isWet = (weather?.kelembapan_tanah ?? 55) > 80;
+
+  // 0A. NANAS
+  if (c.includes('nanas') || c.includes('nenas') || c.includes('pineapple')) {
+    const isVegetatif = hst <= 180;
+    const isInduksi = hst > 180 && hst <= 220;
+
+    const siramDesc = isWet
+      ? 'Tanah bedengan nanas tergenang air! Segera perdalam parit drainase keliling. Nanas sangat rentan penyakit busuk hati (heart rot Phytophthora nicotianae) jika perakaran tergenang lebih dari 24 jam.'
+      : isDry
+      ? 'Tanah bedengan nanas agak kering. Berikan penyiraman secukupnya di parit bedengan seluas ' + userLuasLabel + '. Nanas memiliki daun sukulen berlilin hemat air, namun butuh air saat pembesaran buah.'
+      : 'Kelembapan tanah bedengan nanas sangat prima (gembur berpasir). Tanaman menyerap hara dengan baik tanpa risiko busuk akar.';
+
+    const pupukDesc = isVegetatif
+      ? 'Fase Vegetatif Roset: Berikan pupuk NPK 15-15-15 dan kompos matang untuk memacu pembentukan minimal 35 helai daun aktif sebelum fase induksi pembungaan.'
+      : isInduksi
+      ? 'Fase Induksi Bunga: Lakukan forcing etilen/kalsium karbit pada titik tumbuh di sore hari dan berikan pupuk Kalsium-Boron untuk memperkokoh tangkai kuncup bunga nanas.'
+      : 'Fase Pembesaran & Pematangan: Tingkatkan Kalium tinggi (KNO3 Putih / Kalium Sulfat ZK) untuk menaikkan kadar brix rasa manis madu, aroma harum, dan bobot buah nanas.';
+
+    const npkKg = Math.max(1, Math.round(280 * areaHa));
+    const komposKg = Math.max(5, Math.round(1500 * areaHa));
+    const khususKg = Math.max(1, Math.round(45 * areaHa));
+
+    return {
+      komoditasClean: 'Tanaman Nanas (Madu Subang / Honi)',
+      category: 'Buah',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: isInduksi ? 'Zat Induksi Bunga & Kalsium' : 'KNO3 Putih (Kalium Tinggi)',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai kutu putih nanas (Dysmicoccus brevipes) yang memicu penyakit layu mealybug wilt, serta busuk hati/pangkal Phytophthora saat drainase kurang lancar.',
+      tipsFase: 'Tutup bagian atas buah nanas dengan daun pembungkus saat sinar matahari sangat terik untuk mencegah luka gosong terbakar matahari (sunscald).'
+    };
+  }
+
+  // 0B. DURIAN
+  if (c.includes('durian') || c.includes('duren')) {
+    const isAnthesis = hst <= 45;
+    const isPentil = hst > 45 && hst <= 75;
+
+    const siramDesc = isWet
+      ? 'Lahan kebun durian becek tergenang! Buat saluran parit pembuangan air di luar piringan tajuk. Genangan air memicu jamur mematikan kanker batang Phytophthora palmivora.'
+      : isDry
+      ? 'Tanah piringan pohon durian kering. Alirkan irigasi piringan di bawah kanopi luar tajuk seluas ' + userLuasLabel + '. Pohon durian sangat membutuhkan air saat pembesaran buah.'
+      : 'Kondisi air tanah kebun durian sangat pas gembur berdrainase prima. Perakaran menyerap nutrisi hara secara optimal.';
+
+    const pupukDesc = isAnthesis
+      ? 'Fase Bunga Mekar (Anthesis): Semprot unsur Kalsium dan Boron di tangkai bunga dan kurangi penyiraman berlebih untuk mencegah kerontokan bunga massal.'
+      : isPentil
+      ? 'Fase Pentil Buah: Lakukan seleksi penjarangan (sisakan 2–3 buah terbaik per dahan) dan berikan NPK 16-16-16 + Kalsium Nitrat untuk kekuatan sel buah.'
+      : 'Fase Pembesaran & Pengisian Daging Buah: Berikan Kalium tinggi (Kalium Sulfat ZK / KNO3 Putih) di lingkar tajuk agar daging buah durian pulen, manis, dan bertekstur mentega.';
+
+    const npkKg = Math.max(1, Math.round(300 * areaHa));
+    const komposKg = Math.max(5, Math.round(2000 * areaHa));
+    const khususKg = Math.max(1, Math.round(50 * areaHa));
+
+    return {
+      komoditasClean: 'Pohon Durian (Montong / Bawor / Musang King)',
+      category: 'Buah',
+      siramDesc,
+      pupukDesc,
+      pupukNamaKhusus: isAnthesis ? 'Boron & Kalsium' : 'Kalium Sulfat (ZK)',
+      userLuasLabel,
+      npkKg,
+      komposKg,
+      khususKg,
+      pestWarning: 'Waspadai ulat penggerek buah (Conogethes punctiferalis), penggerek batang (Batocera sp.), dan jamur kanker batang Phytophthora palmivora.',
+      tipsFase: 'Pasang tali pengikat dahan dan buah ke cabang utama untuk mencegah dahan patah atau buah durian jatuh prematur membentur tanah.'
+    };
+  }
 
   // 1. APEL
   if (c.includes('apel') || c.includes('apple')) {
