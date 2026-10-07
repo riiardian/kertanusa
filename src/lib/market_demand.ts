@@ -547,7 +547,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(32000, [6, 7, 12, 1], 0.22),
     karakteristik_tanah: 'Tanah andosol vulkanis pegunungan, gembur berpasir kaya bahan organik, drainase lancar, ketinggian 700 - 1.200 mdpl',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 120–140 HST',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (fase bunga ke buah matang ±120–140 hari)',
     potensi_hasil_per_ha: '18 - 28 Ton Buah Segar per tahun',
     estimasi_biaya_per_ha: 38000000,
     tips_agronomis: 'Terapkan perompesan daun serentak (defoliasi buatan) pasca pemangkasan tajuk, penjarangan pentil 1-2 buah per dompolan, dan pembungkusan buah untuk mencegah sengatan lalat buah.'
@@ -566,7 +566,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(16500, [1, 2, 12], 0.22),
     karakteristik_tanah: 'Lempung berpasir gembur tebal, tidak tergenang, air tanah kedalaman > 1.5 meter',
     ph_ideal: 'pH 5.8 - 6.5',
-    umur_panen: 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Buah Dewasa: 210–240 HST',
+    umur_panen: 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (fase bunga ke buah matang ±210–240 hari)',
     potensi_hasil_per_ha: '18 - 30 Ton / Ha per tahun',
     estimasi_biaya_per_ha: 35000000,
     tips_agronomis: 'Gunakan bibit bebas penyakit CVPD bersertifikat dan pangkas bentuk tajuk 1-3-9 sejak dini.'
@@ -623,7 +623,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(22000, [9, 10, 11], 0.32),
     karakteristik_tanah: 'Lempung berpasir tanah kering dengan musim kemarau tegas 3-4 bulan untuk merangsang bunga',
     ph_ideal: 'pH 5.5 - 7.0',
-    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 110–130 HST',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (fase bunga ke buah matang ±110–130 hari)',
     potensi_hasil_per_ha: '15 - 25 Ton per tahun',
     estimasi_biaya_per_ha: 30000000,
     tips_agronomis: 'Memerlukan musim kemarau kering selama 2-3 bulan agar pucuk vegetatif berhenti dan berganti menjadi bunga serempak.'
@@ -699,7 +699,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(32000, [1, 7, 12], 0.18),
     karakteristik_tanah: 'Tanah andosol atau latosol gembur berpasir kaya hara organik',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 180–210 HST',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (fase bunga ke buah matang ±180–210 hari)',
     potensi_hasil_per_ha: '15 - 25 Ton per tahun saat dewasa',
     estimasi_biaya_per_ha: 36000000,
     tips_agronomis: 'Gunakan bibit sambung pucuk varietas Miki (tahan ulat buah) atau Aligator untuk bobot besar berdaging pulen mentega.'
@@ -756,7 +756,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(65000, [12, 1, 2, 7], 0.35),
     karakteristik_tanah: 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m), lereng berdrainase prima tanpa air menggenang',
     ph_ideal: 'pH 6.0 - 6.8',
-    umur_panen: 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Siklus Buah per Musim: 110–130 HST',
+    umur_panen: 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (fase bunga mekar ke buah matang ±110–130 hari)',
     potensi_hasil_per_ha: '10 - 18 Ton Buah Durian per Ha per tahun pada tanaman dewasa produktif',
     estimasi_biaya_per_ha: 45000000,
     tips_agronomis: 'Lakukan penjarangan buah (fruit thinning) dengan menyisakan 2-3 buah terbaik per dahan saat pentil sebesar bola tenis. Pasang tali pengikat dahan dan buah agar dahan tidak patah serta buah tidak jatuh membentur tanah saat masak fisiologis.'
@@ -1532,7 +1532,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   if (lower.includes('durian') || lower.includes('duren')) {
     category = 'Buah-Buahan';
     basePrice = 65000;
-    harvestAge = 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Siklus Buah Dewasa: 110–130 HST';
+    harvestAge = 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (siklus bunga-buah ±110–130 hari)';
     ph = 'pH 6.0 - 6.8';
     yieldStr = '10 - 18 Ton / Ha per tahun';
     soil = 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m)';
@@ -1540,7 +1540,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('mangga') || lower.includes('alpukat') || lower.includes('apel')) {
     category = 'Buah-Buahan';
     basePrice = 30000;
-    harvestAge = 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 120–140 HST';
+    harvestAge = 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (siklus bunga-buah ±120–140 hari)';
     ph = 'pH 5.5 - 6.8';
     yieldStr = '15 - 25 Ton / Ha per tahun';
     soil = 'Tanah gembur lempung berpasir subur, tidak tergenang air';
@@ -1548,7 +1548,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   } else if (lower.includes('jeruk') || lower.includes('citrus') || lower.includes('lemon')) {
     category = 'Buah-Buahan';
     basePrice = 18000;
-    harvestAge = 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Buah Dewasa: 210–240 HST';
+    harvestAge = 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Pohon Produktif: Panen raya tahunan (siklus bunga-buah ±210–240 hari)';
     ph = 'pH 5.8 - 6.8';
     yieldStr = '18 - 30 Ton / Ha per tahun';
     soil = 'Lempung berpasir gembur tebal, tidak tergenang, air tanah kedalaman > 1.5 meter';
