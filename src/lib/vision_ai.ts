@@ -106,18 +106,77 @@ export const DISEASE_LIBRARY: Record<string, Omit<VisionAnalysisResult, 'id'>> =
     pestisida_nabati_organik: [
       'Hentikan seluruh aplikasi pestisida 5 hari sebelum panen untuk menjamin bebas residu kimiawi.'
     ]
+  },
+  'ulat-grayak': {
+    nama_tanaman: 'Bawang Merah / Jagung / Kedelai',
+    kategori_diagnosa: 'Hama',
+    nama_masalah: 'Serangan Ulat Grayak (Spodoptera exigua / frugiperda)',
+    tingkat_keparahan: 'Parah',
+    akurasi: 95.4,
+    status_kematangan: 'Belum Cukup Panen',
+    estimasi_hari_panen: 28,
+    ciri_visual: [
+      'Lubang gigitan memanjang transparan menyerupai jendela pada daun bawang/jagung',
+      'Kotoran ulat berwarna hijau kecokelatan di dalam rongga daun daun terlipat',
+      'Ulat bersembunyi di pangkal tanaman saat siang hari dan aktif makan di malam hari'
+    ],
+    rekomendasi_pupuk: [
+      { jenis: 'Pupuk Silika Nanomikro', formula: 'SiO2 25% + Boron 1%', dosis: '1.5 ml/liter air', cara_aplikasi: 'Semprot kabut tipis pada sore hari untuk menebalkan kutikula daun.' },
+      { jenis: 'Asam Amino & Kalium', formula: 'K2O 30% + Amino 20%', dosis: '2 gram/liter air', cara_aplikasi: 'Kocor di sekitar akar untuk merangsang pemulihan tajuk daun baru.' }
+    ],
+    solusi_perawatan: [
+      'Pasang lampu perangkap hama (*Light Trap*) di malam hari dengan baskom air berbusa di bawahnya.',
+      'Lakukan pengutipan ulat dan telur kelompok berbulu kapas secara manual pada pagi hari (pukul 06.00-08.00).',
+      'Rotasi tanaman dengan palawija non-inang (kacang tanah atau jagung manis tahan ulat).'
+    ],
+    pestisida_nabati_organik: [
+      'Bio-insektisida hayati Beauveria bassiana atau Bacillus thuringiensis (Bt)',
+      'Ekstrak biji/daun mimba (*Azadirachtin*) dicampur ekstrak brotowali pahit (semprot sore hari)'
+    ]
+  },
+  'bulai-jagung': {
+    nama_tanaman: 'Jagung (Zea mays)',
+    kategori_diagnosa: 'Penyakit',
+    nama_masalah: 'Penyakit Bulai Jagung (Peronosclerospora maydis)',
+    tingkat_keparahan: 'Parah',
+    akurasi: 94.1,
+    status_kematangan: 'Belum Cukup Panen',
+    estimasi_hari_panen: 60,
+    ciri_visual: [
+      'Garis klorotik putih sejajar tulang daun dari pangkal hingga ujung helaian',
+      'Lapisan serbuk spora putih seperti bedung tepung di bawah permukaan daun saat pagi lembap',
+      'Tanaman kerdil dan tongkol jagung tidak terisi biji secara normal'
+    ],
+    rekomendasi_pupuk: [
+      { jenis: 'Pupuk Kalsium Kocor', formula: 'CaCO3 98%', dosis: '5 kg/drum 200 liter', cara_aplikasi: 'Kocor tanah sekitar perakaran untuk meningkatkan resistensi dinding sel.' }
+    ],
+    solusi_perawatan: [
+      'Cabut dan musnahkan (bakar/kubur) tanaman yang terinfeksi bulai sebelum spora terbawa angin.',
+      'Gunakan benih bersertifikat yang telah diperlakukan dengan perlakuan benih (*seed treatment*) fungisida hayati.',
+      'Atur waktu tanam serempak dalam satu hamparan untuk memutus siklus hidup patogen.'
+    ],
+    pestisida_nabati_organik: [
+      'Agens hayati Trichoderma asperellum diaplikasikan pada tanah dan lubang tanam',
+      'Ekstrak daun sirih hijau dan rimpang jahe sebagai fungisida nabati preventif'
+    ]
   }
 };
 
 export function analyzeCropImage(imageKeyOrDesc: string): VisionAnalysisResult {
-  const key = imageKeyOrDesc.toLowerCase();
+  const key = (imageKeyOrDesc || '').toLowerCase();
   let selected = DISEASE_LIBRARY['antraknosa'];
 
-  if (key.includes('kutu') || key.includes('putih') || key.includes('keriting') || key.includes('kebul')) {
+  if (key.includes('ulat') || key.includes('grayak') || key.includes('bawang') || key.includes('spodoptera')) {
+    selected = DISEASE_LIBRARY['ulat-grayak'];
+  } else if (key.includes('bulai') || key.includes('jagung') || key.includes('putih-jagung')) {
+    selected = DISEASE_LIBRARY['bulai-jagung'];
+  } else if (key.includes('kutu') || key.includes('putih') || key.includes('keriting') || key.includes('kebul')) {
     selected = DISEASE_LIBRARY['kutu-kebul'];
   } else if (key.includes('hawar') || key.includes('kresek') || key.includes('kuning') || key.includes('padi')) {
     selected = DISEASE_LIBRARY['hawar-daun'];
-  } else if (key.includes('sehat') || key.includes('panen') || key.includes('matang') || key.includes('merah')) {
+  } else if (key.includes('sehat') || key.includes('panen') || key.includes('matang') || key.includes('merah') || key.includes('grade-a')) {
+    selected = DISEASE_LIBRARY['siap-panen-grade-a'];
+  } else if (key.includes('custom') || key.includes('kamera') || key.includes('foto')) {
     selected = DISEASE_LIBRARY['siap-panen-grade-a'];
   }
 
