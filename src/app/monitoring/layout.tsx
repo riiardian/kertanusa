@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Agroklimat | KERTANUSA',
+  title: 'Agroklimat',
   description: 'Pemantauan iklim mikro sawah, sensor agrometeorologi, dan pH tanah Kertanusa.',
 };
 
