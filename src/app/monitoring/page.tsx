@@ -367,84 +367,485 @@ function getCropStages(cropName: string): CropGrowthStage[] {
     ];
   }
 
-  // Apel (Manalagi / Rome Beauty / Anna)
+  // Apel (Manalagi / Rome Beauty / Anna) — SIKLUS POHON PENUH DARI BIBIT
   if (c.includes('apel') || c.includes('apple')) {
     return [
       {
-        title: 'Pemangkasan Tajuk & Perompesan Daun (Dormansi Buatan)',
-        hstRange: 'Hari 1 – 15',
+        title: 'Adaptasi Bibit Okulasi di Tanah Andosol Dingin',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
         minHst: 1,
-        maxHst: 15,
-        warning: 'Lakukan pemangkasan tunas air liar dan perontokan daun tua serentak (defoliasi). Ini memutus fase vegetatif pohon apel untuk merangsang keluarnya tunas bunga serentak. Kurangi air penyiraman.'
+        maxHst: 365,
+        warning: 'Bibit okulasi ditanam di bedengan tanah andosol dataran tinggi (700-1.200 mdpl). Pasang ajir bambu dan jaga kelembapan tanah remah tanpa becek genangan.'
       },
       {
-        title: 'Muncul Tunas Bunga & Anthesis Mekar',
-        hstRange: 'Hari 16 – 40',
-        minHst: 16,
-        maxHst: 40,
-        warning: 'Bunga apel putih kemerahan mekar lebat. Jaga kelembapan tanah sedang dengan sistem drip piringan tajuk luar. Semprot nutrisi Kalsium-Boron untuk mencegah kerontokan bunga. Jangan semprot pestisida kimia keras saat lebah penyerbuk aktif.'
+        title: 'Pembentukan Tajuk Terbuka (Open Center) & Cabang Primer',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Bentuk arsitektur kanopi menyerupai cawan terbuka (open center). Pangkas cabang yang saling silang. Berikan pupuk NPK 16-16-16 dosis 250 g/pohon tiap 3 bulan.'
       },
       {
-        title: 'Pentil Buah & Penjarangan (Fruit Thinning)',
-        hstRange: 'Hari 41 – 70',
-        minHst: 41,
-        maxHst: 70,
-        warning: 'Pentil buah terbentuk sebesar kelereng. Lakukan penjarangan buah: sisakan 1–2 pentil terbaik per dompolan agar buah mencapai ukuran Grade A. Berikan pupuk NPK 16-16-16 + Kalsium Nitrat untuk kekuatan sel buah.'
+        title: 'Pematangan Dahan & Inisiasi Percobaan Bunga Pertama',
+        hstRange: 'Tahun 3 (HST 731 – 1.095)',
+        minHst: 731,
+        maxHst: 1095,
+        warning: 'Dahan pokok mengeras kokoh. Berikan pupuk Fosfat & Kalium tinggi (MKP) dan kurangi air penyiraman untuk memicu pembentukan kuncup bunga perdana.'
       },
       {
-        title: 'Pembesaran Buah & Pembungkusan (Fruit Bagging)',
-        hstRange: 'Hari 71 – 110',
-        minHst: 71,
-        maxHst: 110,
-        warning: 'Buah apel membesar cepat. Bungkus buah dengan kertas khusus untuk mencegah sengatan lalat buah (Bactrocera) dan bercak jamur Marssonina. Aplikasikan pupuk tinggi Kalium (KNO3 Putih / MKP).'
-      },
-      {
-        title: 'Pematangan Warna & Panen Petik',
-        hstRange: 'Hari 111+',
-        minHst: 111,
-        maxHst: 999,
-        warning: 'Warna buah hijau kekuningan (Manalagi) atau semburat merah cerah (Rome Beauty) merata dengan aroma harum khas. Hentikan penyiraman intensif 7 hari sebelum petik agar kadar gula brix dan kerenyahan apel maksimal. Petik dengan tangkai utuh di pagi hari.'
+        title: 'Pohon Produktif — Panen Perdana & Siklus Rompes Daun Rutin',
+        hstRange: 'Tahun 4+ (HST 1.096+)',
+        minHst: 1096,
+        maxHst: 99999,
+        warning: 'Pohon apel berbuah produktif puluhan tahun. Pada pohon dewasa, pemangkasan & perontokan daun serentak (defoliasi buatan) memicu bunga mekar serempak dengan siklus mekar → petik masak 120–140 hari.'
       }
     ];
   }
 
-  // Jeruk (Siam / Keprok / Lemon)
+  // Jeruk (Siam / Keprok / Lemon) — SIKLUS POHON PENUH DARI BIBIT
   if (c.includes('jeruk') || c.includes('citrus') || c.includes('lemon')) {
     return [
       {
-        title: 'Pemangkasan Pemeliharaan & Flush Tunas Baru',
+        title: 'Adaptasi Bibit Okulasi Bebas CVPD di Lapangan',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Tanam bibit okulasi bebas CVPD bersertifikat di lubang 60×60×60 cm berjarak 5×5 m. Berikan pupuk kandang matang 15 kg/lubang. Lindungi dari kutu loncat Diaphorina citri.'
+      },
+      {
+        title: 'Pembentukan Tajuk 1-3-9 & Pemangkasan Cabang Air',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Bentuk percabangan tajuk 1-3-9 secara teratur. Pangkas tunas air liar di bagian tengah kanopi agar sinar matahari masuk leluasa. Berikan NPK berimbang + unsur mikro Zn dan Fe.'
+      },
+      {
+        title: 'Inisiasi Bunga Putih Harum & Panen Buah Pertama',
+        hstRange: 'Tahun 2.5–3 (HST 731 – 900)',
+        minHst: 731,
+        maxHst: 900,
+        warning: 'Bunga putih harum mekar di ujung ranting. Ini masa paling peka stres air. Siram stabil di parit lingkar luar tajuk. Panen buah perdana tiba di umur 2.5–3 tahun (~900 HST).'
+      },
+      {
+        title: 'Pohon Dewasa Produktif — Panen Rutin 1–2 Kali Setahun',
+        hstRange: 'Tahun 3+ (HST 901+)',
+        minHst: 901,
+        maxHst: 99999,
+        warning: 'Pohon jeruk dewasa berbuah rutin tahunan. Siklus bunga mekar → petik masak sari manis: 210–240 hari. Berikan Kalium Sulfat ZK untuk meningkatkan kemanisan dan mencegah buah pecah.'
+      }
+    ];
+  }
+
+  // Mangga (Harum Manis / Gedong Gincu) — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('mangga') || c.includes('mango')) {
+    return [
+      {
+        title: 'Adaptasi Bibit Okulasi & Bentuk Tajuk Y',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Bibit okulasi unggul ditanam di lubang 60×60×60 cm berpupuk kandang 20 kg. Jaga kelembapan tanah, pasang ajir penyangga bambu, dan potong pucuk pada ketinggian 80 cm untuk merangsang 3 cabang primer seimbang.'
+      },
+      {
+        title: 'Pembentukan Percabangan 1-3-9',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Pangkas masing-masing cabang primer agar memunculkan 3 cabang sekunder (pola 1-3-9). Berikan NPK 15-15-15 sebanyak 250 g/pohon tiap 3 bulan. Waspadai hama wereng mangga (Idiocerus) dan penggerek pucuk.'
+      },
+      {
+        title: 'Penguatan Dahan & Inisiasi Malai Bunga Pertama',
+        hstRange: 'Tahun 3 (HST 731 – 1.095)',
+        minHst: 731,
+        maxHst: 1095,
+        warning: 'Dahan mengeras kokoh. Menjelang musim kemarau, kurangi penyiraman (water stress 1 bulan) dan aplikasikan pupuk tinggi Fosfat & Kalium (MKP) untuk merangsang munculnya malai bunga perdana.'
+      },
+      {
+        title: 'Pohon Produktif — Panen Perdana & Rutin Tahunan',
+        hstRange: 'Tahun 4+ (HST 1.096+)',
+        minHst: 1096,
+        maxHst: 99999,
+        warning: 'Pohon mangga berbuah rutin tiap tahun (September-November). Siklus bunga mekar → petik masak: 110–130 hari. Bungkus buah dengan kertas semen/karung saat pentil sebesar telur ayam untuk mencegah sengatan lalat buah.'
+      }
+    ];
+  }
+
+  // Alpukat (Miki / Aligator) — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('alpukat') || c.includes('avocado')) {
+    return [
+      {
+        title: 'Adaptasi Bibit Sambung Pucuk & Perakaran',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Bibit sambung pucuk ditanam pada jarak tanam 6×6 m. Berikan naungan sementara dan pupuk organik matang. Jaga drainase tanah andosol/latosol agar akar tidak terendam air.'
+      },
+      {
+        title: 'Pemangkasan Pucuk (Topping) & Percabangan Mendatar',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Lakukan topping pucuk utama setinggi 1 meter untuk memicu cabang mendatar yang produktif. Berikan NPK 16-16-16 dosis 300 g/pohon tiap 3 bulan. Waspadai ulat kipat dan ulat buah.'
+      },
+      {
+        title: 'Pematangan Cabang Produktif & Bunga Perdana',
+        hstRange: 'Tahun 3 (HST 731 – 1.095)',
+        minHst: 731,
+        maxHst: 1095,
+        warning: 'Pohon siap memasuki fase generatif. Berikan pupuk Kalium & Boron tinggi menjelang awal musim kemarau. Bunga kuning kehijauan mulai mekar di ketiak daun.'
+      },
+      {
+        title: 'Pohon Dewasa Produktif — Panen Perdana & Rutin',
+        hstRange: 'Tahun 4+ (HST 1.096+)',
+        minHst: 1096,
+        maxHst: 99999,
+        warning: 'Pohon berbuah produktif puluhan tahun. Siklus bunga mekar → petik tua: 180–210 hari (6–7 bulan). Petik buah saat kulit berubah agak kusam dan bila diguncang biji terdengar berdetak lembut.'
+      }
+    ];
+  }
+
+  // Pisang (Cavendish / Raja)
+  if (c.includes('pisang')) {
+    return [
+      {
+        title: 'Adaptasi Anakan & Tunas Daun Pertama',
+        hstRange: 'HST 1 – 60',
+        minHst: 1,
+        maxHst: 60,
+        warning: 'Anakan bibit ditanam di lubang 50×50×50 cm berjarak 2.5×2.5 m. Pupuk kandang matang 15 kg/lubang. Jaga kelembapan tanah alluvial tanpa becek genangan.'
+      },
+      {
+        title: 'Pertumbuhan Batang Semu & Daun Rimbun',
+        hstRange: 'HST 61 – 190',
+        minHst: 61,
+        maxHst: 190,
+        warning: 'Batang semu membesar kokoh. Lakukan penyiangan gulma dan pangkas daun tua yang mengering. Berikan pupuk susulan NPK 15-15-15 dan Urea.'
+      },
+      {
+        title: 'Muncul Jantung Pisang (Ontong) & Mekar Sisir',
+        hstRange: 'HST 191 – 230',
+        minHst: 191,
+        maxHst: 230,
+        warning: 'Jantung pisang menyembul dan kelopak membuka menjadi sisir buah. Potong sisa jantung pisang 1–2 jengkal di bawah sisir terakhir agar pengisian buah maksimal.'
+      },
+      {
+        title: 'Pembesaran Buah & Pembungkusan Tandan (Brongsong)',
+        hstRange: 'HST 231 – 280',
+        minHst: 231,
+        maxHst: 280,
+        warning: 'Bungkus tandan dengan plastik brongsong biru berpori untuk mencegah luka lalat buah dan gesekan daun. Pasang bambu penopang pohon agar tidak rebah.'
+      },
+      {
+        title: 'Pematangan Jari Pisang & Panen Tandan',
+        hstRange: 'HST 281 – 300+',
+        minHst: 281,
+        maxHst: 999,
+        warning: 'Sudut lingkar jari pisang membulat dan daun bendera mulai menguning (~300 HST). Tebang pohon setengah tinggi batang dan tampung tandan hati-hati.'
+      }
+    ];
+  }
+
+  // Pepaya (Calina / California)
+  if (c.includes('pepaya') || c.includes('papaya')) {
+    return [
+      {
+        title: 'Adaptasi Bibit Semaian di Guludan Tinggi',
+        hstRange: 'HST 1 – 45',
+        minHst: 1,
+        maxHst: 45,
+        warning: 'Bibit semaian dipindah ke guludan tinggi. Perakaran pepaya sangat peka genangan air; pastikan saluran drainase lancar untuk mencegah busuk pangkal batang Phytophthora.'
+      },
+      {
+        title: 'Vegetatif Aktif & Seleksi Bunga Hermaprodit',
+        hstRange: 'HST 46 – 100',
+        minHst: 46,
+        maxHst: 100,
+        warning: 'Bunga pertama muncul. Pilih tanaman hermaprodit (bunga sempurna bentuk lonjong) untuk kualitas buah lonjong super Grade A. Berikan pupuk NPK berimbang.'
+      },
+      {
+        title: 'Pembentukan Buah Deret Batang & Penjarangan',
+        hstRange: 'HST 101 – 180',
+        minHst: 101,
+        maxHst: 180,
+        warning: 'Buah berderet rapat di batang utama. Buang buah cacat atau saling berhimpitan agar buah lain berkembang sempurna. Berikan pupuk tinggi Kalium (KNO3 Putih).'
+      },
+      {
+        title: 'Pematangan Semburat Kuning & Panen Rutin',
+        hstRange: 'HST 181 – 240+',
+        minHst: 181,
+        maxHst: 999,
+        warning: 'Ujung bawah buah mulai bersemu semburat kuning 1–2 garis (~240 HST). Panen diputar dengan tangan di pagi hari. Pohon panen rutin tiap 5–7 hari selama 2–3 tahun.'
+      }
+    ];
+  }
+
+  // Buah Naga Merah
+  if (c.includes('naga')) {
+    return [
+      {
+        title: 'Adaptasi Stek & Perambatan Tiang Panjat',
+        hstRange: 'HST 1 – 90',
+        minHst: 1,
+        maxHst: 90,
+        warning: 'Ikat sulur stek batang tua ke tiang panjat beton/kayu kuat. Pelihara 1–2 cabang primer tegak ke atas dan bersihkan tunas air samping yang tidak perlu.'
+      },
+      {
+        title: 'Pembentukan Mahkota Tajuk di Ban Penyangga',
+        hstRange: 'HST 91 – 220',
+        minHst: 91,
+        maxHst: 220,
+        warning: 'Potong pucuk saat mencapai ban penyangga atas agar membentuk cabang menjuntai ke bawah yang produktif. Berikan pupuk kandang matang dan NPK berimbang.'
+      },
+      {
+        title: 'Inisiasi Kuncup Bunga Malam (Night Bloom)',
+        hstRange: 'HST 221 – 290',
+        minHst: 221,
+        maxHst: 290,
+        warning: 'Bunga raksasa putih harum mekar di malam hari. Bantu penyerbukan lebah atau kuas manual pada pagi subuh. Berikan pupuk Fosfat & Kalium tinggi.'
+      },
+      {
+        title: 'Pematangan Kulit Merah & Panen Petik',
+        hstRange: 'HST 291 – 330+',
+        minHst: 291,
+        maxHst: 999,
+        warning: 'Kulit buah berubah warna merah marun mengkilap dan sisik buah melunak lentur (~330 HST). Gunting tangkai buah dengan gunting tajam di pagi hari.'
+      }
+    ];
+  }
+
+  // Anggur
+  if (c.includes('anggur') || c.includes('grape')) {
+    return [
+      {
+        title: 'Pertumbuhan Batang Primer & Sekunder di Trellis',
+        hstRange: 'HST 1 – 150',
+        minHst: 1,
+        maxHst: 150,
+        warning: 'Rambatkan batang utama ke para-para atap UV. Pasang ajir dan pupuk NPK seimbang + asam humat agar perakaran berkembang kuat.'
+      },
+      {
+        title: 'Pembentukan Cabang Tersier & Pematangan Kayu',
+        hstRange: 'HST 151 – 270',
+        minHst: 151,
+        maxHst: 270,
+        warning: 'Rawat cabang tersier tempat bakal bunga. Lakukan perompesan daun air dan tunggu cabang tersier berubah warna cokelat tua berkayu (lignifikasi).'
+      },
+      {
+        title: 'Pemangkasan Pembuahan (Pruning) & Bunga Mekar',
+        hstRange: 'HST 271 – 305',
+        minHst: 271,
+        maxHst: 305,
+        warning: 'Lakukan potong cabang tersier (pruning) di mata tunas gemuk (bud 4–7). Malai bunga brokoli akan menyembul serempak dalam 10–14 hari setelah pangkas.'
+      },
+      {
+        title: 'Penjarangan Beri & Panen Dompolan Masak',
+        hstRange: 'HST 306 – 330+',
+        minHst: 306,
+        maxHst: 999,
+        warning: 'Gunting beri yang terlalu rapat saat seukuran kacang tanah. Petik dompolan saat kadar manis brix mencapai >18 brix dan aroma harum khas (~330 HST).'
+      }
+    ];
+  }
+
+  // Semangka
+  if (c.includes('semangka')) {
+    return [
+      {
+        title: 'Vegetatif Awal & Perambatan Sulur',
         hstRange: 'HST 1 – 25',
         minHst: 1,
         maxHst: 25,
-        warning: 'Pangkas cabang air liar dan ranting kering di dalam kanopi. Tabur pupuk kandang matang dan NPK berimbang di lingkar tajuk luar untuk merangsang tunas daun baru (flushing serempak).'
+        warning: 'Bibit bertunas di atas mulsa/jerami. Atur arah sulur utama agar tidak saling tumpang tindih. Berikan pupuk starter NPK seimbang.'
       },
       {
-        title: 'Inisiasi Bunga & Anthesis Mekar',
-        hstRange: 'HST 26 – 55',
+        title: 'Pembungaan & Polinasi Kawin Silang',
+        hstRange: 'HST 26 – 40',
         minHst: 26,
-        maxHst: 55,
-        warning: 'Bunga putih beraroma wangi mekar di ujung ranting. Ini masa paling peka stres air. Siram stabil di parit lingkar luar dan semprot pupuk mikro Boron + ZPT pembungaan.'
+        maxHst: 40,
+        warning: 'Bunga jantan dan betina mekar. Lakukan perkawinan buatan pada bunga betina ruas ke-12 s/d 16 pada pukul 06.00–09.00 pagi untuk jaminan jadi buah.'
       },
       {
-        title: 'Pentil Buah & Seleksi Gugur Fisiologis',
-        hstRange: 'HST 56 – 100',
-        minHst: 56,
-        maxHst: 100,
-        warning: 'Terbentuk pentil buah jeruk. Tanaman melakukan gugur buah alami pertama. Berikan Kalsium Nitrat dan Kalium untuk memperkuat tangkai buah dan mencegah kulit buah pecah (fruit cracking).'
+        title: 'Pembesaran Buah & Pembalikan Posisi',
+        hstRange: 'HST 41 – 52',
+        minHst: 41,
+        maxHst: 52,
+        warning: 'Pilih 1–2 buah terbaik per tanaman dan buang calon buah lainnya. Balik posisi buah secara berkala agar warna kulit dan bentuk bulat merata.'
       },
       {
-        title: 'Pembesaran Buah & Pengisian Bulir Sari',
-        hstRange: 'HST 101 – 170',
-        minHst: 101,
-        maxHst: 170,
-        warning: 'Bulir sari buah jeruk sedang terisi cairan sari manis kaya vitamin C. Aplikasikan pupuk Kalium Sulfat (ZK / KNO3 Putih) dan pasang perangkap feromon lalat buah.'
-      },
-      {
-        title: 'Pematangan Kulit & Panen Petik',
-        hstRange: 'HST 171+',
-        minHst: 171,
+        title: 'Pematangan Buah & Panen Petik',
+        hstRange: 'HST 53 – 60+',
+        minHst: 53,
         maxHst: 999,
-        warning: 'Kulit buah mulai melunak kenyal dan bersemu kuning cerah. Potong tangkai buah menggunakan gunting pangkas pada pagi hari saat embun kering untuk menjaga daya simpan.'
+        warning: 'Sungkup tangkai buah mengering dan sulur depan buah mati kaku (~60 HST). Bunyi buah terdengar berat saat ditepuk. Panen siang hari saat kering.'
+      }
+    ];
+  }
+
+  // Melon
+  if (c.includes('melon')) {
+    return [
+      {
+        title: 'Vegetatif & Pengikatan Tali Ajir',
+        hstRange: 'HST 1 – 25',
+        minHst: 1,
+        maxHst: 25,
+        warning: 'Rambatkan batang utama melon ke tali ajir vertikal. Buang cabang tunas air di ruas 1–8 agar nutrisi terkonsentrasi ke tajuk atas.'
+      },
+      {
+        title: 'Polinasi Bunga Betina (Ruas 9–12)',
+        hstRange: 'HST 26 – 38',
+        minHst: 26,
+        maxHst: 38,
+        warning: 'Lakukan penyerbukan bunga betina di ruas 9 s/d 12. Gantung bakal buah melon terpilih menggunakan tali rafia agar tangkai tidak patah memikul beban.'
+      },
+      {
+        title: 'Pembesaran Buah & Pembentukan Jaring (Netting)',
+        hstRange: 'HST 39 – 55',
+        minHst: 39,
+        maxHst: 55,
+        warning: 'Jaring (net) kulit buah melon mulai terbentuk rapat. Berikan pupuk Kalium Sulfat tinggi dan kurangi nitrogen agar jaring tebal dan buah manis.'
+      },
+      {
+        title: 'Pematangan Aroma & Panen Gunting',
+        hstRange: 'HST 56 – 65+',
+        minHst: 56,
+        maxHst: 999,
+        warning: 'Retakan cincin di tangkai buah sempurna dan tercium aroma wangi harum melon khas (~65 HST). Gunting tangkai buah membentuk huruf T.'
+      }
+    ];
+  }
+
+  // Kopi (Arabika / Robusta) — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('kopi')) {
+    return [
+      {
+        title: 'Adaptasi Bibit di Bawah Naungan Sementara',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Bibit kopi ditanam di bawah naungan pohon lamtoro/moghania pada jarak 2.5×2.5 m. Pupuk kandang matang 10 kg/lubang. Lindungi dari sengatan matahari terik langsung.'
+      },
+      {
+        title: 'Pembentukan Cabang Primer & Pemangkasan Wiwil',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Pangkas pucuk (topping) setinggi 1.6–1.8 m untuk menahan tinggi pohon dan memacu cabang primer mendatar. Buang tunas air (wiwil) liar yang tumbuh tegak lurus.'
+      },
+      {
+        title: 'Inisiasi Bunga Bintang Putih & Panen Perdana',
+        hstRange: 'Tahun 3 (HST 731 – 900)',
+        minHst: 731,
+        maxHst: 900,
+        warning: 'Bunga putih harum mekar serempak setelah hujan pertama pasca kemarau. Calon ceri kopi terbentuk. Berikan pupuk Kalium & Fosfat untuk panen buah perdana (~900 HST).'
+      },
+      {
+        title: 'Pohon Dewasa — Panen Raya Petik Merah 100%',
+        hstRange: 'Tahun 3+ (HST 901+)',
+        minHst: 901,
+        maxHst: 99999,
+        warning: 'Pohon kopi dewasa panen rutin tiap musim raya (Mei-Agustus). Siklus bunga mekar → ceri merah matang: 210–240 hari. Hanya petik ceri yang 100% merah matang pohon.'
+      }
+    ];
+  }
+
+  // Cokelat / Kakao — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('kakao') || c.includes('cokelat')) {
+    return [
+      {
+        title: 'Adaptasi Bibit Sambung di Bawah Naungan',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Bibit klon unggul (MCC 02/Sulawesi) ditanam di bawah naungan kelapa/lamtoro berjarak 3×3 m. Jaga tanah lembap kaya serasah organik.'
+      },
+      {
+        title: 'Pembentukan Tajuk Jorket & Cabang Kipas',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Atur 3–4 cabang jorket utama yang kokoh. Pangkas cabang cacing dan tunas air berkala agar sinar matahari 60% menembus tajuk. Pupuk NPK berimbang tiap 3 bulan.'
+      },
+      {
+        title: 'Bunga Batang Kauliflori & Panen Perdana',
+        hstRange: 'Tahun 2.5–3 (HST 731 – 800)',
+        minHst: 731,
+        maxHst: 800,
+        warning: 'Bunga mekar di bantalan batang utama (kauliflori). Pentil buah cherelle terbentuk. Lakukan sarungisasi plastik (kondomisasi) untuk mencegah hama PBK (~800 HST).'
+      },
+      {
+        title: 'Pohon Dewasa Produktif — Panen Rutin',
+        hstRange: 'Tahun 3+ (HST 801+)',
+        minHst: 801,
+        maxHst: 99999,
+        warning: 'Pohon kakao berbuah sepanjang tahun dengan puncak panen raya. Siklus bunga → polong masak: 150–180 hari. Petik polong saat alur kulit berubah warna kuning penuh.'
+      }
+    ];
+  }
+
+  // Kelapa Sawit — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('sawit')) {
+    return [
+      {
+        title: 'TBM 1: Adaptasi Bibit & Pengendalian Gulma',
+        hstRange: 'Tahun 1 (HST 1 – 365)',
+        minHst: 1,
+        maxHst: 365,
+        warning: 'Bibit sawit bersertifikat PPKS ditanam sistem mata lima 9×9×9 m di lubang berpupuk fosfat/dolomit. Tanam Mucuna bracteata (kacangan penutup tanah) untuk menahan erosi.'
+      },
+      {
+        title: 'TBM 2: Kastrasi Bunga Pasir & Pembentukan Pelepah',
+        hstRange: 'Tahun 2 (HST 366 – 730)',
+        minHst: 366,
+        maxHst: 730,
+        warning: 'Lakukan kastrasi (buang semua bunga pasir jantan & betina) pada umur 14–20 bulan agar nutrisi pohon terkonsentrasi penuh untuk pembesaran batang dan pelepah daun.'
+      },
+      {
+        title: 'TBM 3: Penghentian Kastrasi & Persiapan Buah Perdana',
+        hstRange: 'Tahun 3 (HST 731 – 1.095)',
+        minHst: 731,
+        maxHst: 1095,
+        warning: 'Hentikan kastrasi di umur 24–28 bulan. Tandan buah segar (TBS) perdana mulai berkembang. Panen buah pasir perdana di tahun ke-3 (~1.095–1.200 HST).'
+      },
+      {
+        title: 'Tanaman Menghasilkan (TM) Penuh — Panen Rutin',
+        hstRange: 'Tahun 4+ (HST 1.096+)',
+        minHst: 1096,
+        maxHst: 99999,
+        warning: 'Pohon sawit dewasa menghasilkan TBS secara rutin tiap 10–14 hari. Panen TBS tepat saat minimal 5 brondolan lepas jatuh ke piringan pohon.'
+      }
+    ];
+  }
+
+  // Karet — SIKLUS POHON PENUH DARI BIBIT
+  if (c.includes('karet')) {
+    return [
+      {
+        title: 'TBM 1–2: Adaptasi Okulasi & Pembentukan Batang Lurus',
+        hstRange: 'Tahun 1–2 (HST 1 – 730)',
+        minHst: 1,
+        maxHst: 730,
+        warning: 'Bibit okulasi klon PB 260/IRR ditanam berjarak 6×3 m. Tunas okulasi dijaga tumbuh tegak lurus tunggal tanpa cabang hingga ketinggian 2.5–3 meter.'
+      },
+      {
+        title: 'TBM 3–4: Pemeliharaan Tajuk & Pemupukan Berkala',
+        hstRange: 'Tahun 3–4 (HST 731 – 1.460)',
+        minHst: 731,
+        maxHst: 1460,
+        warning: 'Cabang tajuk atas mulai rimbun. Pupuk NPK berimbang + kieserit tiap 6 bulan. Waspadai penyakit jamur akar putih (Rigidoporus microporus).'
+      },
+      {
+        title: 'Matang Sadap & Persiapan Buka Sadap Perdana',
+        hstRange: 'Tahun 5 (HST 1.461 – 1.825)',
+        minHst: 1461,
+        maxHst: 1825,
+        warning: 'Ukur lingkar lilit batang setinggi 130 cm dari pertautan okulasi. Pohon siap buka sadap perdana saat lilit batang mencapai minimal 45 cm (~1.825 HST).'
+      },
+      {
+        title: 'Pohon Sadap Produktif (TM) — Sadap Pagi Buta',
+        hstRange: 'Tahun 5+ (HST 1.826+)',
+        minHst: 1826,
+        maxHst: 99999,
+        warning: 'Sadap lateks dilakukan rutin tiap 2–3 hari sekali pada pukul 05.00–07.00 pagi dengan sudut kemiringan irisan 30 derajat dari kiri atas ke kanan bawah.'
       }
     ];
   }

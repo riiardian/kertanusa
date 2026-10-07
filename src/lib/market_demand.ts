@@ -547,7 +547,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(32000, [6, 7, 12, 1], 0.22),
     karakteristik_tanah: 'Tanah andosol vulkanis pegunungan, gembur berpasir kaya bahan organik, drainase lancar, ketinggian 700 - 1.200 mdpl',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '120 - 135 Hari (Siklus bunga ke matang petik)',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 120–140 HST',
     potensi_hasil_per_ha: '18 - 28 Ton Buah Segar per tahun',
     estimasi_biaya_per_ha: 38000000,
     tips_agronomis: 'Terapkan perompesan daun serentak (defoliasi buatan) pasca pemangkasan tajuk, penjarangan pentil 1-2 buah per dompolan, dan pembungkusan buah untuk mencegah sengatan lalat buah.'
@@ -566,7 +566,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(16500, [1, 2, 12], 0.22),
     karakteristik_tanah: 'Lempung berpasir gembur tebal, tidak tergenang, air tanah kedalaman > 1.5 meter',
     ph_ideal: 'pH 5.8 - 6.5',
-    umur_panen: 'Tahun ke-2.5 mulai panen produktif',
+    umur_panen: 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Buah Dewasa: 210–240 HST',
     potensi_hasil_per_ha: '18 - 30 Ton / Ha per tahun',
     estimasi_biaya_per_ha: 35000000,
     tips_agronomis: 'Gunakan bibit bebas penyakit CVPD bersertifikat dan pangkas bentuk tajuk 1-3-9 sejak dini.'
@@ -585,7 +585,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(65000, [11, 12, 1], 0.25),
     karakteristik_tanah: 'Porous berpasir dicampur kompos matang, sekam bakar, dan kapur dolomit',
     ph_ideal: 'pH 6.5 - 7.2',
-    umur_panen: '8 - 10 Bulan mulai pembuahan perdana (pruning)',
+    umur_panen: 'Stek/Grafting: 10–12 Bulan (~330 HST) hingga Pembuahan Perdana',
     potensi_hasil_per_ha: '8 - 14 Ton Buah Segar',
     estimasi_biaya_per_ha: 75000000,
     tips_agronomis: 'Terapkan atap UV sederhana dan lakukan pemangkasan pembuahan (pruning) setelah cabang tersier cokelat berkayu.'
@@ -604,7 +604,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(8500, [1, 7, 12], 0.10),
     karakteristik_tanah: 'Tanah alluvial atau latosol subur tebal gembur, tidak tergenang',
     ph_ideal: 'pH 5.5 - 6.8',
-    umur_panen: '9 - 11 Bulan setelah tanam',
+    umur_panen: 'Bibit Anakan: 9–11 Bulan (~300 HST) hingga Panen Tandan',
     potensi_hasil_per_ha: '35 - 55 Ton Tandan Buah Segar',
     estimasi_biaya_per_ha: 26000000,
     tips_agronomis: 'Bungkus (brongsong) tandan buah pisang dengan plastik biru sejak jantung merunduk untuk mencegah luka lalat buah.'
@@ -623,7 +623,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(22000, [9, 10, 11], 0.32),
     karakteristik_tanah: 'Lempung berpasir tanah kering dengan musim kemarau tegas 3-4 bulan untuk merangsang bunga',
     ph_ideal: 'pH 5.5 - 7.0',
-    umur_panen: 'Tahun ke-3 mulai berbuah produktif',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 110–130 HST',
     potensi_hasil_per_ha: '15 - 25 Ton per tahun',
     estimasi_biaya_per_ha: 30000000,
     tips_agronomis: 'Memerlukan musim kemarau kering selama 2-3 bulan agar pucuk vegetatif berhenti dan berganti menjadi bunga serempak.'
@@ -680,7 +680,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(6500, [1, 12], 0.12),
     karakteristik_tanah: 'Lempung berpasir subur, gembur, tidak boleh ada air menggenang lebih dari 12 jam',
     ph_ideal: 'pH 6.0 - 6.7',
-    umur_panen: '7 - 8 Bulan mulai panen rutin mingguan',
+    umur_panen: 'Semaian Bibit: 7–8 Bulan (~240 HST) mulai Panen Rutin Mingguan',
     potensi_hasil_per_ha: '50 - 75 Ton per tahun',
     estimasi_biaya_per_ha: 24000000,
     tips_agronomis: 'Buat guludan tinggi dan parit drainase dalam. Akar pepaya sangat rentan busuk Phytophthora jika tergenang air.'
@@ -699,7 +699,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(32000, [1, 7, 12], 0.18),
     karakteristik_tanah: 'Tanah andosol atau latosol gembur berpasir kaya hara organik',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: 'Tahun ke-3 mulai berbuah produktif',
+    umur_panen: 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 180–210 HST',
     potensi_hasil_per_ha: '15 - 25 Ton per tahun saat dewasa',
     estimasi_biaya_per_ha: 36000000,
     tips_agronomis: 'Gunakan bibit sambung pucuk varietas Miki (tahan ulat buah) atau Aligator untuk bobot besar berdaging pulen mentega.'
@@ -718,7 +718,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(18500, [1, 2, 12], 0.28),
     karakteristik_tanah: 'Tanah berpasir porous, tahan kering, butuh sinar matahari penuh 100%',
     ph_ideal: 'pH 6.0 - 7.0',
-    umur_panen: '10 - 12 Bulan setelah tanam stek',
+    umur_panen: 'Stek Batang: 10–12 Bulan (~330 HST) hingga Panen Perdana',
     potensi_hasil_per_ha: '20 - 35 Ton Buah Segar',
     estimasi_biaya_per_ha: 45000000,
     tips_agronomis: 'Gunakan lampu penerangan LED di malam hari saat musim non-bunga untuk memacu pembungaan di luar musim (off-season).'
@@ -756,7 +756,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(65000, [12, 1, 2, 7], 0.35),
     karakteristik_tanah: 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m), lereng berdrainase prima tanpa air menggenang',
     ph_ideal: 'pH 6.0 - 6.8',
-    umur_panen: 'Bibit Sambung Pucuk: 4–6 Tahun hingga Panen Perdana | Siklus Buah per Musim: 110–130 HST (Bunga Mekar → Masak Petik)',
+    umur_panen: 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Siklus Buah per Musim: 110–130 HST',
     potensi_hasil_per_ha: '10 - 18 Ton Buah Durian per Ha per tahun pada tanaman dewasa produktif',
     estimasi_biaya_per_ha: 45000000,
     tips_agronomis: 'Lakukan penjarangan buah (fruit thinning) dengan menyisakan 2-3 buah terbaik per dahan saat pentil sebesar bola tenis. Pasang tali pengikat dahan dan buah agar dahan tidak patah serta buah tidak jatuh membentur tanah saat masak fisiologis.'
@@ -834,7 +834,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(85000, [10, 11, 12, 1], 0.25),
     karakteristik_tanah: 'Tanah hutan subur, lembap, naungan 40-60%, tidak tahan matahari terik langsung',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '110 - 130 HST (Siklus Buah 3.5 - 4 Bulan)',
+    umur_panen: 'Bibit Rumpun: 1.5–2 Tahun (~730 HST) hingga Panen Perdana | Siklus Buah Dewasa: 110–130 HST',
     potensi_hasil_per_ha: '2.5 - 4.5 Ton Buah Kering',
     estimasi_biaya_per_ha: 35000000,
     tips_agronomis: 'Bersihkan daun-daun kering di pangkal rumpun secara teratur agar sinar matahari menembus bunga dan memicu pembuahan.'
@@ -853,7 +853,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(250000, [5, 6, 7, 12], 0.20),
     karakteristik_tanah: 'Tanah kaya serasah organik gembur, aerasi tinggi, tidak boleh tergenang air',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '240 - 270 HST (Siklus Polong Matang 8 - 9 Bulan)',
+    umur_panen: 'Sulur Tanam: 2–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Polong: 240–270 HST',
     potensi_hasil_per_ha: '800 - 1.500 kg Polong Kering Grade A',
     estimasi_biaya_per_ha: 85000000,
     tips_agronomis: 'Lakukan penyerbukan bunga secara manual dengan lidi pada pagi hari (pukul 06.00-10.00) saat kepala putik terbuka sempurna.'
@@ -874,7 +874,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(82000, [1, 2, 3, 12], 0.28),
     karakteristik_tanah: 'Lempung liat berpasir tebal minimal 1.5 meter, kaya bahan organik, drainase lancar',
     ph_ideal: 'pH 6.0 - 7.0',
-    umur_panen: '150 - 180 HST (Siklus Buah 5 - 6 Bulan)',
+    umur_panen: 'Bibit Sambung: 2–3 Tahun (~800 HST) hingga Panen Perdana | Siklus Buah Dewasa: 150–180 HST',
     potensi_hasil_per_ha: '1.8 - 2.5 Ton Biji Kering Fermentasi',
     estimasi_biaya_per_ha: 28000000,
     tips_agronomis: 'Lakukan fermentasi biji dalam kotak kayu selama 5 hari untuk mengeluarkan aroma khas cokelat premium dan harga jual tertinggi.'
@@ -893,7 +893,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(85000, [5, 6, 7, 8], 0.16),
     karakteristik_tanah: 'Tanah andosol vulkanik pegunungan subur tebal gembur',
     ph_ideal: 'pH 5.0 - 6.5',
-    umur_panen: '210 - 240 HST (Siklus Ceri Merah 7 - 8 Bulan)',
+    umur_panen: 'Bibit Tanam: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Ceri Merah: 210–240 HST',
     potensi_hasil_per_ha: '1.2 - 2.0 Ton Green Bean',
     estimasi_biaya_per_ha: 32000000,
     tips_agronomis: 'Hanya petik buah ceri yang sudah 100% merah matang pohon untuk mendapatkan skor cupping di atas 84 (grade specialty).'
@@ -912,7 +912,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(48000, [5, 6, 7], 0.18),
     karakteristik_tanah: 'Latosol atau andosol gembur berdrainase baik',
     ph_ideal: 'pH 5.5 - 6.5',
-    umur_panen: '180 - 210 HST (Siklus Panen Raya 6 - 7 Bulan)',
+    umur_panen: 'Bibit Tanam: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Panen Raya: 180–210 HST',
     potensi_hasil_per_ha: '1.8 - 3.0 Ton Green Bean',
     estimasi_biaya_per_ha: 26000000,
     tips_agronomis: 'Lakukan pemangkasan cabang tua dan wiwil tunas air setelah panen raya agar cabang baru pembawa bunga tumbuh lebat.'
@@ -931,7 +931,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(2800, [1, 2, 12], 0.10),
     karakteristik_tanah: 'Tanah alluvial, podsolik, atau gambut dangkal teregulasi airnya',
     ph_ideal: 'pH 4.0 - 6.0',
-    umur_panen: 'Tahun ke-3 mulai panen TBS rutin tiap 2 minggu',
+    umur_panen: 'Bibit Tanam: 3–4 Tahun (~1.200 HST) hingga Panen TBS Perdana',
     potensi_hasil_per_ha: '20 - 28 Ton TBS / Ha / Tahun',
     estimasi_biaya_per_ha: 40000000,
     tips_agronomis: 'Wajib gunakan bibit resmi bersertifikat dari sumber terpercaya (PPKS Medan, Socfindo, Dami Mas) agar produktivitas tidak anjlok.'
@@ -950,7 +950,7 @@ export const COMMODITY_TRENDS: MarketCommodityTrendExtended[] = [
     historis_bulanan: make12MonthCurve(18500, [2, 3, 10], 0.10),
     karakteristik_tanah: 'Latosol atau podsolik merah kuning dalam',
     ph_ideal: 'pH 4.5 - 6.0',
-    umur_panen: 'Tahun ke-5 mulai buka sadap lateks',
+    umur_panen: 'Bibit Okulasi: 5–6 Tahun (~1.825 HST) hingga Buka Sadap Lateks Perdana',
     potensi_hasil_per_ha: '1.5 - 2.2 Ton Karet Kering / Ha / Tahun',
     estimasi_biaya_per_ha: 22000000,
     tips_agronomis: 'Sadap pohon pada pagi subuh (pukul 05.00-07.00) saat tekanan turgor sel lateks berada di titik tertinggi.'
@@ -1138,23 +1138,45 @@ export interface MarketIntelligenceScore {
 
 function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
-  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset Balitbangtan)
-  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 tahun dari bibit sambung pucuk hingga panen perdana (4-6 tahun riil). BUKAN 120 hari - itu hanya siklus bunga ke buah untuk pohon DEWASA
-  if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke petik buah 110-130 HST)
-  if (lower.includes('apel') || lower.includes('apple')) return 130;
-  if (lower.includes('jeruk') || lower.includes('citrus')) return 240;
-  if (lower.includes('kakao') || lower.includes('cokelat')) return 165;
-  if (lower.includes('kopi')) return 210;
-  if (lower.includes('kapulaga')) return 120;
-  if (lower.includes('pisang')) return 240;
-  if (lower.includes('vanili')) return 255;
-  if (lower.includes('jahe') || lower.includes('kunyit')) return 255;
-  if (lower.includes('padi')) return 115;
-  if (lower.includes('jagung')) return 75;
-  if (lower.includes('bawang')) return 65;
-  if (lower.includes('cabai') || lower.includes('cabe')) return 85;
-  if (lower.includes('tomat')) return 75;
-  if (lower.includes('singkong') || lower.includes('ubi')) return 240;
+
+  // 1. Tanaman Pohon / Perennial Buah & Perkebunan (Awal Tanam Bibit ➔ Panen Perdana)
+  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 Tahun (~1.825 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('karet')) return 1825; // 5-6 Tahun (~1.825 HST) dari bibit okulasi hingga buka sadap lateks
+  if (lower.includes('mangga') || lower.includes('mango')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('alpukat') || lower.includes('avocado')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit sambung pucuk hingga panen perdana
+  if (lower.includes('apel') || lower.includes('apple')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('sawit')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit sawit hingga panen TBS perdana
+  if (lower.includes('jeruk') || lower.includes('citrus') || lower.includes('lemon')) return 900; // 2.5-3 Tahun (~900 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('kopi')) return 900; // 2.5-3 Tahun (~900 HST) dari bibit tanam hingga panen perdana
+  if (lower.includes('vanili')) return 900; // 2-3 Tahun (~900 HST) dari sulur tanam hingga panen polong perdana
+  if (lower.includes('kakao') || lower.includes('cokelat')) return 800; // 2-3 Tahun (~800 HST) dari bibit sambung hingga panen perdana
+  if (lower.includes('kapulaga')) return 730; // 1.5-2 Tahun (~730 HST) dari anakan rumpun hingga panen perdana
+
+  // 2. Tanaman Buah Semusim Panjang / Merambat / Rumpun (8-12 Bulan)
+  if (lower.includes('naga')) return 330; // 10-12 Bulan (~330 HST) dari stek cabang hingga panen perdana
+  if (lower.includes('anggur') || lower.includes('grape')) return 330; // 10-12 Bulan (~330 HST) dari bibit stek/grafting hingga pembuahan perdana
+  if (lower.includes('pisang')) return 300; // 9-11 Bulan (~300 HST) dari anakan bibit hingga panen tandan
+  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 Bulan (270-300 HST) dari tunas batang
+  if (lower.includes('singkong') || lower.includes('ubi kayu')) return 270; // 8-10 Bulan (~270 HST) dari stek batang hingga cabut umbi
+  if (lower.includes('jahe') || lower.includes('kunyit') || lower.includes('kencur')) return 270; // 9 Bulan (~270 HST) hingga rimpang tua
+  if (lower.includes('pepaya') || lower.includes('papaya')) return 240; // 7-8 Bulan (~240 HST) dari semaian hingga panen rutin
+  if (lower.includes('porang')) return 180; // 6 Bulan per musim (~180 HST)
+  if (lower.includes('ubi jalar')) return 120; // 3.5-4 Bulan (~120 HST)
+
+  // 3. Tanaman Buah Semusim Merambat & Sayur/Pangan Hortikultura
+  if (lower.includes('semangka')) return 60; // 55-65 HST (~60 HST)
+  if (lower.includes('melon')) return 65; // 60-70 HST (~65 HST)
+  if (lower.includes('padi') || lower.includes('gabah') || lower.includes('beras')) return 115; // 105-120 HST
+  if (lower.includes('cabai rawit') || lower.includes('cabe rawit')) return 80; // 75-85 HST
+  if (lower.includes('cabai') || lower.includes('cabe') || lower.includes('chili')) return 85; // 80-90 HST
+  if (lower.includes('jagung')) return 75; // 70-80 HST
+  if (lower.includes('tomat')) return 75; // 70-80 HST
+  if (lower.includes('kentang')) return 90; // 85-100 HST
+  if (lower.includes('kacang tanah')) return 95; // 90-100 HST
+  if (lower.includes('kedelai')) return 85; // 80-90 HST
+  if (lower.includes('bawang merah')) return 60; // 55-65 HST
+  if (lower.includes('bawang daun') || lower.includes('prei')) return 70; // 65-75 HST
+  if (lower.includes('bawang')) return 65; // 60-70 HST
 
   if (!umurPanenStr) return 90;
 
@@ -1170,15 +1192,16 @@ function parseHarvestDaysApprox(umurPanenStr?: string, komoditasName?: string): 
     return Number(hariMatch[1]);
   }
 
+  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
+  if (tahunMatch) {
+    if (tahunMatch[2]) return Math.round(((Number(tahunMatch[1]) + Number(tahunMatch[2])) / 2) * 365);
+    return Math.round(Number(tahunMatch[1]) * 365);
+  }
+
   const bulanMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Bulan/i) || umurPanenStr.match(/(\d+)\s*Bulan/i);
   if (bulanMatch) {
     if (bulanMatch[2]) return Math.round(((Number(bulanMatch[1]) + Number(bulanMatch[2])) / 2) * 30);
     return Number(bulanMatch[1]) * 30;
-  }
-
-  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
-  if (tahunMatch) {
-    return 150;
   }
 
   return 90;
@@ -1342,8 +1365,20 @@ export function calculateAllMarketScores(luasM2: number = 10000, regionName?: st
 
   return COMMODITY_TRENDS.map(item => {
     const harvestDays = parseHarvestDaysApprox(item.umur_panen, item.komoditas);
+    const isPerennial = harvestDays >= 365;
     const harvestMonthOffset = Math.max(1, Math.round(harvestDays / 30));
-    const harvestMonth = (nowMonth + harvestMonthOffset) % 12;
+    let harvestMonth = (nowMonth + harvestMonthOffset) % 12;
+
+    if (isPerennial && item.bulan_harga_tertinggi && item.bulan_harga_tertinggi.length > 0) {
+      const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const peakIdx = bulanList.findIndex(b =>
+        item.bulan_harga_tertinggi.some(p => p.toLowerCase().startsWith(b.slice(0, 3).toLowerCase()))
+      );
+      if (peakIdx >= 0) {
+        harvestMonth = peakIdx;
+      }
+    }
+
     const priceAtPlant = item.historis_bulanan[nowMonth]?.harga || item.harga_saat_ini;
     const priceAtHarvest = item.historis_bulanan[harvestMonth]?.harga || item.harga_saat_ini;
     const harvestDeltaPct = priceAtPlant > 0 ? Math.round(((priceAtHarvest - priceAtPlant) / priceAtPlant) * 100) : 0;
@@ -1494,22 +1529,102 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
   let soil = 'Tanah gembur lempung berpasir, drainase baik, kaya bahan organik';
   let tips = 'Berikan pupuk kandang matang saat olah tanah dan jaga kelembapan tanah teratur.';
 
-  if (lower.includes('apel') || lower.includes('apple')) {
+  if (lower.includes('durian') || lower.includes('duren')) {
     category = 'Buah-Buahan';
-    basePrice = 32000;
-    harvestAge = '120 - 140 HST (Siklus Buah 4 - 5 Bulan)';
-    ph = 'pH 5.5 - 6.5';
+    basePrice = 65000;
+    harvestAge = 'Bibit Sambung Pucuk: 4–6 Tahun (~1.825 HST) hingga Panen Perdana | Siklus Buah Dewasa: 110–130 HST';
+    ph = 'pH 6.0 - 6.8';
+    yieldStr = '10 - 18 Ton / Ha per tahun';
+    soil = 'Tanah latosol atau andosol subur gembur kaya humus, lapisan tanah dalam (>1.5 m)';
+    tips = 'Gunakan bibit sambung pucuk varietas unggul bersertifikat, jaga drainase prima, dan lakukan pemangkasan bentuk tajuk piramida.';
+  } else if (lower.includes('mangga') || lower.includes('alpukat') || lower.includes('apel')) {
+    category = 'Buah-Buahan';
+    basePrice = 30000;
+    harvestAge = 'Bibit Okulasi: 3–4 Tahun (~1.200 HST) hingga Panen Perdana | Siklus Buah Dewasa: 120–140 HST';
+    ph = 'pH 5.5 - 6.8';
     yieldStr = '15 - 25 Ton / Ha per tahun';
-    soil = 'Tanah andosol / lempung berpasir vulkanik pegunungan, ketinggian 700-1200 mdpl';
-    tips = 'Lakukan perompesan daun secara serentak untuk merangsang tunas bunga serempak dan pembesaran buah optimal.';
-  } else if (lower.includes('buah') || lower.includes('naga') || lower.includes('berry') || lower.includes('durian') || lower.includes('mangga')) {
+    soil = 'Tanah gembur lempung berpasir subur, tidak tergenang air';
+    tips = 'Pangkas cabang air secara teratur dan lakukan induksi pembungaan terencana saat memasuki musim kemarau.';
+  } else if (lower.includes('jeruk') || lower.includes('citrus') || lower.includes('lemon')) {
     category = 'Buah-Buahan';
-    basePrice = 32000;
-    harvestAge = '120 - 150 HST (Siklus Buah 4 - 5 Bulan)';
+    basePrice = 18000;
+    harvestAge = 'Bibit Okulasi: 2.5–3 Tahun (~900 HST) hingga Panen Perdana | Siklus Buah Dewasa: 210–240 HST';
+    ph = 'pH 5.8 - 6.8';
+    yieldStr = '18 - 30 Ton / Ha per tahun';
+    soil = 'Lempung berpasir gembur tebal, tidak tergenang, air tanah kedalaman > 1.5 meter';
+    tips = 'Gunakan bibit bebas CVPD bersertifikat dan pangkas bentuk tajuk 1-3-9 sejak dini.';
+  } else if (lower.includes('naga') || lower.includes('anggur')) {
+    category = 'Buah-Buahan';
+    basePrice = 35000;
+    harvestAge = 'Stek/Grafting: 10–12 Bulan (~330 HST) hingga Pembuahan Perdana';
+    ph = 'pH 6.0 - 7.0';
+    yieldStr = '10 - 20 Ton / Ha';
+    soil = 'Tanah berpasir porous gembur dicampur kompos matang, tiang rambatan/trellis kuat';
+    tips = 'Rawat sulur ke tiang panjat atau trellis dan lakukan pemangkasan pembuahan setelah cabang tersier berkayu.';
+  } else if (lower.includes('pisang')) {
+    category = 'Buah-Buahan';
+    basePrice = 9000;
+    harvestAge = 'Bibit Anakan: 9–11 Bulan (~300 HST) hingga Panen Tandan';
+    ph = 'pH 5.5 - 6.8';
+    yieldStr = '35 - 50 Ton / Ha';
+    soil = 'Tanah alluvial/latosol tebal gembur kaya humus, drainase lancar';
+    tips = 'Bungkus tandan dengan plastik brongsong sejak jantung merunduk dan sangga batang dengan bambu.';
+  } else if (lower.includes('pepaya')) {
+    category = 'Buah-Buahan';
+    basePrice = 7000;
+    harvestAge = 'Semaian: 7–8 Bulan (~240 HST) mulai Panen Rutin';
+    ph = 'pH 6.0 - 6.8';
+    yieldStr = '50 - 70 Ton / Ha per tahun';
+    soil = 'Lempung berpasir gembur pada guludan tinggi bebas genangan air';
+    tips = 'Buat parit drainase dalam karena perakaran pepaya sangat sensitif terhadap kelebihan air.';
+  } else if (lower.includes('nanas')) {
+    category = 'Buah-Buahan';
+    basePrice = 9500;
+    harvestAge = '270 - 300 HST (Rata-rata 285 HST / 9 - 10 Bulan)';
+    ph = 'pH 4.5 - 5.5';
+    yieldStr = '45 - 65 Ton / Ha';
+    soil = 'Tanah lempung berpasir gembur tebal tanpa genangan air';
+    tips = 'Lakukan induksi pembungaan (forcing) pada umur 6-7 bulan saat kanopi memiliki minimal 35 daun aktif.';
+  } else if (lower.includes('semangka') || lower.includes('melon')) {
+    category = 'Buah-Buahan';
+    basePrice = 10000;
+    harvestAge = '55 - 65 HST (Tanaman Semusim Merambat)';
+    ph = 'pH 6.0 - 6.8';
+    yieldStr = '25 - 40 Ton / Ha';
+    soil = 'Lempung berpasir gembur subur, saluran parit drainase dalam';
+    tips = 'Pilih 1–2 bakal buah terbaik pada ruas ke-10 ke atas dan kurangi air 10 hari menjelang panen.';
+  } else if (lower.includes('buah') || lower.includes('berry')) {
+    category = 'Buah-Buahan';
+    basePrice = 28000;
+    harvestAge = 'Bibit Tanam: 1–2 Tahun (~365–730 HST) hingga Panen Perdana';
     ph = 'pH 5.8 - 6.8';
     yieldStr = '12 - 22 Ton / Ha per tahun';
     soil = 'Tanah subur gembur berpasir tebal, tidak tergenang air, sinar matahari penuh';
     tips = 'Gunakan bibit vegetatif sambung pucuk atau okulasi dan lakukan pemangkasan cabang teratur.';
+  } else if (lower.includes('karet')) {
+    category = 'Perkebunan';
+    basePrice = 18500;
+    harvestAge = 'Bibit Okulasi: 5–6 Tahun (~1.825 HST) hingga Buka Sadap Lateks';
+    ph = 'pH 4.5 - 6.0';
+    yieldStr = '1.5 - 2.2 Ton / Ha per tahun';
+    soil = 'Latosol atau podsolik merah kuning dalam';
+    tips = 'Sadap pohon pada pagi subuh saat tekanan turgor sel lateks di titik tertinggi.';
+  } else if (lower.includes('sawit')) {
+    category = 'Perkebunan';
+    basePrice = 2800;
+    harvestAge = 'Bibit Sawit: 3–4 Tahun (~1.200 HST) hingga Panen TBS Perdana';
+    ph = 'pH 4.0 - 6.0';
+    yieldStr = '20 - 28 Ton TBS / Ha / tahun';
+    soil = 'Tanah alluvial atau podsolik lapisan olah dalam';
+    tips = 'Gunakan bibit resmi bersertifikat PPKS dan terapkan kastrasi bunga pasir di umur 14-20 bulan.';
+  } else if (lower.includes('kopi') || lower.includes('kakao') || lower.includes('cokelat')) {
+    category = 'Perkebunan';
+    basePrice = 60000;
+    harvestAge = 'Bibit Tanam: 2.5–3 Tahun (~800–900 HST) hingga Panen Perdana';
+    ph = 'pH 5.5 - 6.5';
+    yieldStr = '1.5 - 3.0 Ton / Ha per tahun';
+    soil = 'Tanah andosol atau latosol gembur berdrainase baik';
+    tips = 'Tanam tanaman naungan sementara dan pangkas cabang air secara teratur.';
   } else if (lower.includes('jahe') || lower.includes('kunyit') || lower.includes('rempah') || lower.includes('lada') || lower.includes('cengkeh') || lower.includes('kayu manis') || lower.includes('akar')) {
     category = 'Rempah & Bumbu';
     basePrice = 45000;
@@ -1526,7 +1641,7 @@ export function getUniversalCommodityData(searchTerm: string): MarketCommodityTr
     yieldStr = '5 - 10 Ton / Ha';
     soil = 'Tanah porous berhumus tinggi, naungan ringan 20-30%';
     tips = 'Petik daun atau rimpang pada pagi hari saat kandungan minyak atsiri dan senyawa aktif berada di puncak.';
-  } else if (lower.includes('kopi') || lower.includes('sawit') || lower.includes('karet') || lower.includes('tebu') || lower.includes('tembakau') || lower.includes('teh')) {
+  } else if (lower.includes('tebu') || lower.includes('tembakau') || lower.includes('teh')) {
     category = 'Perkebunan';
     basePrice = 50000;
     harvestAge = '180 - 240 HST (Siklus Panen 6 - 8 Bulan)';

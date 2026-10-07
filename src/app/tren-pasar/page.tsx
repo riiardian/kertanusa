@@ -87,23 +87,45 @@ function getSeedKomoditasKey(name: string): 'Padi' | 'Cabai Rawit Merah' | 'Bawa
 
 function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: string): number {
   const lower = (komoditasName || '').toLowerCase();
-  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 bulan (rata-rata 270-300 HST sesuai riset hortikultura)
-  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 tahun dari bibit sambung pucuk hingga panen perdana (4-6 tahun riil). Siklus bunga→buah hanya 110-130 HST untuk pohon DEWASA
-  if (lower.includes('mangga') || lower.includes('mango')) return 120; // 4 bulan (siklus bunga ke matang petik 110-130 HST)
-  if (lower.includes('apel') || lower.includes('apple')) return 130; // ~4.3 bulan (Siklus bunga ke matang petik 120-140 HST)
-  if (lower.includes('jeruk') || lower.includes('citrus')) return 240; // 8 bulan
-  if (lower.includes('kakao') || lower.includes('cokelat')) return 165; // 5.5 bulan (150-180 HST)
-  if (lower.includes('kopi')) return 210; // 7 bulan (180-240 HST)
-  if (lower.includes('kapulaga')) return 120; // 4 bulan (110-130 HST)
-  if (lower.includes('pisang')) return 240; // 8 bulan
-  if (lower.includes('vanili')) return 255; // 8.5 bulan
-  if (lower.includes('jahe') || lower.includes('kunyit')) return 255; // 8.5 bulan
-  if (lower.includes('padi')) return 115; // ~3.8 bulan (105-120 HST)
-  if (lower.includes('jagung')) return 75; // ~2.5 bulan (70-80 HST)
-  if (lower.includes('cabai') || lower.includes('cabe')) return 85; // ~2.8 bulan (80-90 HST)
-  if (lower.includes('bawang')) return 65; // ~2.1 bulan (60-70 HST)
-  if (lower.includes('tomat')) return 75; // ~2.5 bulan (70-80 HST)
-  if (lower.includes('singkong') || lower.includes('ubi')) return 240; // 8 bulan
+
+  // 1. Tanaman Pohon / Perennial Buah & Perkebunan (Awal Tanam Bibit ➔ Panen Perdana)
+  if (lower.includes('durian') || lower.includes('duren')) return 1825; // 5 Tahun (~1.825 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('karet')) return 1825; // 5-6 Tahun (~1.825 HST) dari bibit okulasi hingga buka sadap lateks
+  if (lower.includes('mangga') || lower.includes('mango')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('alpukat') || lower.includes('avocado')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit sambung pucuk hingga panen perdana
+  if (lower.includes('apel') || lower.includes('apple')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('sawit')) return 1200; // 3-4 Tahun (~1.200 HST) dari bibit sawit hingga panen TBS perdana
+  if (lower.includes('jeruk') || lower.includes('citrus') || lower.includes('lemon')) return 900; // 2.5-3 Tahun (~900 HST) dari bibit okulasi hingga panen perdana
+  if (lower.includes('kopi')) return 900; // 2.5-3 Tahun (~900 HST) dari bibit tanam hingga panen perdana
+  if (lower.includes('vanili')) return 900; // 2-3 Tahun (~900 HST) dari sulur tanam hingga panen polong perdana
+  if (lower.includes('kakao') || lower.includes('cokelat')) return 800; // 2-3 Tahun (~800 HST) dari bibit sambung hingga panen perdana
+  if (lower.includes('kapulaga')) return 730; // 1.5-2 Tahun (~730 HST) dari anakan rumpun hingga panen perdana
+
+  // 2. Tanaman Buah Semusim Panjang / Merambat / Rumpun (8-12 Bulan)
+  if (lower.includes('naga')) return 330; // 10-12 Bulan (~330 HST) dari stek cabang hingga panen perdana
+  if (lower.includes('anggur') || lower.includes('grape')) return 330; // 10-12 Bulan (~330 HST) dari bibit stek/grafting hingga pembuahan perdana
+  if (lower.includes('pisang')) return 300; // 9-11 Bulan (~300 HST) dari anakan bibit hingga panen tandan
+  if (lower.includes('nanas') || lower.includes('pineapple') || lower.includes('nenas')) return 285; // 9.5 Bulan (270-300 HST) dari tunas batang
+  if (lower.includes('singkong') || lower.includes('ubi kayu')) return 270; // 8-10 Bulan (~270 HST) dari stek batang hingga cabut umbi
+  if (lower.includes('jahe') || lower.includes('kunyit') || lower.includes('kencur')) return 270; // 9 Bulan (~270 HST) hingga rimpang tua
+  if (lower.includes('pepaya') || lower.includes('papaya')) return 240; // 7-8 Bulan (~240 HST) dari semaian hingga panen rutin
+  if (lower.includes('porang')) return 180; // 6 Bulan per musim (~180 HST)
+  if (lower.includes('ubi jalar')) return 120; // 3.5-4 Bulan (~120 HST)
+
+  // 3. Tanaman Buah Semusim Merambat & Sayur/Pangan Hortikultura
+  if (lower.includes('semangka')) return 60; // 55-65 HST (~60 HST)
+  if (lower.includes('melon')) return 65; // 60-70 HST (~65 HST)
+  if (lower.includes('padi') || lower.includes('gabah') || lower.includes('beras')) return 115; // 105-120 HST
+  if (lower.includes('cabai rawit') || lower.includes('cabe rawit')) return 80; // 75-85 HST
+  if (lower.includes('cabai') || lower.includes('cabe') || lower.includes('chili')) return 85; // 80-90 HST
+  if (lower.includes('jagung')) return 75; // 70-80 HST
+  if (lower.includes('tomat')) return 75; // 70-80 HST
+  if (lower.includes('kentang')) return 90; // 85-100 HST
+  if (lower.includes('kacang tanah')) return 95; // 90-100 HST
+  if (lower.includes('kedelai')) return 85; // 80-90 HST
+  if (lower.includes('bawang merah')) return 60; // 55-65 HST
+  if (lower.includes('bawang daun') || lower.includes('prei')) return 70; // 65-75 HST
+  if (lower.includes('bawang')) return 65; // 60-70 HST
 
   if (!umurPanenStr) return 90;
   
@@ -119,15 +141,16 @@ function parseHarvestDays(umurPanenStr: string | undefined, komoditasName?: stri
     return Number(hariMatch[1]);
   }
 
+  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
+  if (tahunMatch) {
+    if (tahunMatch[2]) return Math.round(((Number(tahunMatch[1]) + Number(tahunMatch[2])) / 2) * 365);
+    return Math.round(Number(tahunMatch[1]) * 365);
+  }
+
   const bulanMatch = umurPanenStr.match(/(\d+)\s*-\s*(\d+)\s*Bulan/i) || umurPanenStr.match(/(\d+)\s*Bulan/i);
   if (bulanMatch) {
     if (bulanMatch[2]) return Math.round(((Number(bulanMatch[1]) + Number(bulanMatch[2])) / 2) * 30);
     return Number(bulanMatch[1]) * 30;
-  }
-
-  const tahunMatch = umurPanenStr.match(/([\d.]+)\s*-\s*([\d.]+)\s*Tahun/i) || umurPanenStr.match(/([\d.]+)\s*Tahun/i);
-  if (tahunMatch) {
-    return 150;
   }
 
   return 90;
@@ -172,6 +195,12 @@ function buildMultiYearHistory(
     hargaSaatPanen: number;
     plantMonthName: string;
     harvestMonthName: string;
+    plantYear: number;
+    harvestYear: number;
+    plantScheduleText: string;
+    harvestScheduleText: string;
+    isPerennial: boolean;
+    yearsOffset: number;
     harvestDays: number;
     delta: number;
     deltaPct: number;
@@ -200,17 +229,43 @@ function buildMultiYearHistory(
   const bulanShort = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
   const yearVariance = [0.88, 0.92, 0.96, 1.00, 1.04]; // 5 tahun terakhir (2022 s/d 2026)
 
-  // Tentukan bulan tanam
+  // Tentukan bulan & tahun tanam
   let plantMonth = currentMonth;
+  let plantYear = currentYear;
   if (plantingDate) {
     const pd = new Date(plantingDate);
-    if (!isNaN(pd.getTime())) plantMonth = pd.getMonth();
+    if (!isNaN(pd.getTime())) {
+      plantMonth = pd.getMonth();
+      plantYear = pd.getFullYear();
+    }
   }
 
   // Hitung durasi dan bulan panen nyata tanaman (bukan 2 bulan seragam!)
   const harvestDays = parseHarvestDays(item.umur_panen, item.komoditas);
+  const isPerennial = harvestDays >= 365;
+  const yearsOffset = Math.max(1, Math.round(harvestDays / 365));
   const harvestMonthOffset = Math.max(1, Math.round(harvestDays / 30));
-  const harvestMonth = (plantMonth + harvestMonthOffset) % 12;
+
+  // Untuk pohon tahunan, panen perdana tiba di tahun ke-(plantYear + yearsOffset)
+  // dan puncak pemanenan mengikuti musim panen raya komoditas (bulan_harga_tertinggi)
+  let harvestMonth = (plantMonth + harvestMonthOffset) % 12;
+  const harvestYear = isPerennial 
+    ? plantYear + yearsOffset 
+    : plantYear + Math.floor((plantMonth + harvestMonthOffset) / 12);
+
+  if (isPerennial && item.bulan_harga_tertinggi && item.bulan_harga_tertinggi.length > 0) {
+    const peakIdx = bulanList.findIndex(b =>
+      item.bulan_harga_tertinggi.some(p => p.toLowerCase().startsWith(b.slice(0, 3).toLowerCase()))
+    );
+    if (peakIdx >= 0) {
+      harvestMonth = peakIdx;
+    }
+  }
+
+  const plantScheduleText = `${bulanList[plantMonth]} ${plantYear}`;
+  const harvestScheduleText = isPerennial
+    ? `${bulanList[harvestMonth]} ${harvestYear} (~${harvestDays.toLocaleString('id-ID')} HST / ±${yearsOffset} Tahun)`
+    : `${bulanList[harvestMonth]} ${harvestYear} (~${harvestDays} HST / ±${Math.max(1, Math.round(harvestDays / 30))} Bulan)`;
 
   const chartData: Array<{
     label: string;
@@ -343,32 +398,46 @@ function buildMultiYearHistory(
 
   if (isProfit && deltaPct >= 10 && yearsProfitable >= 3) {
     statusType = 'aman';
-    statusBadgeText = 'Rekomendasi Tanam';
-    keputusanSistem = `Direkomendasikan Tanam di Bulan ${bulanList[plantMonth]} (Potensi Keuntungan Tinggi)`;
-    kesimpulan = `Berdasarkan kalkulasi historis 5 tahun, menanam ${item.komoditas} di bulan ${bulanList[plantMonth]} konsisten menghasilkan keuntungan dengan proyeksi kenaikan harga panen rata-rata +${deltaPct}% (${yearsProfitable} dari 5 tahun harga naik). Periode ini ideal untuk memulai siklus tanam.`;
+    statusBadgeText = isPerennial ? 'Rekomendasi Investasi Pohon' : 'Rekomendasi Tanam';
+    keputusanSistem = isPerennial
+      ? `Investasi Pohon Direkomendasikan (Prospek Pasar Musim Panen Raya Sangat Kuat)`
+      : `Direkomendasikan Tanam di Bulan ${bulanList[plantMonth]} (Potensi Keuntungan Tinggi)`;
+    kesimpulan = isPerennial
+      ? `Berdasarkan kalkulasi historis 5 tahun, budidaya ${item.komoditas} memiliki prospek harga musim panen yang sangat menguntungkan di kisaran Rp ${avgPanen.toLocaleString('id-ID')} / kg (potensi surplus +${deltaPct}% dibanding harga dasar). Tanaman ini membutuhkan masa investasi vegetatif ±${yearsOffset} tahun (~${harvestDays.toLocaleString('id-ID')} HST) hingga panen perdana, kemudian menghasilkan panen rutin bernilai tinggi setiap musim raya tahunan.`
+      : `Berdasarkan kalkulasi historis 5 tahun, menanam ${item.komoditas} di bulan ${bulanList[plantMonth]} konsisten menghasilkan keuntungan dengan proyeksi kenaikan harga panen rata-rata +${deltaPct}% (${yearsProfitable} dari 5 tahun harga naik). Periode ini ideal untuk memulai siklus tanam.`;
     arahanLangkah = [
       {
-        kategori: '1. Jadwal Tanam Lapangan',
-        arahan: `Lahan siap ditanami di bulan ${bulanList[plantMonth]}. Estimasi masa panen tiba pada bulan ${bulanList[harvestMonth]} (~${harvestDays} HST) sebelum puncak panen raya nasional tiba.`,
+        kategori: isPerennial ? '1. Fase Tanam Bibit & Investasi Lahan' : '1. Jadwal Pelaksanaan Tanam',
+        arahan: isPerennial
+          ? `Gunakan bibit sambung pucuk / okulasi unggul bersertifikat untuk memastikan pohon mulai berbuah perdana tepat waktu (~${yearsOffset} tahun / ${harvestDays.toLocaleString('id-ID')} HST). Tanam di awal musim hujan.`
+          : `Lahan siap ditanami di bulan ${bulanList[plantMonth]}. Estimasi masa panen tiba pada bulan ${bulanList[harvestMonth]} (~${harvestDays} HST) sebelum puncak panen raya nasional tiba.`,
       },
       {
-        kategori: '2. Estimasi Harga Panen',
+        kategori: isPerennial ? '2. Proyeksi Penjualan Musim Raya' : '2. Estimasi Harga Panen',
         arahan: `Hasil panen diproyeksikan terserap optimal di pasar pada kisaran Rp ${avgPanen.toLocaleString('id-ID')} / kg dengan potensi surplus keuntungan modal sekitar +${deltaPct}%.`,
       },
       {
-        kategori: '3. Pemeliharaan Nutrisi Lahan',
-        arahan: `Jaga kestabilan kelembapan dan pH tanah secara rutin, serta gunakan benih unggul adaptif cuaca untuk memastikan tonase hasil panen maksimal.`,
+        kategori: isPerennial ? '3. Pemeliharaan Tajuk & Nutrisi Multi-Tahun' : '3. Pemeliharaan Nutrisi Lahan',
+        arahan: isPerennial
+          ? `Lakukan pemangkasan bentuk tajuk arsitektur piramida di tahun 1-2, dan manajemen stres air (water stress) terukur di musim kemarau menjelang fase pembuahan perdana.`
+          : `Jaga kestabilan kelembapan dan pH tanah secara rutin, serta gunakan benih unggul adaptif cuaca untuk memastikan tonase hasil panen maksimal.`,
       }
     ];
   } else if (isProfit && deltaPct >= 0) {
     statusType = 'stabil';
-    statusBadgeText = 'Siklus Stabil';
-    keputusanSistem = `Aman Ditanam Sesuai Jadwal (Fokus Efisiensi Biaya Operasional)`;
-    kesimpulan = `Pergerakan harga ${item.komoditas} relatif stabil antara masa tanam (${bulanList[plantMonth]}) dan panen (${bulanList[harvestMonth]}) dengan tren rata-rata +${deltaPct}%. Keuntungan budidaya dapat terjaga optimal melalui efisiensi biaya kerja dan perawatan tanah yang terukur.`;
+    statusBadgeText = isPerennial ? 'Investasi Pohon Stabil' : 'Siklus Stabil';
+    keputusanSistem = isPerennial
+      ? `Aman Ditanam untuk Investasi Jangka Panjang (Fokus Efisiensi Pemeliharaan Bibit)`
+      : `Aman Ditanam Sesuai Jadwal (Fokus Efisiensi Biaya Operasional)`;
+    kesimpulan = isPerennial
+      ? `Pergerakan harga ${item.komoditas} relatif stabil antara masa tanam (${bulanList[plantMonth]}) dan musim panen (${bulanList[harvestMonth]}) dengan tren rata-rata +${deltaPct}%. Tanaman membutuhkan masa tumbuh ±${yearsOffset} tahun (~${harvestDays.toLocaleString('id-ID')} HST) hingga panen perdana dan perawatan tajuk yang teratur.`
+      : `Pergerakan harga ${item.komoditas} relatif stabil antara masa tanam (${bulanList[plantMonth]}) dan panen (${bulanList[harvestMonth]}) dengan tren rata-rata +${deltaPct}%. Keuntungan budidaya dapat terjaga optimal melalui efisiensi biaya kerja dan perawatan tanah yang terukur.`;
     arahanLangkah = [
       {
-        kategori: '1. Jadwal Tanam Lapangan',
-        arahan: `Penanaman dapat dijalankan sesuai jadwal kerja di bulan ${bulanList[plantMonth]}. Estimasi panen tiba sekitar bulan ${bulanList[harvestMonth]} (~${harvestDays} HST).`,
+        kategori: isPerennial ? '1. Jadwal Tanam Bibit' : '1. Jadwal Tanam Lapangan',
+        arahan: isPerennial
+          ? `Penanaman bibit pohon dapat dijalankan sesuai rencana di bulan ${bulanList[plantMonth]}. Estimasi panen perdana tiba sekitar tahun ${harvestYear} (${bulanList[harvestMonth]}, ~${harvestDays.toLocaleString('id-ID')} HST).`
+          : `Penanaman dapat dijalankan sesuai jadwal kerja di bulan ${bulanList[plantMonth]}. Estimasi panen tiba sekitar bulan ${bulanList[harvestMonth]} (~${harvestDays} HST).`,
       },
       {
         kategori: '2. Pengendalian Biaya HPP',
@@ -382,12 +451,16 @@ function buildMultiYearHistory(
   } else {
     statusType = 'waspada';
     statusBadgeText = 'Penyesuaian Jadwal Tanam';
-    keputusanSistem = `Disarankan Tunda Tanam Bulan Ini ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`;
+    keputusanSistem = isPerennial
+      ? `Disarankan Tanam di Awal Musim Hujan ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`
+      : `Disarankan Tunda Tanam Bulan Ini ➔ Jadwal Terbaik: Bulan ${bulanList[optimalPlantMonthIdx]}`;
     kesimpulan = `Data historis 5 tahun menunjukkan jika menanam ${item.komoditas} di bulan ${bulanList[plantMonth]}, harga pasar saat panen (${bulanList[harvestMonth]}) cenderung mengalami koreksi turun rata-rata ${Math.abs(deltaPct)}% (${yearsProfitable} dari 5 tahun harga naik) akibat banjir pasokan panen serentak. Agar modal petani terlindungi, sistem menyarankan menyesuaikan jadwal tanam ke bulan ${bulanList[optimalPlantMonthIdx]} saat pasokan pasar lebih seimbang.`;
     arahanLangkah = [
       {
         kategori: '1. Penyesuaian Jadwal Tanam',
-        arahan: `Tunda tanam di bulan ${bulanList[plantMonth]}. Waktu tanam terbaik adalah bulan ${bulanList[optimalPlantMonthIdx]} (~${harvestDays} HST) agar waktu panen tiba di bulan ${bulanList[optimalHarvestMonthIdx]}.`,
+        arahan: isPerennial
+          ? `Waktu penanaman bibit pohon terbaik adalah awal musim hujan (bulan ${bulanList[optimalPlantMonthIdx]}) agar perakaran kuat sebelum kemarau.`
+          : `Tunda tanam di bulan ${bulanList[plantMonth]}. Waktu tanam terbaik adalah bulan ${bulanList[optimalPlantMonthIdx]} (~${harvestDays} HST) agar waktu panen tiba di bulan ${bulanList[optimalHarvestMonthIdx]}.`,
       },
       {
         kategori: '2. Proyeksi Penjualan Hasil',
@@ -409,6 +482,12 @@ function buildMultiYearHistory(
       hargaSaatPanen: avgPanen,
       plantMonthName: bulanList[plantMonth],
       harvestMonthName: bulanList[harvestMonth],
+      plantYear,
+      harvestYear,
+      plantScheduleText,
+      harvestScheduleText,
+      isPerennial,
+      yearsOffset,
       harvestDays,
       delta,
       deltaPct,
@@ -881,21 +960,34 @@ export default function MarketDemandPage() {
         <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-5">
           {/* Header Card: Komoditas Terpilih & Jadwal Tanam-Panen */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-            <div>
+            <div className="space-y-1.5 max-w-2xl">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-bold text-slate-900">{currentDetailItem.komoditas}</h3>
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-700 text-white">
                   {currentDetailItem.kategori}
                 </span>
+                {multiYearAnalysis.harvestOutlook.isPerennial && (
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-amber-600 text-white flex items-center gap-1 shadow-sm">
+                    🌳 Pohon Buah / Tanaman Tahunan (±{multiYearAnalysis.harvestOutlook.yearsOffset} Tahun Menuju Panen Perdana)
+                  </span>
+                )}
                 {!regionalSuitability.isSuitable && (
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-slate-700 text-white">
                     Kurang Cocok di {activePetani.daerah || 'Wilayah Anda'}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                Jadwal Tanam: <strong className="text-slate-800">{multiYearAnalysis.harvestOutlook.plantMonthName}</strong> ➔ Estimasi Panen: <strong className="text-slate-800">{multiYearAnalysis.harvestOutlook.harvestMonthName}</strong> (~{multiYearAnalysis.harvestOutlook.harvestDays} HST)
+              <p className="text-xs text-slate-600">
+                Jadwal Tanam: <strong className="text-slate-900">{multiYearAnalysis.harvestOutlook.plantScheduleText}</strong> ➔ {multiYearAnalysis.harvestOutlook.isPerennial ? 'Estimasi Panen Perdana:' : 'Estimasi Panen:'} <strong className="text-slate-900">{multiYearAnalysis.harvestOutlook.harvestScheduleText}</strong>
               </p>
+              {multiYearAnalysis.harvestOutlook.isPerennial && (
+                <div className="text-[11px] text-amber-900 bg-amber-50/90 border border-amber-200 rounded-xl px-3 py-1.5 mt-1 flex items-start gap-1.5 leading-relaxed">
+                  <span className="text-sm shrink-0">ℹ️</span>
+                  <span>
+                    <strong>Siklus Pohon Produktif:</strong> Waktu tunggu dari tanam bibit okulasi/sambung pucuk hingga panen perdana adalah <strong>±{multiYearAnalysis.harvestOutlook.yearsOffset} tahun</strong> (~{multiYearAnalysis.harvestOutlook.harvestDays.toLocaleString('id-ID')} HST). Setelah pohon dewasa produktif, pemanenan berlangsung rutin setiap tahun pada musim raya ({currentDetailItem.musim_puncak || 'musim panen tahunan'}).
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-4">
@@ -955,7 +1047,7 @@ export default function MarketDemandPage() {
                   </span>
                   <span className="flex items-center gap-2 font-bold text-emerald-800">
                     <span className="w-3.5 h-3.5 rounded-sm bg-emerald-700 inline-block shrink-0" />
-                    <span>Harga Saat Panen ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
+                    <span>Harga {multiYearAnalysis.harvestOutlook.isPerennial ? 'Musim Panen Raya' : 'Saat Panen'} ({multiYearAnalysis.harvestOutlook.harvestMonthName})</span>
                   </span>
                 </div>
                 <div className="sm:ml-auto">
