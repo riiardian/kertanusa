@@ -1084,10 +1084,10 @@ export default function MarketDemandPage() {
                     setActiveCategory(cat);
                     setSearchQuery('');
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-all border ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors border ${
                     isActive
-                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                      : 'bg-slate-50/90 hover:bg-emerald-50 hover:text-emerald-900 hover:border-emerald-200 text-slate-600 border-slate-200/70'
+                      ? 'bg-emerald-700 text-white border-emerald-700'
+                      : 'bg-white hover:bg-white text-slate-600 hover:text-slate-900 border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   {cat}
@@ -1100,14 +1100,9 @@ export default function MarketDemandPage() {
         {filteredCommodities.length > 0 ? (
           <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/40 space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-800">
-                  Daftar Komoditas Pertanian
-                </span>
-                <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
-                  {filteredCommodities.length} komoditas
-                </span>
-              </div>
+              <span className="text-xs font-bold text-slate-800">
+                Daftar Komoditas Pertanian
+              </span>
               <span className="text-[11px] text-slate-400 hidden sm:inline">
                 Klik baris komoditas untuk memperbarui grafik tren & analisis
               </span>
@@ -1142,17 +1137,12 @@ export default function MarketDemandPage() {
                         }`}
                       >
                         <td className="py-2.5 px-3.5">
-                          <div className="flex items-center gap-2">
-                            {isSelected && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                            )}
-                            <div>
-                              <div className={`font-bold ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-800'}`}>
-                                {c.komoditas}
-                              </div>
-                              <div className="text-[10px] text-slate-400 font-normal sm:hidden">
-                                {c.kategori}
-                              </div>
+                          <div>
+                            <div className={`font-bold ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-800'}`}>
+                              {c.komoditas}
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-normal sm:hidden">
+                              {c.kategori}
                             </div>
                           </div>
                         </td>
@@ -1165,13 +1155,13 @@ export default function MarketDemandPage() {
                           Rp {c.harga_saat_ini.toLocaleString('id-ID')}
                           <span className="text-[10px] text-slate-400 font-normal"> /kg</span>
                         </td>
-                        <td className="py-2.5 px-3 text-right text-xs font-semibold">
+                        <td className="py-2.5 px-3 text-right text-xs">
                           {c.tren_mingguan === 'Naik' ? (
-                            <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md inline-block">
+                            <span className="text-emerald-700 font-bold">
                               +{c.persentase_tren}%
                             </span>
                           ) : (
-                            <span className="text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md inline-block">
+                            <span className="text-slate-500 font-medium">
                               Stabil
                             </span>
                           )}
@@ -1179,10 +1169,10 @@ export default function MarketDemandPage() {
                         <td className="py-2.5 px-3 text-center">
                           <button
                             type="button"
-                            className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                            className={`text-xs font-semibold px-3 py-1.5 rounded transition-colors cursor-pointer ${
                               isSelected
-                                ? 'bg-emerald-700 text-white shadow-xs'
-                                : 'text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/60'
+                                ? 'bg-emerald-800 text-white hover:bg-emerald-900'
+                                : 'bg-emerald-700 text-white hover:bg-emerald-800'
                             }`}
                           >
                             {isSelected ? 'Terpilih' : 'Pilih'}
