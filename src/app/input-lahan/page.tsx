@@ -6,7 +6,7 @@ import { RefreshCw, MapPin, Check, ChevronDown, Trash2, AlertCircle } from 'luci
 import { REGIONS } from '@/lib/agro_regions';
 import { getCropInfo, isRecognizedCrop, SUPPORTED_CROP_NAMES, searchCropSuggestions } from '@/lib/crops';
 import LottieAnimation from '@/components/LottieAnimation';
-import loadingAnimation from '../../../public/growingplant.json';
+import searchFileAnimation from '../../../public/Searching File.json';
 
 export default function InputLahanPage() {
   const [formData, setFormData] = useState({
@@ -285,8 +285,8 @@ export default function InputLahanPage() {
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent select-none cursor-wait animate-in fade-in duration-150">
           <LottieAnimation
-            animationData={loadingAnimation}
-            className="w-32 h-32 sm:w-36 sm:h-36"
+            animationData={searchFileAnimation}
+            className="w-36 h-36 sm:w-44 sm:h-44"
             loop={true}
             autoplay={true}
           />
