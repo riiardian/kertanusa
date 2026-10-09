@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { RefreshCw, MapPin, Check, ChevronDown, Trash2 } from 'lucide-react';
+import { RefreshCw, MapPin, Check, ChevronDown, Trash2, AlertCircle } from 'lucide-react';
 import { REGIONS } from '@/lib/agro_regions';
 import { getCropInfo, isRecognizedCrop, SUPPORTED_CROP_NAMES, searchCropSuggestions } from '@/lib/crops';
 import LottieAnimation from '@/components/LottieAnimation';
@@ -531,21 +531,18 @@ export default function InputLahanPage() {
               const isValid = isRecognizedCrop(formData.jenis_tanaman);
               if (isValid) {
                 return (
-                  <div className="p-2.5 bg-emerald-50/90 border border-emerald-200 rounded-lg text-emerald-800 text-[11px] font-medium space-y-1">
-                    <div className="flex items-center gap-1.5">
-                      <span>🌱</span>
-                      <span>
-                        Terdeteksi: <strong>{detected.nama}</strong> ({detected.kategori})
-                      </span>
+                  <div className="text-[11px] text-slate-600 space-y-1 pt-1 leading-relaxed">
+                    <div>
+                      Terdeteksi: <strong className="text-slate-800 font-semibold">{detected.nama}</strong> ({detected.kategori})
                     </div>
-                    <div className="pl-5 text-emerald-700 text-[11px] leading-relaxed">
+                    <div className="text-slate-500">
                       {detected.is_tanaman_tahunan ? (
                         <span>
-                          🌳 <strong>Tanaman Tahunan (Pohon):</strong> Estimasi panen perdana dari bibit sambung/okulasi adalah <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST (±{Math.round(detected.umur_panen_hari / 365)} Tahun)</strong>. Pohon dewasa berbuah berulang dengan siklus musim <strong>~{detected.siklus_buah_hari || 120} hari</strong>.
+                          <strong className="text-slate-700">Tanaman Tahunan (Pohon):</strong> Estimasi panen perdana dari bibit sambung/okulasi adalah <strong className="font-semibold text-slate-800">~{detected.umur_panen_hari} HST (±{Math.round(detected.umur_panen_hari / 365)} Tahun)</strong>. Pohon dewasa berbuah berulang dengan siklus musim <strong>~{detected.siklus_buah_hari || 120} hari</strong>.
                         </span>
                       ) : (
                         <span>
-                          🌾 <strong>Tanaman Semusim:</strong> Estimasi panen: <strong className="font-bold underline decoration-emerald-500">~{detected.umur_panen_hari} HST</strong> (±{detected.umur_panen_hari >= 30 ? (detected.umur_panen_hari / 30).toFixed(1) + ' Bulan' : detected.umur_panen_hari + ' Hari'}) sesuai data riset Balitbangtan.
+                          <strong className="text-slate-700">Tanaman Semusim:</strong> Estimasi panen: <strong className="font-semibold text-slate-800">~{detected.umur_panen_hari} HST</strong> (±{detected.umur_panen_hari >= 30 ? (detected.umur_panen_hari / 30).toFixed(1) + ' Bulan' : detected.umur_panen_hari + ' Hari'}) sesuai data riset Balitbangtan.
                         </span>
                       )}
                     </div>
@@ -554,7 +551,7 @@ export default function InputLahanPage() {
               }
               return (
                 <div className="flex items-start gap-2 p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-[11px] font-medium">
-                  <span className="text-base leading-none">⚠️</span>
+                  <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                   <div>
                     <strong className="block text-rose-900">Komoditas &quot;{formData.jenis_tanaman}&quot; tidak dikenali</strong>
                     <span>
