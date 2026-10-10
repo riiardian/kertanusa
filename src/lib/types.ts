@@ -89,21 +89,6 @@ export interface VisionAnalysisResult {
   }[];
   solusi_perawatan: string[];
   pestisida_nabati_organik: string[];
-  detected_boxes?: {
-    id: string;
-    label: string;
-    confidence: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    type: 'disease' | 'pest' | 'fruit' | 'foliage';
-    color?: string;
-  }[];
-  sample_image_url?: string;
-  spad_chlorophyll_index?: number;
-  health_index?: number;
-  mitigasi_7hari?: string[];
 }
 
 export interface MarketCommodityTrend {
