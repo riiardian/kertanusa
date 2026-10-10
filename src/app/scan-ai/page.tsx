@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useTransition } from 'react';
+import Link from 'next/link';
 import { 
   Camera, 
   Upload, 
@@ -14,22 +15,57 @@ import {
   Leaf, 
   History, 
   Sparkles, 
-  Maximize2,
-  ShieldCheck,
-  Calendar,
-  Check,
-  ChevronRight
+  ShieldCheck, 
+  Calendar, 
+  Check, 
+  Copy, 
+  Eye, 
+  EyeOff, 
+  Activity, 
+  Sprout, 
+  ArrowRight,
+  Printer,
+  ChevronRight,
+  Layers,
+  Clock,
+  ExternalLink
 } from 'lucide-react';
 import { VisionAnalysisResult } from '@/lib/types';
 import { DISEASE_LIBRARY } from '@/lib/vision_ai';
+import { SAMPLE_CROP_SVGS } from '@/lib/sample_crops_svg';
 
 export default function ScanAiPage() {
+  // Tab Input: 'sample' | 'camera' | 'upload'
+  const [activeInputTab, setActiveInputTab] = useState<'sample' | 'camera' | 'upload'>('sample');
+  // Tab Hasil Diagnosa: 'visual' | 'nutrisi' | 'hayati' | 'mitigasi'
+  const [activeResultTab, setActiveResultTab] = useState<'visual' | 'nutrisi' | 'hayati' | 'mitigasi'>('visual');
+
+  // Status Sampel & Citra
   const [selectedSample, setSelectedSample] = useState<string>('antraknosa');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(SAMPLE_CROP_SVGS['antraknosa'] || null);
   const [imageSource, setImageSource] = useState<'camera' | 'upload' | 'sample'>('sample');
-  const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState<VisionAnalysisResult | null>(null);
+  const [showAnnotations, setShowAnnotations] = useState<boolean>(true);
+  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+
+  // Status Pemindaian AI & Hasil
+  const [scanning, setScanning] = useState<boolean>(false);
+  const [scanStepIndex, setScanStepIndex] = useState<number>(0);
+  const [result, setResult] = useState<VisionAnalysisResult | null>(() => ({
+    id: 'demo-init',
+    ...DISEASE_LIBRARY['antraknosa']
+  }));
   const [scanHistory, setScanHistory] = useState<VisionAnalysisResult[]>([]);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  // Integrasi Lahan Terdaftar Petani (Local Persistence)
+  const [activeFarmer, setActiveFarmer] = useState<{
+    id?: string;
+    nama_petani?: string;
+    daerah?: string;
+    jenis_tanaman?: string;
+    luas_tanah?: number | string;
+    satuan_luas?: string;
+  } | null>(null);
 
   // State Kamera Langsung (WebRTC Viewfinder)
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -43,49 +79,93 @@ export default function ScanAiPage() {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const nativeCameraInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Sampel Preset Lapangan Kasus Nyata Petani
+  // Pipeline Tahapan Analisis Visual
+  const SCAN_STAGES = [
+    'Ekstraksi Citra & Normalisasi Pencahayaan...',
+    'Segmentasi Spektral Klorofil & Pola Lesi Daun...',
+    'Inferensi Model Patologi Vision Kertanusa...',
+    'Menyusun Resep Formulasi Nutrisi & Penanganan...'
+  ];
+
+  // Sampel Kasus Lapangan Kurasi Agronomis
   const samplePresets = [
     {
       id: 'antraknosa',
       crop: 'Cabai Merah / Rawit',
-      label: 'Cabai: Antraknosa (Patek Buah)',
-      desc: 'Bercak hitam cekung melingkar pada buah menjelang merah',
+      label: 'Antraknosa (Patek Buah)',
+      desc: 'Bercak cekung melingkar kehitaman berspora oranye pada cabai',
       badge: 'Penyakit Buah',
-      badgeColor: 'bg-rose-50 text-rose-700 border-rose-200'
+      badgeClass: 'bg-rose-50 text-rose-700 border-rose-200/80',
+      svgKey: 'antraknosa',
+      accuracy: '94.8%'
     },
     {
       id: 'kutu-kebul',
       crop: 'Cabai / Tomat / Terong',
-      label: 'Cabai: Kutu Kebul & Virus Kuning',
+      label: 'Kutu Kebul & Virus Kuning',
       desc: 'Daun keriting mangkok & koloni serangga putih vektor gemini',
       badge: 'Hama Vektor',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200'
+      badgeClass: 'bg-amber-50 text-amber-700 border-amber-200/80',
+      svgKey: 'kutu-kebul',
+      accuracy: '96.2%'
     },
     {
       id: 'ulat-grayak',
       crop: 'Bawang Merah / Jagung',
-      label: 'Bawang: Ulat Grayak (Spodoptera)',
-      desc: 'Daun berlubang transparan & bekas gerekan larva ulat',
+      label: 'Ulat Grayak (Spodoptera)',
+      desc: 'Helaian silindris daun berlubang transparan akibat larva',
       badge: 'Hama Daun',
-      badgeColor: 'bg-orange-50 text-orange-700 border-orange-200'
+      badgeClass: 'bg-orange-50 text-orange-700 border-orange-200/80',
+      svgKey: 'ulat-grayak',
+      accuracy: '95.4%'
     },
     {
       id: 'hawar-daun',
       crop: 'Padi Sawah / Gogo',
-      label: 'Padi: Hawar Daun Bakteri (Kresek)',
-      desc: 'Garis basah kuning di tepi helaian daun menyerupai terbakar',
+      label: 'Hawar Bakteri (Kresek)',
+      desc: 'Garis basah kuning bergelombang di tepi helai daun padi',
       badge: 'Penyakit Daun',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200'
+      badgeClass: 'bg-amber-50 text-amber-700 border-amber-200/80',
+      svgKey: 'hawar-daun',
+      accuracy: '93.5%'
+    },
+    {
+      id: 'bulai-jagung',
+      crop: 'Jagung (Zea mays)',
+      label: 'Bulai Klorotik Jagung',
+      desc: 'Garis putih klorosis sejajar tulang daun berspora tepung',
+      badge: 'Penyakit Daun',
+      badgeClass: 'bg-purple-50 text-purple-700 border-purple-200/80',
+      svgKey: 'bulai-jagung',
+      accuracy: '94.1%'
     },
     {
       id: 'siap-panen-grade-a',
-      crop: 'Cabai / Tomat / Buah',
-      label: 'Cabai: Buah Matang Optimal Grade A',
-      desc: 'Kulit merah berkilau merata 95%, buah padat segar',
+      crop: 'Cabai Merah Prima',
+      label: 'Buah Matang Super Grade A',
+      desc: 'Pigmen merah merata 95%, kulit mulus bebas bercak patogen',
       badge: 'Siap Panen',
-      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+      badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+      svgKey: 'siap-panen-grade-a',
+      accuracy: '98.7%'
     }
   ];
+
+  // Muat data Lahan Aktif Petani saat client mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem('kertanusa_active_farmer_data');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.nama_petani) {
+          setActiveFarmer(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('Gagal memuat profil petani aktif:', e);
+    }
+  }, []);
 
   // Bersihkan stream kamera saat unmount
   useEffect(() => {
@@ -102,21 +182,21 @@ export default function ScanAiPage() {
     setIsCameraActive(false);
   }
 
-  // Mulai Kamera Langsung di Browser
+  // Buka Kamera Langsung WebRTC
   async function startCamera(mode: 'environment' | 'user' = 'environment') {
     setCameraError(null);
     stopCameraStream();
 
     try {
       if (!navigator?.mediaDevices?.getUserMedia) {
-        throw new Error('WebRTC Camera tidak didukung pada browser ini');
+        throw new Error('WebRTC Camera tidak didukung pada browser ini.');
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: mode },
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 960 }
         },
         audio: false
       });
@@ -124,49 +204,43 @@ export default function ScanAiPage() {
       streamRef.current = stream;
       setCameraFacingMode(mode);
       setIsCameraActive(true);
+      setActiveInputTab('camera');
 
-      // Tunggu mounting elemen video
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play().catch(e => console.log('Video auto-play interrupted:', e));
         }
-      }, 100);
+      }, 150);
 
     } catch (err: any) {
       console.warn('Gagal membuka kamera WebRTC:', err);
-      setCameraError('Kamera langsung di browser tidak tersedia atau izin ditolak. Anda dapat menggunakan kamera bawaan ponsel.');
+      setCameraError('Izin akses kamera browser belum diaktifkan. Anda dapat memilih foto dari galeri atau membuka kamera bawaan ponsel.');
       setIsCameraActive(false);
-      // Fallback: picu input kamera native perangkat jika di HP
-      setTimeout(() => {
-        nativeCameraInputRef.current?.click();
-      }, 300);
     }
   }
 
-  // Beralih Kamera Depan / Belakang
   function toggleCameraFacing() {
     const nextMode = cameraFacingMode === 'environment' ? 'user' : 'environment';
     startCamera(nextMode);
   }
 
-  // Jepret Foto dari Video Viewfinder
+  // Jepret foto dari viewfinder kamera
   function capturePhoto() {
     if (!videoRef.current) return;
     const video = videoRef.current;
 
-    // Efek kilatan shutter
     setIsShutterFlashing(true);
     setTimeout(() => setIsShutterFlashing(false), 200);
 
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    canvas.width = video.videoWidth || 800;
+    canvas.height = video.videoHeight || 600;
     const ctx = canvas.getContext('2d');
 
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
       setImagePreview(dataUrl);
       setImageSource('camera');
       stopCameraStream();
@@ -174,298 +248,517 @@ export default function ScanAiPage() {
     }
   }
 
-  // Unggah Berkas Foto (Galeri atau Kamera Native)
-  function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>, source: 'camera' | 'upload') {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result as string;
-        setImagePreview(dataUrl);
-        setImageSource(source);
-        stopCameraStream();
-        handleRunScan('custom-' + source, dataUrl);
-      };
-      reader.readAsDataURL(file);
+  // Handler Berkas Gambar
+  function handleFileSelected(file?: File, source: 'camera' | 'upload' = 'upload') {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Mohon pilih berkas gambar (JPG, PNG, atau WebP).');
+      return;
     }
-    e.target.value = '';
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setImagePreview(dataUrl);
+      setImageSource(source);
+      stopCameraStream();
+      handleRunScan('custom-' + source, dataUrl);
+    };
+    reader.readAsDataURL(file);
   }
 
-  // Jalankan Proses Analisis AI Computer Vision
+  // Jalankan Pipeline Computer Vision
   async function handleRunScan(sampleKey: string, customImage?: string) {
     setScanning(true);
-    setResult(null);
+    setScanStepIndex(0);
+
+    // Animasi step progress scanning
+    const stepInterval = setInterval(() => {
+      setScanStepIndex(prev => {
+        if (prev < SCAN_STAGES.length - 1) return prev + 1;
+        return prev;
+      });
+    }, 380);
 
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sampleKey, hasCustomImage: !!customImage })
+        body: JSON.stringify({ 
+          sampleKey, 
+          registeredCrop: activeFarmer?.jenis_tanaman,
+          hasCustomImage: !!customImage 
+        })
       });
+
       const data = await res.json();
-      if (data.success) {
-        setTimeout(() => {
-          setResult(data.data);
-          setScanHistory(prev => [data.data, ...prev.slice(0, 5)]);
-          setScanning(false);
-        }, 1200);
+      clearInterval(stepInterval);
+
+      if (data.success && data.data) {
+        setResult(data.data);
+        setScanHistory(prev => [data.data, ...prev.filter(item => item.id !== data.data.id).slice(0, 5)]);
       } else {
-        setScanning(false);
+        // Fallback lokal jika endpoint mengalami kendala
+        const fallback = {
+          id: 'scan-' + Date.now(),
+          ...(DISEASE_LIBRARY[sampleKey] || DISEASE_LIBRARY['antraknosa'])
+        };
+        setResult(fallback as VisionAnalysisResult);
+        setScanHistory(prev => [fallback as VisionAnalysisResult, ...prev.slice(0, 5)]);
       }
     } catch (err) {
       console.error('Scan error:', err);
-      // Fallback lokal jika API offline
-      const fallbackResult = {
+      clearInterval(stepInterval);
+      const fallback = {
         id: 'scan-' + Date.now(),
         ...(DISEASE_LIBRARY[sampleKey] || DISEASE_LIBRARY['antraknosa'])
       };
+      setResult(fallback as VisionAnalysisResult);
+      setScanHistory(prev => [fallback as VisionAnalysisResult, ...prev.slice(0, 5)]);
+    } finally {
       setTimeout(() => {
-        setResult(fallbackResult as VisionAnalysisResult);
-        setScanHistory(prev => [fallbackResult as VisionAnalysisResult, ...prev.slice(0, 5)]);
         setScanning(false);
-      }, 1000);
+      }, 500);
     }
   }
 
-  // Foto Ulang
-  function handleRetakePhoto() {
-    setImagePreview(null);
-    setResult(null);
-    startCamera(cameraFacingMode);
+  // Pilih Sampel Preset
+  function handleSelectSample(presetId: string) {
+    setSelectedSample(presetId);
+    setImagePreview(SAMPLE_CROP_SVGS[presetId] || null);
+    setImageSource('sample');
+    stopCameraStream();
+    handleRunScan(presetId);
+  }
+
+  // Salin Rangkuman Diagnosa ke Clipboard
+  function handleCopyDiagnosis() {
+    if (!result) return;
+    const text = `📋 LAPORAN DIAGNOSTIK KERTANUSA VISION AI
+━━━━━━━━━━━━━━━━━━━━
+🌱 Tanaman: ${result.nama_tanaman}
+🚨 Diagnosis: ${result.nama_masalah} (${result.kategori_diagnosa})
+📊 Akurasi AI: ${result.akurasi}% | Tingkat: ${result.tingkat_keparahan}
+⏳ Kesiapan Panen: ${result.status_kematangan} (${result.estimasi_hari_panen === 0 ? 'Siap Petik' : `± ${result.estimasi_hari_panen} hari`})
+
+🔍 Ciri Visual Terdeteksi:
+${result.ciri_visual.map(c => `• ${c}`).join('\n')}
+
+🧪 Rekomendasi Nutrisi & Dosis:
+${result.rekomendasi_pupuk.map(p => `• ${p.jenis} (${p.formula}): ${p.dosis} -> ${p.cara_aplikasi}`).join('\n')}
+
+🌿 Solusi Hayati & Pengendalian:
+${result.solusi_perawatan.map(s => `• ${s}`).join('\n')}
+━━━━━━━━━━━━━━━━━━━━
+Dianalisis melalui https://kertanusa.web.id/scan-ai`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500);
+    });
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16 space-y-7">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-20 space-y-8 text-slate-800">
       
-      {/* ── HEADER HALAMAN (CLEAN & NATURAL) ── */}
-      <div className="space-y-1.5 border-b border-slate-100 pb-5">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
-          <ScanSearch className="w-3.5 h-3.5 text-emerald-700" />
-          <span>Computer Vision AI Pertanian</span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Deteksi Hama, Penyakit & Kesiapan Panen
-        </h1>
-        <p className="text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
-          Ambil foto langsung melalui kamera atau unggah foto daun dan buah tanaman Anda. AI akan mendiagnosis gejala patogen, menghitung akurasi penyakit, mengukur kematangan panen, dan meracik rekomendasi pupuk presisi.
-        </p>
-      </div>
+      {/* ── HEADER HALAMAN: CLEAN, NATURAL & SEIMBANG ── */}
+      <section className="space-y-3.5 border-b border-slate-200/70 pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
+            <ScanSearch className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Kertanusa Vision AI • Diagnostik Makro Lapangan</span>
+          </div>
 
-      {/* Inputs Tersembunyi untuk Kamera Native & Galeri File */}
+          {/* Badge Status Kamera / AI */}
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Engine Vision v2.4 Aktif
+            </span>
+          </div>
+        </div>
+
+        <div className="space-y-1.5 max-w-3xl">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Pindai Kesehatan & Kesiapan Panen Tanaman
+          </h1>
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Diagnosa dini gejala serangan patogen, serangga vektor, indeks klorofil (SPAD), dan tingkat kematangan buah menggunakan computer vision makro yang dirancang khusus untuk kondisi iklim tropis Nusantara.
+          </p>
+        </div>
+
+        {/* Notifikasi Sinkronisasi Lahan Aktif Petani (Jika terdaftar) */}
+        {activeFarmer ? (
+          <div className="mt-2 p-3 sm:p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Sprout className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-emerald-950 block">
+                  Lahan Terdaftar Terhubung: {activeFarmer.nama_petani}
+                </span>
+                <span className="text-emerald-800 text-[11px]">
+                  Komoditas: <strong>{activeFarmer.jenis_tanaman}</strong> • Lokasi: {activeFarmer.daerah} ({activeFarmer.luas_tanah} {activeFarmer.satuan_luas || 'm²'})
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  const crop = (activeFarmer.jenis_tanaman || '').toLowerCase();
+                  if (crop.includes('bawang')) handleSelectSample('ulat-grayak');
+                  else if (crop.includes('jagung')) handleSelectSample('bulai-jagung');
+                  else if (crop.includes('padi')) handleSelectSample('hawar-daun');
+                  else handleSelectSample('antraknosa');
+                }}
+                className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+              >
+                <span>Fokus Diagnosa {activeFarmer.jenis_tanaman}</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-slate-400 shrink-0" />
+              <span>Ingin hasil diagnosis otomatis tersinkronisasi dengan luas petak dan kalender sawah Anda?</span>
+            </div>
+            <Link 
+              href="/input-lahan"
+              className="text-emerald-700 hover:text-emerald-800 font-semibold shrink-0 hover:underline inline-flex items-center gap-1"
+            >
+              <span>Sambungkan Lahan</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* Hidden File Inputs */}
       <input 
         type="file" 
         accept="image/*" 
         capture="environment" 
         ref={nativeCameraInputRef} 
-        onChange={e => handleFileSelected(e, 'camera')} 
+        onChange={e => {
+          const file = e.target.files?.[0];
+          if (file) handleFileSelected(file, 'camera');
+          e.target.value = '';
+        }} 
         className="hidden" 
       />
       <input 
         type="file" 
         accept="image/*" 
         ref={galleryInputRef} 
-        onChange={e => handleFileSelected(e, 'upload')} 
+        onChange={e => {
+          const file = e.target.files?.[0];
+          if (file) handleFileSelected(file, 'upload');
+          e.target.value = '';
+        }} 
         className="hidden" 
       />
 
-      {/* ── AREA UTAMA SCANNER ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* ── KONTEN UTAMA: DUA KOLOM BERSIH & PROPORSIONAL ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* KOLOM KIRI: KAMERA LANGSUNG, UPLOAD & SAMPEL (5 Kolom) */}
-        <div className="lg:col-span-5 space-y-4">
+        {/* ══ KOLOM KIRI (5 KOLOM): VIEWFINDER CITRA & INPUT SUMBER ══ */}
+        <div className="lg:col-span-5 space-y-5">
           
-          {/* Card Kamera & Pengambilan Foto */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+          {/* Card Viewfinder Utama */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
             
-            <div className="flex items-center justify-between">
+            {/* Header Card dengan Navigasi Tab Segmented */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <h2 className="text-sm font-bold text-slate-900">
+                <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Sumber Citra Tanaman
                 </h2>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Foto langsung daun/buah atau pilih dari galeri
+                  Foto daun/buah makro resolusi tinggi
                 </p>
               </div>
 
-              {isCameraActive && (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/60">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Kamera Aktif
-                </span>
-              )}
+              {/* Segmented Control Pill Tab */}
+              <div className="inline-flex p-1 rounded-xl bg-slate-100/90 text-xs font-medium self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveInputTab('sample');
+                    stopCameraStream();
+                    if (!imagePreview && selectedSample) {
+                      setImagePreview(SAMPLE_CROP_SVGS[selectedSample] || null);
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    activeInputTab === 'sample'
+                      ? 'bg-white text-slate-900 font-bold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Sampel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveInputTab('camera');
+                    startCamera('environment');
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    activeInputTab === 'camera'
+                      ? 'bg-white text-emerald-800 font-bold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Kamera
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveInputTab('upload');
+                    stopCameraStream();
+                  }}
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                    activeInputTab === 'upload'
+                      ? 'bg-white text-slate-900 font-bold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Unggah
+                </button>
+              </div>
             </div>
 
-            {/* KONDISI 1: LIVE VIEWFINDER KAMERA AKTIF */}
-            {isCameraActive ? (
-              <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-300 aspect-4/3 flex flex-col justify-between">
-                
-                {/* Elemen Video WebRTC */}
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  muted 
-                  className={`w-full h-full object-cover ${cameraFacingMode === 'user' ? 'scale-x-[-1]' : ''}`}
-                />
-
-                {/* Kilatan Shutter Flash */}
-                {isShutterFlashing && (
-                  <div className="absolute inset-0 bg-white/90 z-30 transition-opacity duration-200" />
-                )}
-
-                {/* Overlay Pembidik Sudut (Viewfinder Reticle) */}
-                <div className="absolute inset-0 pointer-events-none p-6 flex flex-col items-center justify-center">
-                  <div className="relative w-44 h-44 sm:w-52 sm:h-52 border border-emerald-400/40 rounded-xl">
-                    {/* 4 Sudut Pembidik */}
-                    <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-emerald-400 rounded-tl-sm" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-emerald-400 rounded-tr-sm" />
-                    <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-emerald-400 rounded-bl-sm" />
-                    <span className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-emerald-400 rounded-br-sm" />
-                    
-                    {/* Titik Fokus Tengah */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80 animate-ping" />
-                    </div>
-                  </div>
-
-                  <p className="mt-3 text-[11px] font-medium text-white/90 bg-black/60 px-2.5 py-1 rounded-md backdrop-blur-xs">
-                    Posisikan daun atau buah di tengah bingkai
-                  </p>
-                </div>
-
-                {/* Tombol Kontrol Bawah Viewfinder */}
-                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 bg-slate-900/70 backdrop-blur-xs p-2 rounded-xl border border-white/10">
-                  {/* Tutup Kamera */}
-                  <button
-                    type="button"
-                    onClick={stopCameraStream}
-                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1"
-                    title="Tutup Kamera"
-                  >
-                    <X className="w-4 h-4" />
-                    <span className="text-[11px] hidden sm:inline">Batal</span>
-                  </button>
-
-                  {/* Tombol Shutter Utama */}
-                  <button
-                    type="button"
-                    onClick={capturePhoto}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer border border-emerald-400/30"
-                  >
-                    <Camera className="w-4 h-4" />
-                    <span>Jepret Foto</span>
-                  </button>
-
-                  {/* Beralih Kamera (Depan / Belakang) */}
-                  <button
-                    type="button"
-                    onClick={toggleCameraFacing}
-                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1"
-                    title="Beralih Kamera Depan/Belakang"
-                  >
-                    <FlipHorizontal className="w-4 h-4" />
-                    <span className="text-[11px] hidden sm:inline">Putar</span>
-                  </button>
-                </div>
-
-              </div>
-            ) : imagePreview ? (
-              /* KONDISI 2: FOTO TELAH DIAMBIL / DIUNGGAH (PREVIEW AKTIF) */
-              <div className="space-y-3">
-                <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-4/3 group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src={imagePreview} 
-                    alt="Pratinjau Tanaman" 
-                    className="w-full h-full object-cover"
+            {/* AREA TAMPILAN VIEWPORT / KAMERA / PREVIEW */}
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-100/70 aspect-4/3 flex items-center justify-center select-none">
+              
+              {/* KONDISI A: KAMERA LANGSUNG WEBRTC AKTIF */}
+              {isCameraActive ? (
+                <div className="w-full h-full relative bg-slate-900 flex flex-col justify-between">
+                  {/* Elemen Video */}
+                  <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline 
+                    muted 
+                    className={`w-full h-full object-cover ${cameraFacingMode === 'user' ? 'scale-x-[-1]' : ''}`}
                   />
-                  
-                  {/* Tag Sumber */}
-                  <div className="absolute top-2.5 left-2.5">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1">
-                      {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : <Upload className="w-3 h-3 text-emerald-400" />}
-                      <span>{imageSource === 'camera' ? 'Foto Kamera Langsung' : 'Unggahan Galeri'}</span>
-                    </span>
-                  </div>
 
-                  {/* Overlay Garis Pemindai saat Scanning */}
-                  {scanning && (
-                    <div className="absolute inset-0 bg-emerald-950/20 flex flex-col items-center justify-center">
-                      <div className="w-full h-1 bg-emerald-400 shadow-[0_0_12px_#34d399] animate-pulse absolute top-1/2 -translate-y-1/2" />
-                      <span className="text-xs font-bold text-white bg-slate-900/80 px-3 py-1 rounded-md backdrop-blur-xs shadow-sm">
-                        Memindai Fitur Visual Daun...
-                      </span>
-                    </div>
+                  {/* Kilatan Shutter */}
+                  {isShutterFlashing && (
+                    <div className="absolute inset-0 bg-white/95 z-30 transition-opacity duration-150" />
                   )}
-                </div>
 
-                {/* Tombol Aksi Foto Ulang / Ganti */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={handleRetakePhoto}
-                    className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Foto Ulang</span>
-                  </button>
+                  {/* Frame Reticle Natural (Sleek Minimal White Corners) */}
+                  <div className="absolute inset-0 pointer-events-none p-8 flex flex-col items-center justify-center">
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 border border-white/30 rounded-2xl">
+                      {/* 4 Sudut Minimalis Putih Halus */}
+                      <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-md shadow-xs" />
+                      <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-md shadow-xs" />
+                      <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-md shadow-xs" />
+                      <span className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-md shadow-xs" />
 
-                  <button
-                    type="button"
-                    onClick={() => galleryInputRef.current?.click()}
-                    className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Upload className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Ganti Foto</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* KONDISI 3: BELUM ADA FOTO (PILIH KAMERA ATAU GALERI) */
-              <div className="space-y-3">
-                <div className="p-6 rounded-xl border border-slate-200 bg-slate-50/60 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-100">
-                    <Camera className="w-6 h-6" />
-                  </div>
+                      {/* Titik Fokus Halus */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-white/70 animate-ping" />
+                      </div>
+                    </div>
 
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-800">
-                      Ambil Foto Daun atau Buah Tanaman
-                    </h3>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Gunakan kamera langsung di kebun atau unggah dari album galeri
+                    <p className="mt-3 text-[11px] font-medium text-white/90 bg-slate-900/60 px-3 py-1 rounded-full backdrop-blur-md shadow-xs">
+                      Posisikan helai daun atau buah di tengah bingkai
                     </p>
                   </div>
 
-                  {/* Dua Tombol Utama yang Rapi & Proporsional */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  {/* Bar Kontrol Bawah Viewfinder */}
+                  <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
                     <button
                       type="button"
-                      onClick={() => startCamera('environment')}
-                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      onClick={stopCameraStream}
+                      className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
                     >
-                      <Camera className="w-4 h-4" />
-                      <span>Buka Kamera</span>
+                      <X className="w-4 h-4" />
+                      <span className="text-[11px] hidden sm:inline">Batal</span>
+                    </button>
+
+                    {/* Tombol Shutter Utama */}
+                    <button
+                      type="button"
+                      onClick={capturePhoto}
+                      className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-full font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer border border-emerald-400/40"
+                    >
+                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                      <span>Jepret Foto</span>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => galleryInputRef.current?.click()}
-                      className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      onClick={toggleCameraFacing}
+                      className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
+                      title="Beralih Kamera Depan/Belakang"
                     >
-                      <Upload className="w-4 h-4 text-slate-500" />
-                      <span>Pilih dari Galeri</span>
+                      <FlipHorizontal className="w-4 h-4" />
+                      <span className="text-[11px] hidden sm:inline">Putar</span>
                     </button>
                   </div>
                 </div>
+              ) : imagePreview ? (
+                /* KONDISI B: PREVIEW CITRA AKTIF (SAMPEL / UPLOAD / FOTO KAMERA) */
+                <div className="w-full h-full relative group">
+                  {/* Gambar Utama */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={imagePreview} 
+                    alt="Pratinjau Citra Tanaman" 
+                    className="w-full h-full object-cover transition-transform duration-300"
+                  />
 
-                {/* Catatan / Alternatif Kamera HP Bawaan */}
-                <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-                  <span>Format: JPG, PNG (Maks 10 MB)</span>
+                  {/* OVERLAY DETEKSI COMPUTER VISION (BOUNDING BOXES) */}
+                  {showAnnotations && result && result.detected_boxes && result.detected_boxes.length > 0 && !scanning && (
+                    <div className="absolute inset-0 pointer-events-none">
+                      {result.detected_boxes.map((box) => (
+                        <div 
+                          key={box.id}
+                          className="absolute border-2 rounded-lg transition-all duration-300"
+                          style={{
+                            left: `${box.x}%`,
+                            top: `${box.y}%`,
+                            width: `${box.width}%`,
+                            height: `${box.height}%`,
+                            borderColor: box.color || '#e11d48',
+                            backgroundColor: `${box.color || '#e11d48'}18`,
+                            boxShadow: `0 0 10px ${box.color || '#e11d48'}40`
+                          }}
+                        >
+                          {/* Label Tag Bounding Box */}
+                          <span 
+                            className="absolute -top-6 left-0 px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-xs backdrop-blur-xs whitespace-nowrap"
+                            style={{ backgroundColor: box.color || '#e11d48' }}
+                          >
+                            {box.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ANIMASI PEMINDAIAN LASER (SAAT PROSES SCAN AKTIF) */}
+                  {scanning && (
+                    <div className="absolute inset-0 bg-emerald-950/20 flex flex-col justify-between overflow-hidden">
+                      {/* Garis Pemindai Spektral Bergerak */}
+                      <div className="w-full h-1 bg-emerald-400 shadow-[0_0_16px_#34d399] animate-bounce absolute top-1/2 -translate-y-1/2" />
+                      
+                      {/* Bar Status Pemindaian */}
+                      <div className="absolute bottom-3 inset-x-3 bg-slate-900/80 backdrop-blur-md p-3 rounded-xl border border-white/10 text-white space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                            <span>Membedah Citra Makro...</span>
+                          </span>
+                          <span className="font-mono text-slate-300">{Math.round(((scanStepIndex + 1) / SCAN_STAGES.length) * 100)}%</span>
+                        </div>
+                        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-emerald-400 h-full transition-all duration-300"
+                            style={{ width: `${((scanStepIndex + 1) / SCAN_STAGES.length) * 100}%` }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-300 truncate">
+                          {SCAN_STAGES[scanStepIndex]}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Badge Sumber & Toggle Anotasi di Sudut Atas */}
+                  <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-auto">
+                    <span className="text-[10px] font-semibold px-2.5 py-1 rounded-md bg-slate-900/70 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
+                      {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : imageSource === 'upload' ? <Upload className="w-3 h-3 text-emerald-400" /> : <Sprout className="w-3 h-3 text-emerald-400" />}
+                      <span>{imageSource === 'camera' ? 'Kamera Langsung' : imageSource === 'upload' ? 'Unggahan Berkas' : 'Sampel Lapangan'}</span>
+                    </span>
+
+                    {/* Tombol Toggle Anotasi Bounding Box */}
+                    {result && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAnnotations(prev => !prev)}
+                        className={`text-[10px] font-semibold px-2.5 py-1 rounded-md backdrop-blur-xs transition-all cursor-pointer flex items-center gap-1 shadow-xs ${
+                          showAnnotations 
+                            ? 'bg-emerald-700/90 hover:bg-emerald-800 text-white' 
+                            : 'bg-slate-900/70 hover:bg-slate-900 text-slate-200'
+                        }`}
+                        title="Tampilkan / Sembunyikan Bounding Box AI"
+                      >
+                        {showAnnotations ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        <span>{showAnnotations ? 'Anotasi AI: Aktif' : 'Citra Asli'}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* KONDISI C: BELUM ADA CITRA */
+                <div className="p-8 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-100">
+                    <Camera className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-800">
+                      Pilih atau Ambil Foto Tanaman
+                    </h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Gunakan tab di atas untuk memilih metode pengambilan citra
+                    </p>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Toolbar Aksi Cepat Bawah Viewport */}
+            {imagePreview && !isCameraActive && (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (imageSource === 'camera') startCamera('environment');
+                    else if (imageSource === 'upload') galleryInputRef.current?.click();
+                    else handleRunScan(selectedSample);
+                  }}
+                  className="py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <span>{imageSource === 'camera' ? 'Foto Ulang' : 'Pindai Ulang'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                >
+                  <Upload className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Ganti Berkas</span>
+                </button>
+              </div>
+            )}
+
+            {/* Pesan Kesalahan Akses Kamera */}
+            {cameraError && (
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/90 text-amber-900 text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+                  <span>Akses Kamera Perangkat Terkendala</span>
+                </div>
+                <p className="text-[11px] text-amber-800 leading-relaxed">
+                  {cameraError}
+                </p>
+                <div className="pt-1 flex gap-2">
                   <button
                     type="button"
                     onClick={() => nativeCameraInputRef.current?.click()}
-                    className="text-emerald-700 hover:text-emerald-800 font-semibold underline underline-offset-2 cursor-pointer"
+                    className="text-xs font-semibold text-emerald-800 underline underline-offset-2 cursor-pointer"
                   >
                     Buka Kamera HP Bawaan
                   </button>
@@ -473,70 +766,108 @@ export default function ScanAiPage() {
               </div>
             )}
 
-            {/* Pesan Kesalahan Kamera jika ada */}
-            {cameraError && (
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
-                <div className="flex items-center gap-1.5 font-bold">
-                  <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
-                  <span>Akses Kamera Terkendala</span>
-                </div>
-                <p className="text-[11px] text-amber-800 leading-relaxed">
-                  {cameraError}
-                </p>
-              </div>
-            )}
-
           </div>
 
-          {/* Card Sampel Demo Lapangan */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+          {/* TAB CONTENT: UNGGAH DRAG & DROP (JIKA TAB UNGGAH DIPILIH) */}
+          {activeInputTab === 'upload' && !isCameraActive && (
+            <div 
+              onDragOver={e => {
+                e.preventDefault();
+                setIsDragOver(true);
+              }}
+              onDragLeave={e => {
+                e.preventDefault();
+                setIsDragOver(false);
+              }}
+              onDrop={e => {
+                e.preventDefault();
+                setIsDragOver(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) handleFileSelected(file, 'upload');
+              }}
+              className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed transition-all text-center space-y-3 cursor-pointer ${
+                isDragOver 
+                  ? 'border-emerald-600 bg-emerald-50/60 shadow-xs' 
+                  : 'border-slate-200 hover:border-emerald-400 bg-white hover:bg-slate-50/50 shadow-xs'
+              }`}
+              onClick={() => galleryInputRef.current?.click()}
+            >
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-100">
+                <Upload className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-xs font-bold text-slate-800">
+                  Tarik & Lepas Foto Daun / Buah di Sini
+                </h4>
+                <p className="text-[11px] text-slate-500">
+                  atau klik untuk memilih dari album galeri penyimpanan
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-[10px] font-medium text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">
+                <span>Mendukung format JPG, PNG, WebP (Maks 10 MB)</span>
+              </div>
+            </div>
+          )}
+
+          {/* TAB CONTENT: SAMPEL KASUS LAPANGAN KURASI (GRID KARTU VISUAL ALAMI) */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div>
-                <h3 className="text-xs font-bold text-slate-900">
-                  Sampel Lapangan (1-Klik Analisis)
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  Katalog Sampel Kasus Lapangan
                 </h3>
                 <p className="text-[11px] text-slate-500">
-                  Uji coba deteksi instan berbagai kasus patogen pertanian
+                  Klik untuk simulasi diagnostik makro instan
                 </p>
               </div>
               <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-                5 Kasus
+                6 Kasus Uji
               </span>
             </div>
 
             <div className="space-y-2">
               {samplePresets.map((preset) => {
-                const isSelected = selectedSample === preset.id && !imagePreview;
+                const isSelected = selectedSample === preset.id && imageSource === 'sample';
                 return (
                   <button
                     key={preset.id}
                     type="button"
-                    onClick={() => {
-                      setSelectedSample(preset.id);
-                      setImagePreview(null);
-                      setImageSource('sample');
-                      stopCameraStream();
-                      handleRunScan(preset.id);
-                    }}
-                    className={`w-full p-3 rounded-xl border text-left transition-colors flex items-start justify-between gap-2.5 cursor-pointer ${
+                    onClick={() => handleSelectSample(preset.id)}
+                    className={`w-full p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-50/70 border-emerald-600 shadow-xs'
-                        : 'bg-white hover:bg-slate-50 border-slate-200'
+                        ? 'bg-emerald-50/70 border-emerald-600 shadow-2xs'
+                        : 'bg-white hover:bg-slate-50/80 border-slate-200/90'
                     }`}
                   >
-                    <div className="space-y-0.5 min-w-0">
-                      <div className="flex items-center gap-1.5">
+                    {/* Thumbnail Miniatur Vektor Sampel */}
+                    <div className="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 shrink-0 relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={SAMPLE_CROP_SVGS[preset.svgKey]} 
+                        alt={preset.label}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="space-y-0.5 min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className={`text-xs font-bold truncate ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-900'}`}>
                           {preset.label}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-500 leading-snug line-clamp-1">
-                        {preset.desc}
+                        {preset.crop} • {preset.desc}
                       </p>
                     </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border shrink-0 ${preset.badgeColor}`}>
-                      {preset.badge}
-                    </span>
+
+                    <div className="text-right shrink-0">
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border block ${preset.badgeClass}`}>
+                        {preset.badge}
+                      </span>
+                      <span className="text-[9.5px] font-mono text-slate-400 mt-0.5 block">
+                        Akurasi {preset.accuracy}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
@@ -545,60 +876,85 @@ export default function ScanAiPage() {
 
         </div>
 
-        {/* KOLOM KANAN: HASIL DIAGNOSIS AI & RESEP AGRONOMIS (7 Kolom) */}
-        <div className="lg:col-span-7 space-y-4">
+        {/* ══ KOLOM KANAN (7 KOLOM): HASIL DIAGNOSTIK KLINIS & RESEP PERAWATAN ══ */}
+        <div className="lg:col-span-7 space-y-5">
           
           {scanning ? (
-            /* STATE 1: SEDANG MEMINDAI (SCANNING ANIMATION) */
-            <div className="bg-white border border-slate-200 rounded-2xl p-10 sm:p-14 text-center space-y-4 min-h-[440px] flex flex-col items-center justify-center">
+            /* STATE 1: SEDANG MEMINDAI (NATURAL SCANNING SKELETON) */
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-8 sm:p-14 text-center space-y-5 min-h-[480px] flex flex-col items-center justify-center shadow-xs">
               <div className="relative w-16 h-16">
                 <div className="w-16 h-16 rounded-full border-3 border-emerald-100 border-t-emerald-700 animate-spin" />
                 <ScanSearch className="w-7 h-7 text-emerald-700 absolute inset-0 m-auto" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5 max-w-sm">
                 <h3 className="text-base font-bold text-slate-900">
                   Computer Vision AI Sedang Mendiagnosis...
                 </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                  Membedah indeks spektral klorofil daun, pola nekrosis bercak patogen, dan tingkat kematangan pigmen buah.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Menganalisis indeks spektral klorofil daun, mendeteksi batas bercak nekrotik, dan meracik takaran nutrisi presisi.
                 </p>
+              </div>
+
+              {/* Progress Steps Indicator */}
+              <div className="w-full max-w-xs space-y-2 pt-2 text-left">
+                {SCAN_STAGES.map((stage, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-[11px]">
+                    <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                      idx < scanStepIndex 
+                        ? 'bg-emerald-600 text-white' 
+                        : idx === scanStepIndex 
+                        ? 'bg-emerald-100 text-emerald-800 animate-pulse' 
+                        : 'bg-slate-100 text-slate-400'
+                    }`}>
+                      {idx < scanStepIndex ? '✓' : idx + 1}
+                    </div>
+                    <span className={idx === scanStepIndex ? 'font-bold text-slate-900' : 'text-slate-500'}>
+                      {stage}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           ) : result ? (
-            /* STATE 2: HASIL PEMINDAIAN LENGKAP */
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-5">
+            /* STATE 2: HASIL PEMINDAIAN LENGKAP & NATURAL AGRONOMIC CLINIC CARD */
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-6">
               
-              {/* Header Kartu Diagnosis */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
-                <div className="space-y-1.5">
+              {/* Header Hasil Diagnosa: Natural Badges & Metrics Strip */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-slate-100">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold border ${
                       result.kategori_diagnosa === 'Tanaman Sehat'
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                        : 'bg-rose-50 text-rose-800 border-rose-200'
+                        : result.tingkat_keparahan === 'Parah'
+                        ? 'bg-rose-50 text-rose-800 border-rose-200'
+                        : 'bg-amber-50 text-amber-800 border-amber-200'
                     }`}>
-                      {result.kategori_diagnosa}
+                      {result.kategori_diagnosa} • Tingkat {result.tingkat_keparahan}
                     </span>
 
-                    <span className="text-xs text-slate-500 font-medium">
-                      Tingkat: <strong className="text-slate-800">{result.tingkat_keparahan}</strong>
-                    </span>
-
-                    <span className="text-xs text-emerald-700 font-semibold bg-emerald-50/60 px-2 py-0.5 rounded border border-emerald-100">
+                    <span className="text-xs text-emerald-800 font-semibold bg-emerald-50/70 px-2.5 py-0.5 rounded-md border border-emerald-200/60">
                       Akurasi AI {result.akurasi}%
                     </span>
+
+                    {result.spad_chlorophyll_index && (
+                      <span className="text-xs text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded-md">
+                        SPAD Klorofil: <strong className="text-slate-900">{result.spad_chlorophyll_index}</strong>
+                      </span>
+                    )}
                   </div>
 
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
                     {result.nama_masalah}
                   </h2>
+                  
                   <p className="text-xs text-slate-500">
                     Komoditas Relevan: <strong className="text-slate-800">{result.nama_tanaman}</strong>
                   </p>
                 </div>
 
-                {/* Status Kematangan & Hari Panen */}
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-left sm:text-right shrink-0 space-y-0.5">
+                {/* Kotak Status Kesiapan Panen */}
+                <div className="p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80 text-left sm:text-right shrink-0 space-y-1">
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                     Kesiapan Panen
                   </span>
@@ -615,118 +971,233 @@ export default function ScanAiPage() {
                 </div>
               </div>
 
-              {/* Ciri-Ciri Visual Terdeteksi */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Ciri Visual yang Teridentifikasi pada Citra:
-                </h4>
-                <div className="space-y-1.5">
-                  {result.ciri_visual.map((ciri, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-slate-600 bg-slate-50/60 p-2 rounded-lg border border-slate-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                      <span className="leading-relaxed">{ciri}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* TAB SUB-SEGMEN LAPORAN KLINIS */}
+              <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2 overflow-x-auto no-scrollbar">
+                <button
+                  type="button"
+                  onClick={() => setActiveResultTab('visual')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    activeResultTab === 'visual'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Temuan Visual ({result.ciri_visual.length})</span>
+                </button>
 
-              {/* Rekomendasi Nutrisi & Resep Pupuk Presisi */}
-              <div className="space-y-2.5 pt-2 border-t border-slate-100">
-                <div className="flex items-center gap-1.5">
-                  <FlaskConical className="w-4 h-4 text-emerald-700" />
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Rekomendasi Nutrisi & Pupuk Presisi
-                  </h4>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveResultTab('nutrisi')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    activeResultTab === 'nutrisi'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <FlaskConical className="w-3.5 h-3.5" />
+                  <span>Resep Pupuk Presisi</span>
+                </button>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {result.rekomendasi_pupuk.map((pupuk, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/70 space-y-1.5 text-xs">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <strong className="text-emerald-950 font-bold block">
-                          {pupuk.jenis}
-                        </strong>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
-                          {pupuk.formula}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-emerald-800">
-                        <span className="font-semibold text-emerald-950">Dosis:</span> {pupuk.dosis}
-                      </div>
-                      <p className="text-[11px] text-slate-600 leading-relaxed">
-                        {pupuk.cara_aplikasi}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveResultTab('hayati')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    activeResultTab === 'hayati'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <Leaf className="w-3.5 h-3.5" />
+                  <span>Solusi Hayati & Nabati</span>
+                </button>
 
-              {/* Solusi Perawatan & Penanganan Alami Nabati */}
-              <div className="space-y-2.5 pt-2 border-t border-slate-100">
-                <div className="flex items-center gap-1.5">
-                  <Leaf className="w-4 h-4 text-emerald-700" />
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Tindakan Agronomis & Pengendalian Nabati Hayati
-                  </h4>
-                </div>
-
-                <div className="space-y-1.5 text-xs text-slate-700">
-                  {result.solusi_perawatan.map((sol, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 leading-relaxed bg-slate-50/70 p-2.5 rounded-xl border border-slate-200/60">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>{sol}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {result.pestisida_nabati_organik.length > 0 && (
-                  <div className="mt-3 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs space-y-1.5">
-                    <strong className="text-amber-950 font-bold block">
-                      Resep Bahan Alami & Hayati Lokal Ramah Lingkungan:
-                    </strong>
-                    <ul className="space-y-1 text-amber-900 text-[11px]">
-                      {result.pestisida_nabati_organik.map((pes, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-amber-700 font-bold">•</span>
-                          <span>{pes}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                {result.mitigasi_7hari && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveResultTab('mitigasi')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                      activeResultTab === 'mitigasi'
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Rencana 7 Hari</span>
+                  </button>
                 )}
+              </div>
+
+              {/* KONTEN SUB-TAB 1: TEMUAN VISUAL & ANOTASI */}
+              {activeResultTab === 'visual' && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <span>Ciri Visual Terdeteksi pada Citra:</span>
+                    </h4>
+                    <div className="space-y-2">
+                      {result.ciri_visual.map((ciri, i) => (
+                        <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 bg-slate-50/70 p-3 rounded-xl border border-slate-200/60 leading-relaxed">
+                          <span className="w-2 h-2 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                          <span>{ciri}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ringkasan Indeks Kesehatan Spektral */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                      <span className="text-[10px] text-slate-500 font-medium block">Indeks Kesehatan Tajuk</span>
+                      <strong className="text-sm font-bold text-slate-900 mt-0.5 block">{result.health_index || 70}%</strong>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                      <span className="text-[10px] text-slate-500 font-medium block">Indeks Klorofil (SPAD)</span>
+                      <strong className="text-sm font-bold text-slate-900 mt-0.5 block">{result.spad_chlorophyll_index || 38.2}</strong>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center col-span-2 sm:col-span-1">
+                      <span className="text-[10px] text-slate-500 font-medium block">Deteksi Lesi/Objek</span>
+                      <strong className="text-sm font-bold text-emerald-700 mt-0.5 block">{result.detected_boxes?.length || 2} Anotasi AI</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* KONTEN SUB-TAB 2: RESEP FORMULASI PUPUK PRESISI */}
+              {activeResultTab === 'nutrisi' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <FlaskConical className="w-4 h-4 text-emerald-700" />
+                      <span>Formulasi Nutrisi & Pemulihan Tanaman</span>
+                    </h4>
+                    <span className="text-[11px] text-slate-500 font-medium">Berdasarkan Luas Daun</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {result.rekomendasi_pupuk.map((pupuk, idx) => (
+                      <div key={idx} className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200/70 space-y-2 text-xs">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <strong className="text-emerald-950 font-bold block text-sm">
+                            {pupuk.jenis}
+                          </strong>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
+                            {pupuk.formula}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-emerald-900 font-medium">
+                          <span className="font-bold text-emerald-950">Takaran Dosis:</span> {pupuk.dosis}
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed border-t border-emerald-200/40 pt-2">
+                          {pupuk.cara_aplikasi}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* KONTEN SUB-TAB 3: SOLUSI HAYATI & SANITASI LAHAN */}
+              {activeResultTab === 'hayati' && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                      <Leaf className="w-4 h-4 text-emerald-700" />
+                      <span>Tindakan Agronomis & Sanitasi Lapangan:</span>
+                    </h4>
+                    <div className="space-y-2 text-xs text-slate-700">
+                      {result.solusi_perawatan.map((sol, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5 leading-relaxed bg-slate-50/70 p-3 rounded-xl border border-slate-200/60">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                          <span>{sol}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {result.pestisida_nabati_organik.length > 0 && (
+                    <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs space-y-2">
+                      <strong className="text-amber-950 font-bold block">
+                        Resep Hayati & Pestisida Alami Lokal Ramah Lingkungan:
+                      </strong>
+                      <ul className="space-y-1.5 text-amber-900 text-[11px]">
+                        {result.pestisida_nabati_organik.map((pes, idx) => (
+                          <li key={idx} className="flex items-start gap-2 leading-relaxed">
+                            <span className="text-amber-700 font-bold">•</span>
+                            <span>{pes}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* KONTEN SUB-TAB 4: RENCANA MITIGASI 7 HARI */}
+              {activeResultTab === 'mitigasi' && result.mitigasi_7hari && (
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-emerald-700" />
+                    <span>Jadwal Aksi Perawatan 7 Hari ke Depan</span>
+                  </h4>
+                  <div className="space-y-2">
+                    {result.mitigasi_7hari.map((m, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 text-xs">
+                        <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-bold text-[10px] shrink-0 font-mono">
+                          Langkah {idx + 1}
+                        </span>
+                        <p className="text-slate-700 leading-relaxed">{m}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TOMBOL AKSI BAGIKAN / SIMPAN / KONSULTASI */}
+              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopyDiagnosis}
+                    className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{isCopied ? 'Tersalin ke Clipboard!' : 'Salin Laporan'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Cetak PDF</span>
+                  </button>
+                </div>
+
+                <Link
+                  href="/monitoring"
+                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline"
+                >
+                  <span>Cek Kondisi Cuaca Sawah</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
 
             </div>
           ) : (
-            /* STATE 3: BELUM ADA HASIL PEMINDAIAN (PANDUAN CLEAN) */
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center space-y-5 min-h-[440px] flex flex-col items-center justify-center">
+            /* STATE 3: BELUM ADA HASIL PEMINDAIAN */
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-8 sm:p-14 text-center space-y-5 min-h-[480px] flex flex-col items-center justify-center shadow-xs">
               <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-200/80">
                 <ScanSearch className="w-7 h-7 text-slate-400" />
               </div>
-
               <div className="space-y-1.5 max-w-sm">
                 <h3 className="text-base font-bold text-slate-900">
                   Belum Ada Pemindaian Aktif
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Ambil foto langsung daun/buah lewat kamera, unggah dari galeri, atau pilih salah satu sampel demo untuk menjalankan diagnosis AI.
+                  Pilih salah satu sampel demo lapangan di sebelah kiri atau ambil foto daun/buah melalui kamera untuk menjalankan diagnosis vision AI.
                 </p>
-              </div>
-
-              {/* Panduan Ringkas Pemotretan di Lahan */}
-              <div className="w-full max-w-md pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">1. Jarak Foto</span>
-                  <p className="text-[11px] text-slate-700 font-medium">15–30 cm dari daun/buah</p>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">2. Pencahayaan</span>
-                  <p className="text-[11px] text-slate-700 font-medium">Cahaya alami terang sejuk</p>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">3. Ketajaman</span>
-                  <p className="text-[11px] text-slate-700 font-medium">Fokus tajam pada bercak</p>
-                </div>
               </div>
             </div>
           )}
@@ -737,8 +1208,8 @@ export default function ScanAiPage() {
 
       {/* ── RIWAYAT PEMINDAIAN SESI INI ── */}
       {scanHistory.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <History className="w-4 h-4 text-emerald-700" />
               <h3 className="font-bold text-sm text-slate-900">
@@ -751,30 +1222,77 @@ export default function ScanAiPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {scanHistory.map((scan, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
+            {scanHistory.map((scan) => (
+              <div 
+                key={scan.id} 
+                onClick={() => {
+                  setResult(scan);
+                  if (scan.sample_image_url) {
+                    setImagePreview(scan.sample_image_url);
+                  }
+                  window.scrollTo({ top: 180, behavior: 'smooth' });
+                }}
+                className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50/50 hover:bg-slate-100/70 transition-colors space-y-2 text-xs cursor-pointer group"
+              >
                 <div className="flex justify-between items-start gap-2">
-                  <strong className="text-slate-900 font-bold block truncate">
+                  <strong className="text-slate-900 font-bold block truncate group-hover:text-emerald-700 transition-colors">
                     {scan.nama_masalah}
                   </strong>
                   <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 shrink-0">
-                    {scan.status_kematangan}
+                    {scan.akurasi}%
                   </span>
                 </div>
 
-                <p className="text-slate-500 text-[11px]">
+                <p className="text-slate-500 text-[11px] truncate">
                   {scan.nama_tanaman} • Tingkat: <strong className="text-slate-700">{scan.tingkat_keparahan}</strong>
                 </p>
 
-                <div className="text-[10px] text-slate-500 pt-1.5 border-t border-slate-200 flex justify-between items-center">
+                <div className="text-[10px] text-slate-500 pt-2 border-t border-slate-200/70 flex justify-between items-center">
                   <span>Panen: {scan.estimasi_hari_panen === 0 ? 'Siap Petik' : `${scan.estimasi_hari_panen} hari`}</span>
-                  <span className="font-semibold text-emerald-700">Akurasi: {scan.akurasi}%</span>
+                  <span className="font-semibold text-emerald-700 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                    <span>Buka Rincian</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </span>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
+
+      {/* ── PANDUAN PEMOTRETAN MAKRO DI LAPANGAN (NATURAL FOOTER TIPS) ── */}
+      <section className="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-5 sm:p-6 space-y-3">
+        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-emerald-600" />
+          <span>Panduan Pemotretan Citra Makro untuk Akurasi Optimal:</span>
+        </h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+          <div className="p-3.5 rounded-xl bg-white border border-slate-200/70 space-y-1 shadow-2xs">
+            <span className="text-[10px] font-bold text-emerald-700 uppercase block">1. Jarak Bidik Makro</span>
+            <p className="text-xs font-bold text-slate-800">15 – 30 cm dari Objek</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Fokuskan kamera langsung pada bercak daun atau permukaan kulit buah yang mengalami kelainan.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white border border-slate-200/70 space-y-1 shadow-2xs">
+            <span className="text-[10px] font-bold text-emerald-700 uppercase block">2. Cahaya Alami Sejuk</span>
+            <p className="text-xs font-bold text-slate-800">Pagi / Sore Hari</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Hindari bayangan jari atau silau matahari terik langsung agar segmentasi warna pigmen klorofil tidak bias.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white border border-slate-200/70 space-y-1 shadow-2xs">
+            <span className="text-[10px] font-bold text-emerald-700 uppercase block">3. Tanpa Goyangan</span>
+            <p className="text-xs font-bold text-slate-800">Kamera Stabil & Bersih</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Pegang ponsel dengan dua tangan dan bersihkan lensa dari debu kebun agar tepi lesi patogen terbaca tajam.
+            </p>
+          </div>
+        </div>
+      </section>
 
     </div>
   );
