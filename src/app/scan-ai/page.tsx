@@ -14,11 +14,9 @@ import {
   Leaf, 
   History, 
   Sparkles, 
-  Maximize2,
-  ShieldCheck,
-  Calendar,
-  Check,
-  ChevronRight
+  ShieldCheck, 
+  Calendar, 
+  Check
 } from 'lucide-react';
 import { VisionAnalysisResult } from '@/lib/types';
 import { DISEASE_LIBRARY } from '@/lib/vision_ai';
@@ -51,7 +49,7 @@ export default function ScanAiPage() {
       label: 'Cabai: Antraknosa (Patek Buah)',
       desc: 'Bercak hitam cekung melingkar pada buah menjelang merah',
       badge: 'Penyakit Buah',
-      badgeColor: 'bg-rose-50 text-rose-700 border-rose-200'
+      badgeColor: 'bg-rose-50 text-rose-700 border-rose-200/80'
     },
     {
       id: 'kutu-kebul',
@@ -59,7 +57,7 @@ export default function ScanAiPage() {
       label: 'Cabai: Kutu Kebul & Virus Kuning',
       desc: 'Daun keriting mangkok & koloni serangga putih vektor gemini',
       badge: 'Hama Vektor',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200'
+      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200/80'
     },
     {
       id: 'ulat-grayak',
@@ -67,7 +65,7 @@ export default function ScanAiPage() {
       label: 'Bawang: Ulat Grayak (Spodoptera)',
       desc: 'Daun berlubang transparan & bekas gerekan larva ulat',
       badge: 'Hama Daun',
-      badgeColor: 'bg-orange-50 text-orange-700 border-orange-200'
+      badgeColor: 'bg-orange-50 text-orange-700 border-orange-200/80'
     },
     {
       id: 'hawar-daun',
@@ -75,7 +73,7 @@ export default function ScanAiPage() {
       label: 'Padi: Hawar Daun Bakteri (Kresek)',
       desc: 'Garis basah kuning di tepi helaian daun menyerupai terbakar',
       badge: 'Penyakit Daun',
-      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200'
+      badgeColor: 'bg-amber-50 text-amber-700 border-amber-200/80'
     },
     {
       id: 'siap-panen-grade-a',
@@ -83,7 +81,7 @@ export default function ScanAiPage() {
       label: 'Cabai: Buah Matang Optimal Grade A',
       desc: 'Kulit merah berkilau merata 95%, buah padat segar',
       badge: 'Siap Panen',
-      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200/80'
     }
   ];
 
@@ -125,19 +123,17 @@ export default function ScanAiPage() {
       setCameraFacingMode(mode);
       setIsCameraActive(true);
 
-      // Tunggu mounting elemen video
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play().catch(e => console.log('Video auto-play interrupted:', e));
         }
-      }, 100);
+      }, 120);
 
     } catch (err: any) {
       console.warn('Gagal membuka kamera WebRTC:', err);
       setCameraError('Kamera langsung di browser tidak tersedia atau izin ditolak. Anda dapat menggunakan kamera bawaan ponsel.');
       setIsCameraActive(false);
-      // Fallback: picu input kamera native perangkat jika di HP
       setTimeout(() => {
         nativeCameraInputRef.current?.click();
       }, 300);
@@ -155,7 +151,6 @@ export default function ScanAiPage() {
     if (!videoRef.current) return;
     const video = videoRef.current;
 
-    // Efek kilatan shutter
     setIsShutterFlashing(true);
     setTimeout(() => setIsShutterFlashing(false), 200);
 
@@ -206,15 +201,14 @@ export default function ScanAiPage() {
       if (data.success) {
         setTimeout(() => {
           setResult(data.data);
-          setScanHistory(prev => [data.data, ...prev.slice(0, 5)]);
+          setScanHistory(prev => [data.data, ...prev.filter(p => p.id !== data.data.id).slice(0, 5)]);
           setScanning(false);
-        }, 1200);
+        }, 1100);
       } else {
         setScanning(false);
       }
     } catch (err) {
       console.error('Scan error:', err);
-      // Fallback lokal jika API offline
       const fallbackResult = {
         id: 'scan-' + Date.now(),
         ...(DISEASE_LIBRARY[sampleKey] || DISEASE_LIBRARY['antraknosa'])
@@ -223,7 +217,7 @@ export default function ScanAiPage() {
         setResult(fallbackResult as VisionAnalysisResult);
         setScanHistory(prev => [fallbackResult as VisionAnalysisResult, ...prev.slice(0, 5)]);
         setScanning(false);
-      }, 1000);
+      }, 900);
     }
   }
 
@@ -235,15 +229,15 @@ export default function ScanAiPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16 space-y-7">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-6 sm:space-y-8 text-slate-800">
       
-      {/* ── HEADER HALAMAN (CLEAN & NATURAL) ── */}
-      <div className="space-y-1.5 border-b border-slate-100 pb-5">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
-          <ScanSearch className="w-3.5 h-3.5 text-emerald-700" />
+      {/* ── HEADER HALAMAN (CLEAN, NATURAL & RAPI) ── */}
+      <div className="space-y-2 border-b border-slate-200/70 pb-5 sm:pb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/70 text-xs font-semibold">
+          <ScanSearch className="w-3.5 h-3.5 text-emerald-600" />
           <span>Computer Vision AI Pertanian</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 tracking-tight leading-tight">
           Deteksi Hama, Penyakit & Kesiapan Panen
         </h1>
         <p className="text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
@@ -268,18 +262,18 @@ export default function ScanAiPage() {
         className="hidden" 
       />
 
-      {/* ── AREA UTAMA SCANNER ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* ── AREA UTAMA SCANNER (2 KOLOM RAPI & SEIMBANG) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         
         {/* KOLOM KIRI: KAMERA LANGSUNG, UPLOAD & SAMPEL (5 Kolom) */}
-        <div className="lg:col-span-5 space-y-4">
+        <div className="lg:col-span-5 space-y-4 sm:space-y-5">
           
           {/* Card Kamera & Pengambilan Foto */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
             
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pb-1 border-b border-slate-100">
               <div>
-                <h2 className="text-sm font-bold text-slate-900">
+                <h2 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Sumber Citra Tanaman
                 </h2>
                 <p className="text-[11px] text-slate-500 mt-0.5">
@@ -288,7 +282,7 @@ export default function ScanAiPage() {
               </div>
 
               {isCameraActive && (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/60">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/70">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Kamera Aktif
                 </span>
@@ -297,7 +291,7 @@ export default function ScanAiPage() {
 
             {/* KONDISI 1: LIVE VIEWFINDER KAMERA AKTIF */}
             {isCameraActive ? (
-              <div className="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-300 aspect-4/3 flex flex-col justify-between">
+              <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/90 aspect-4/3 flex flex-col justify-between">
                 
                 {/* Elemen Video WebRTC */}
                 <video 
@@ -310,36 +304,36 @@ export default function ScanAiPage() {
 
                 {/* Kilatan Shutter Flash */}
                 {isShutterFlashing && (
-                  <div className="absolute inset-0 bg-white/90 z-30 transition-opacity duration-200" />
+                  <div className="absolute inset-0 bg-white/95 z-30 transition-opacity duration-150" />
                 )}
 
-                {/* Overlay Pembidik Sudut (Viewfinder Reticle) */}
+                {/* Overlay Pembidik Sudut (Viewfinder Reticle Natural) */}
                 <div className="absolute inset-0 pointer-events-none p-6 flex flex-col items-center justify-center">
-                  <div className="relative w-44 h-44 sm:w-52 sm:h-52 border border-emerald-400/40 rounded-xl">
-                    {/* 4 Sudut Pembidik */}
-                    <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-emerald-400 rounded-tl-sm" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-emerald-400 rounded-tr-sm" />
-                    <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-emerald-400 rounded-bl-sm" />
-                    <span className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-emerald-400 rounded-br-sm" />
+                  <div className="relative w-44 h-44 sm:w-52 sm:h-52 border border-white/30 rounded-2xl">
+                    {/* 4 Sudut Pembidik Putih Halus */}
+                    <span className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-md shadow-xs" />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-md shadow-xs" />
+                    <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-md shadow-xs" />
+                    <span className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-md shadow-xs" />
                     
                     {/* Titik Fokus Tengah */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80 animate-ping" />
+                      <div className="w-2 h-2 rounded-full bg-white/70 animate-ping" />
                     </div>
                   </div>
 
-                  <p className="mt-3 text-[11px] font-medium text-white/90 bg-black/60 px-2.5 py-1 rounded-md backdrop-blur-xs">
+                  <p className="mt-3 text-[11px] font-medium text-white/90 bg-slate-900/60 px-3 py-1 rounded-full backdrop-blur-md shadow-xs">
                     Posisikan daun atau buah di tengah bingkai
                   </p>
                 </div>
 
                 {/* Tombol Kontrol Bawah Viewfinder */}
-                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 bg-slate-900/70 backdrop-blur-xs p-2 rounded-xl border border-white/10">
+                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
                   {/* Tutup Kamera */}
                   <button
                     type="button"
                     onClick={stopCameraStream}
-                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1"
+                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
                     title="Tutup Kamera"
                   >
                     <X className="w-4 h-4" />
@@ -350,7 +344,7 @@ export default function ScanAiPage() {
                   <button
                     type="button"
                     onClick={capturePhoto}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer border border-emerald-400/30"
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-full font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer border border-emerald-400/30"
                   >
                     <Camera className="w-4 h-4" />
                     <span>Jepret Foto</span>
@@ -360,7 +354,7 @@ export default function ScanAiPage() {
                   <button
                     type="button"
                     onClick={toggleCameraFacing}
-                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1"
+                    className="p-2 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer text-xs flex items-center gap-1.5"
                     title="Beralih Kamera Depan/Belakang"
                   >
                     <FlipHorizontal className="w-4 h-4" />
@@ -372,7 +366,7 @@ export default function ScanAiPage() {
             ) : imagePreview ? (
               /* KONDISI 2: FOTO TELAH DIAMBIL / DIUNGGAH (PREVIEW AKTIF) */
               <div className="space-y-3">
-                <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-4/3 group">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 bg-slate-100 aspect-4/3 group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={imagePreview} 
@@ -382,7 +376,7 @@ export default function ScanAiPage() {
                   
                   {/* Tag Sumber */}
                   <div className="absolute top-2.5 left-2.5">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-900/70 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
                       {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : <Upload className="w-3 h-3 text-emerald-400" />}
                       <span>{imageSource === 'camera' ? 'Foto Kamera Langsung' : 'Unggahan Galeri'}</span>
                     </span>
@@ -392,7 +386,7 @@ export default function ScanAiPage() {
                   {scanning && (
                     <div className="absolute inset-0 bg-emerald-950/20 flex flex-col items-center justify-center">
                       <div className="w-full h-1 bg-emerald-400 shadow-[0_0_12px_#34d399] animate-pulse absolute top-1/2 -translate-y-1/2" />
-                      <span className="text-xs font-bold text-white bg-slate-900/80 px-3 py-1 rounded-md backdrop-blur-xs shadow-sm">
+                      <span className="text-xs font-bold text-white bg-slate-900/80 px-3.5 py-1.5 rounded-lg backdrop-blur-xs shadow-md">
                         Memindai Fitur Visual Daun...
                       </span>
                     </div>
@@ -404,7 +398,7 @@ export default function ScanAiPage() {
                   <button
                     type="button"
                     onClick={handleRetakePhoto}
-                    className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                   >
                     <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
                     <span>Foto Ulang</span>
@@ -413,7 +407,7 @@ export default function ScanAiPage() {
                   <button
                     type="button"
                     onClick={() => galleryInputRef.current?.click()}
-                    className="w-full py-2 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-2.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                   >
                     <Upload className="w-3.5 h-3.5 text-slate-500" />
                     <span>Ganti Foto</span>
@@ -423,26 +417,26 @@ export default function ScanAiPage() {
             ) : (
               /* KONDISI 3: BELUM ADA FOTO (PILIH KAMERA ATAU GALERI) */
               <div className="space-y-3">
-                <div className="p-6 rounded-xl border border-slate-200 bg-slate-50/60 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-100">
+                <div className="p-6 sm:p-7 rounded-2xl border border-slate-200/90 bg-slate-50/60 text-center space-y-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-100">
                     <Camera className="w-6 h-6" />
                   </div>
 
                   <div>
-                    <h3 className="text-xs font-bold text-slate-800">
+                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">
                       Ambil Foto Daun atau Buah Tanaman
                     </h3>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
+                    <p className="text-[11px] sm:text-xs text-slate-500 mt-1">
                       Gunakan kamera langsung di kebun atau unggah dari album galeri
                     </p>
                   </div>
 
                   {/* Dua Tombol Utama yang Rapi & Proporsional */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                     <button
                       type="button"
                       onClick={() => startCamera('environment')}
-                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-95"
                     >
                       <Camera className="w-4 h-4" />
                       <span>Buka Kamera</span>
@@ -451,7 +445,7 @@ export default function ScanAiPage() {
                     <button
                       type="button"
                       onClick={() => galleryInputRef.current?.click()}
-                      className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-2xs active:scale-95"
                     >
                       <Upload className="w-4 h-4 text-slate-500" />
                       <span>Pilih dari Galeri</span>
@@ -460,8 +454,8 @@ export default function ScanAiPage() {
                 </div>
 
                 {/* Catatan / Alternatif Kamera HP Bawaan */}
-                <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-                  <span>Format: JPG, PNG (Maks 10 MB)</span>
+                <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 pt-0.5">
+                  <span>Format: JPG, PNG, WebP (Maks 10 MB)</span>
                   <button
                     type="button"
                     onClick={() => nativeCameraInputRef.current?.click()}
@@ -475,7 +469,7 @@ export default function ScanAiPage() {
 
             {/* Pesan Kesalahan Kamera jika ada */}
             {cameraError && (
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs space-y-1">
                 <div className="flex items-center gap-1.5 font-bold">
                   <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
                   <span>Akses Kamera Terkendala</span>
@@ -489,17 +483,17 @@ export default function ScanAiPage() {
           </div>
 
           {/* Card Sampel Demo Lapangan */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div>
-                <h3 className="text-xs font-bold text-slate-900">
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Sampel Lapangan (1-Klik Analisis)
                 </h3>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-500 mt-0.5">
                   Uji coba deteksi instan berbagai kasus patogen pertanian
                 </p>
               </div>
-              <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+              <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                 5 Kasus
               </span>
             </div>
@@ -518,23 +512,21 @@ export default function ScanAiPage() {
                       stopCameraStream();
                       handleRunScan(preset.id);
                     }}
-                    className={`w-full p-3 rounded-xl border text-left transition-colors flex items-start justify-between gap-2.5 cursor-pointer ${
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border text-left transition-all flex items-start justify-between gap-3 cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-50/70 border-emerald-600 shadow-xs'
-                        : 'bg-white hover:bg-slate-50 border-slate-200'
+                        ? 'bg-emerald-50/70 border-emerald-600 shadow-2xs ring-1 ring-emerald-600/20'
+                        : 'bg-white hover:bg-slate-50/80 border-slate-200/90'
                     }`}
                   >
-                    <div className="space-y-0.5 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`text-xs font-bold truncate ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-900'}`}>
-                          {preset.label}
-                        </span>
-                      </div>
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <span className={`text-xs font-bold block truncate ${isSelected ? 'text-emerald-950 font-extrabold' : 'text-slate-900'}`}>
+                        {preset.label}
+                      </span>
                       <p className="text-[11px] text-slate-500 leading-snug line-clamp-1">
-                        {preset.desc}
+                        {preset.crop} • {preset.desc}
                       </p>
                     </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border shrink-0 ${preset.badgeColor}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border shrink-0 ${preset.badgeColor}`}>
                       {preset.badge}
                     </span>
                   </button>
@@ -550,23 +542,23 @@ export default function ScanAiPage() {
           
           {scanning ? (
             /* STATE 1: SEDANG MEMINDAI (SCANNING ANIMATION) */
-            <div className="bg-white border border-slate-200 rounded-2xl p-10 sm:p-14 text-center space-y-4 min-h-[440px] flex flex-col items-center justify-center">
-              <div className="relative w-16 h-16">
-                <div className="w-16 h-16 rounded-full border-3 border-emerald-100 border-t-emerald-700 animate-spin" />
-                <ScanSearch className="w-7 h-7 text-emerald-700 absolute inset-0 m-auto" />
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-8 sm:p-14 text-center space-y-4 min-h-[460px] flex flex-col items-center justify-center shadow-xs">
+              <div className="relative w-14 h-14">
+                <div className="w-14 h-14 rounded-full border-3 border-emerald-100 border-t-emerald-700 animate-spin" />
+                <ScanSearch className="w-6 h-6 text-emerald-700 absolute inset-0 m-auto" />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 max-w-sm">
                 <h3 className="text-base font-bold text-slate-900">
                   Computer Vision AI Sedang Mendiagnosis...
                 </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Membedah indeks spektral klorofil daun, pola nekrosis bercak patogen, dan tingkat kematangan pigmen buah.
                 </p>
               </div>
             </div>
           ) : result ? (
             /* STATE 2: HASIL PEMINDAIAN LENGKAP */
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-5">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
               
               {/* Header Kartu Diagnosis */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
@@ -575,7 +567,9 @@ export default function ScanAiPage() {
                     <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold border ${
                       result.kategori_diagnosa === 'Tanaman Sehat'
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                        : 'bg-rose-50 text-rose-800 border-rose-200'
+                        : result.tingkat_keparahan === 'Parah'
+                        ? 'bg-rose-50 text-rose-800 border-rose-200'
+                        : 'bg-amber-50 text-amber-800 border-amber-200'
                     }`}>
                       {result.kategori_diagnosa}
                     </span>
@@ -584,12 +578,12 @@ export default function ScanAiPage() {
                       Tingkat: <strong className="text-slate-800">{result.tingkat_keparahan}</strong>
                     </span>
 
-                    <span className="text-xs text-emerald-700 font-semibold bg-emerald-50/60 px-2 py-0.5 rounded border border-emerald-100">
+                    <span className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/70">
                       Akurasi AI {result.akurasi}%
                     </span>
                   </div>
 
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug pt-0.5">
                     {result.nama_masalah}
                   </h2>
                   <p className="text-xs text-slate-500">
@@ -598,7 +592,7 @@ export default function ScanAiPage() {
                 </div>
 
                 {/* Status Kematangan & Hari Panen */}
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-left sm:text-right shrink-0 space-y-0.5">
+                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-left sm:text-right shrink-0 space-y-0.5">
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                     Kesiapan Panen
                   </span>
@@ -622,9 +616,9 @@ export default function ScanAiPage() {
                 </h4>
                 <div className="space-y-1.5">
                   {result.ciri_visual.map((ciri, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-slate-600 bg-slate-50/60 p-2 rounded-lg border border-slate-100">
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 bg-slate-50/60 p-2.5 sm:p-3 rounded-xl border border-slate-100 leading-relaxed">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                      <span className="leading-relaxed">{ciri}</span>
+                      <span>{ciri}</span>
                     </div>
                   ))}
                 </div>
@@ -641,19 +635,19 @@ export default function ScanAiPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {result.rekomendasi_pupuk.map((pupuk, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/70 space-y-1.5 text-xs">
+                    <div key={idx} className="p-3.5 sm:p-4 rounded-xl bg-emerald-50/40 border border-emerald-200/70 space-y-2 text-xs">
                       <div className="flex items-baseline justify-between gap-2">
-                        <strong className="text-emerald-950 font-bold block">
+                        <strong className="text-emerald-950 font-bold block text-xs sm:text-sm">
                           {pupuk.jenis}
                         </strong>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
                           {pupuk.formula}
                         </span>
                       </div>
-                      <div className="text-[11px] text-emerald-800">
-                        <span className="font-semibold text-emerald-950">Dosis:</span> {pupuk.dosis}
+                      <div className="text-[11px] text-emerald-900 font-medium">
+                        <span className="font-bold text-emerald-950">Takaran Dosis:</span> {pupuk.dosis}
                       </div>
-                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                      <p className="text-[11px] text-slate-600 leading-relaxed border-t border-emerald-200/40 pt-1.5">
                         {pupuk.cara_aplikasi}
                       </p>
                     </div>
@@ -672,7 +666,7 @@ export default function ScanAiPage() {
 
                 <div className="space-y-1.5 text-xs text-slate-700">
                   {result.solusi_perawatan.map((sol, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 leading-relaxed bg-slate-50/70 p-2.5 rounded-xl border border-slate-200/60">
+                    <div key={idx} className="flex items-start gap-2.5 leading-relaxed bg-slate-50/60 p-2.5 sm:p-3 rounded-xl border border-slate-100">
                       <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                       <span>{sol}</span>
                     </div>
@@ -680,13 +674,13 @@ export default function ScanAiPage() {
                 </div>
 
                 {result.pestisida_nabati_organik.length > 0 && (
-                  <div className="mt-3 p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs space-y-1.5">
+                  <div className="mt-3 p-3.5 sm:p-4 rounded-xl bg-amber-50/60 border border-amber-200/70 text-xs space-y-2">
                     <strong className="text-amber-950 font-bold block">
                       Resep Bahan Alami & Hayati Lokal Ramah Lingkungan:
                     </strong>
                     <ul className="space-y-1 text-amber-900 text-[11px]">
                       {result.pestisida_nabati_organik.map((pes, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
+                        <li key={idx} className="flex items-start gap-2 leading-relaxed">
                           <span className="text-amber-700 font-bold">•</span>
                           <span>{pes}</span>
                         </li>
@@ -699,8 +693,8 @@ export default function ScanAiPage() {
             </div>
           ) : (
             /* STATE 3: BELUM ADA HASIL PEMINDAIAN (PANDUAN CLEAN) */
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center space-y-5 min-h-[440px] flex flex-col items-center justify-center">
-              <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-200/80">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-8 sm:p-12 text-center space-y-5 min-h-[460px] flex flex-col items-center justify-center shadow-xs">
+              <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-200/70">
                 <ScanSearch className="w-7 h-7 text-slate-400" />
               </div>
 
@@ -714,16 +708,16 @@ export default function ScanAiPage() {
               </div>
 
               {/* Panduan Ringkas Pemotretan di Lahan */}
-              <div className="w-full max-w-md pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
+              <div className="w-full max-w-md pt-5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
+                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">1. Jarak Foto</span>
                   <p className="text-[11px] text-slate-700 font-medium">15–30 cm dari daun/buah</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
+                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">2. Pencahayaan</span>
                   <p className="text-[11px] text-slate-700 font-medium">Cahaya alami terang sejuk</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
+                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/60 space-y-1">
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">3. Ketajaman</span>
                   <p className="text-[11px] text-slate-700 font-medium">Fokus tajam pada bercak</p>
                 </div>
@@ -737,27 +731,27 @@ export default function ScanAiPage() {
 
       {/* ── RIWAYAT PEMINDAIAN SESI INI ── */}
       {scanHistory.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <History className="w-4 h-4 text-emerald-700" />
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 className="font-bold text-xs sm:text-sm text-slate-900 uppercase tracking-wider">
                 Riwayat Pemindaian Sesi Ini
               </h3>
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-500 font-medium">
               {scanHistory.length} Hasil Tersimpan
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {scanHistory.map((scan, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
+              <div key={idx} className="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2 text-xs">
                 <div className="flex justify-between items-start gap-2">
                   <strong className="text-slate-900 font-bold block truncate">
                     {scan.nama_masalah}
                   </strong>
-                  <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 shrink-0">
+                  <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 shrink-0">
                     {scan.status_kematangan}
                   </span>
                 </div>
@@ -766,7 +760,7 @@ export default function ScanAiPage() {
                   {scan.nama_tanaman} • Tingkat: <strong className="text-slate-700">{scan.tingkat_keparahan}</strong>
                 </p>
 
-                <div className="text-[10px] text-slate-500 pt-1.5 border-t border-slate-200 flex justify-between items-center">
+                <div className="text-[10px] text-slate-500 pt-2 border-t border-slate-200/60 flex justify-between items-center">
                   <span>Panen: {scan.estimasi_hari_panen === 0 ? 'Siap Petik' : `${scan.estimasi_hari_panen} hari`}</span>
                   <span className="font-semibold text-emerald-700">Akurasi: {scan.akurasi}%</span>
                 </div>
