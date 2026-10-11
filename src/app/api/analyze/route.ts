@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeCropImage, DISEASE_LIBRARY } from '@/lib/vision_ai';
+import { analyzeCropImage, analyzeImageWithAI, DISEASE_LIBRARY } from '@/lib/vision_ai';
 import { addScanRecord, getAllScans } from '@/lib/db';
 
 export async function GET() {
@@ -18,9 +18,17 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { imageKeyword, sampleKey, cropName } = body;
+    const { imageData, imageKeyword, sampleKey, cropName } = body;
 
-    const result = analyzeCropImage(sampleKey || imageKeyword || 'antraknosa', cropName);
+    let result;
+    if (imageData && typeof imageData === 'string' && (imageData.startsWith('data:image/') || imageData.length > 100)) {
+      // Panggil AI Multimodal Vision asli di server!
+      result = await analyzeImageWithAI(imageData, cropName);
+    } else {
+      // Fallback ke simulasi preset sampel
+      result = analyzeCropImage(sampleKey || imageKeyword || 'antraknosa', cropName);
+    }
+
     addScanRecord(result);
 
     return NextResponse.json({
@@ -29,6 +37,7 @@ export async function POST(request: Request) {
       data: result
     });
   } catch (error) {
+    console.error('API analyze error:', error);
     return NextResponse.json({ success: false, message: 'Gagal memproses analisis gambar.' }, { status: 500 });
   }
 }

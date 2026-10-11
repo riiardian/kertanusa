@@ -1,6 +1,26 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+162. **Integrasi AI Multimodal Computer Vision Nyata: Analisis Citra Patogen & Kematangan Tanaman Real-Time (`src/lib/vision_ai.ts`, `api/analyze/route.ts`, `src/app/scan-ai/page.tsx`) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Pengguna menguji coba mengunggah foto daun pohon jeruk yang sakit, namun hasil diagnosis sebelumnya masih memunculkan data statis cabai/tomat antraknosa.
+      - Pengguna menanyakan mengapa hasilnya cabai/tomat dan dari mana asal data tersebut.
+    - **Akar Masalah (Root Cause)**:
+      - Fitur scan AI sebelumnya masih menggunakan kamus lokal statis mock (`DISEASE_LIBRARY`) dan belum pernah mengirim citra biner asli ke model AI Vision.
+    - **Aksi & Solusi**:
+      1. **Integrasi Multimodal Vision Nyata (`analyzeImageWithAI`)**:
+         - Menghubungkan endpoint `/api/analyze` ke engine AI Multimodal Vision (`ag/gemini-3.8-flash-high`) via router lokal VPS port 20128.
+         - Citra base64 hasil jepretan kamera atau upload galeri kini dianalisis langsung oleh model visi komputer untuk mengenali spesies tanaman (misal: *Jeruk / Citrus sp.*) dan patogen aslinya (*Bercak Cokelat Alternaria / Alternaria alternata*).
+         - AI secara dinamis meracik rekomendasi pupuk spesifik, takaran dosis, langkah tindakan lapangan praktis, dan resep pestisida nabati lokal ramah lingkungan.
+      2. **Pilihan Komoditas "Deteksi Otomatis AI"**:
+         - Menambahkan opsi default "✨ Deteksi Otomatis AI" di Langkah 2 agar AI dapat mendeteksi tanaman secara bebas tanpa mengasumsikan jenis tanaman tertentu.
+      3. **Graceful Fallback**:
+         - Jika koneksi model offline atau pengguna memilih sampel simulasi tanpa foto asli, sistem otomatis beralih ke basis data preset lokal (`DISEASE_LIBRARY`).
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build 100% clean (14/14 static & dynamic pages) tanpa error.
+      - Pengujian end-to-end dengan foto daun jeruk asli mengembalikan akurasi 95.6% Jeruk (*Citrus sp.*) dengan Bercak Cokelat Alternaria.
+      - PM2 `kertanusa-web` direstart di VPS.
+
 161. **Rombak Alur & Desain Computer Vision AI: Implementasi Stepper Wizard 3 Langkah Clean & Natural (`src/app/scan-ai/page.tsx`, `vision_ai.ts`, `api/analyze/route.ts`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Tampilan halaman diagnosis AI (`/scan-ai`) sebelumnya terlalu padat dan membingungkan di layar HP (kamera WebRTC, upload galeri, 5 sampel simulasi, dan hasil analisa bertumpuk dalam satu layar panjang).

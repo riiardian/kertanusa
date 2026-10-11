@@ -33,7 +33,7 @@ export default function ScanAiPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Data State
-  const [selectedCrop, setSelectedCrop] = useState<string>('Cabai');
+  const [selectedCrop, setSelectedCrop] = useState<string>('Deteksi Otomatis AI');
   const [selectedSample, setSelectedSample] = useState<string>('antraknosa');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageSource, setImageSource] = useState<'camera' | 'upload' | 'sample'>('camera');
@@ -57,6 +57,8 @@ export default function ScanAiPage() {
 
   // Komoditas Pilihan Cepat di Step 2
   const cropOptions = [
+    { name: 'Deteksi Otomatis AI', icon: '✨', defaultKey: 'auto' },
+    { name: 'Jeruk', icon: '🍊', defaultKey: 'jeruk' },
     { name: 'Cabai', icon: '🌶️', defaultKey: 'antraknosa' },
     { name: 'Padi', icon: '🌾', defaultKey: 'hawar-daun' },
     { name: 'Bawang Merah', icon: '🧅', defaultKey: 'ulat-grayak' },
@@ -236,9 +238,9 @@ export default function ScanAiPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          imageData: imagePreview,
           sampleKey: imageSource === 'sample' ? selectedSample : undefined,
-          cropName: selectedCrop,
-          hasCustomImage: !!imagePreview
+          cropName: selectedCrop === 'Deteksi Otomatis AI' ? undefined : selectedCrop
         })
       });
 
@@ -631,9 +633,9 @@ export default function ScanAiPage() {
             {/* Pilihan Jenis Tanaman (Chips) */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                Pilih Jenis Tanaman Anda:
+                Pilih Komoditas (Opsional):
               </label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {cropOptions.map((crop) => {
                   const isSelected = selectedCrop === crop.name;
                   return (

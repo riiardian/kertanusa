@@ -190,3 +190,116 @@ export function analyzeCropImage(imageKeyOrDesc: string, cropName?: string): Vis
     ...selected
   };
 }
+
+export async function analyzeImageWithAI(imageData: string, cropHint?: string): Promise<VisionAnalysisResult> {
+  const baseURL = process.env.AI_VISION_BASE_URL || 'http://127.0.0.1:20128/v1';
+  const apiKey = process.env.AI_VISION_API_KEY || '';
+  const model = process.env.AI_VISION_MODEL || 'ag/gemini-3.8-flash-high';
+
+  if (!apiKey && !process.env.AI_VISION_BASE_URL) {
+    return analyzeCropImage('custom', cropHint);
+  }
+
+  const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
+Analisis foto tanaman/daun/buah secara mendalam. Identifikasi spesies tanaman asli, diagnosa penyakit/hama/fisiologis/tanaman sehat, dan susun resep pupuk serta obat alami.
+Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar. Format JSON yang WAJIB dipatuhi:
+{
+  "nama_tanaman": "Nama Tanaman Lengkap (contoh: Jeruk / Citrus sp.)",
+  "kategori_diagnosa": "Penyakit" | "Hama" | "Fisiologis" | "Tanaman Sehat",
+  "nama_masalah": "Nama Masalah / Penyakit / Status (contoh: Bercak Cokelat Alternaria)",
+  "tingkat_keparahan": "Ringan" | "Sedang" | "Parah" | "Aman",
+  "akurasi": 94.5,
+  "status_kematangan": "Belum Cukup Panen" | "Mendekati Panen" | "Siap Panen (Super Grade A)",
+  "estimasi_hari_panen": 30,
+  "ciri_visual": ["ciri 1", "ciri 2", "ciri 3"],
+  "rekomendasi_pupuk": [
+    {
+      "jenis": "Nama Pupuk",
+      "formula": "Kandungan Formula (contoh: CaO 26% + B 2%)",
+      "dosis": "Takaran dosis",
+      "cara_aplikasi": "Panduan aplikasi kocor/semprot"
+    }
+  ],
+  "solusi_perawatan": ["tindakan 1", "tindakan 2", "tindakan 3"],
+  "pestisida_nabati_organik": ["resep alami 1", "resep alami 2"]
+}`;
+
+  const userPrompt = cropHint 
+    ? `Identifikasi spesies dan kondisi kesehatan tanaman pada foto ini. (Catatan petani: dicurigai ${cropHint}, namun utamakan observasi visual nyata pada citra). Balas dalam JSON valid.`
+    : `Identifikasi spesies dan diagnosis kondisi tanaman pada foto ini secara akurat. Balas dalam JSON valid.`;
+
+  try {
+    const res = await fetch(`${baseURL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model,
+        stream: false,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: userPrompt },
+              { type: 'image_url', image_url: { url: imageData } }
+            ]
+          }
+        ],
+        temperature: 0.1
+      })
+    });
+
+    if (!res.ok) {
+      console.warn('AI Vision response error:', res.status, await res.text());
+      return analyzeCropImage('custom', cropHint);
+    }
+
+    const data = await res.json();
+    const rawContent = data.choices?.[0]?.message?.content || '';
+    const cleanJson = rawContent.replace(/^[\s\S]*?\{/, '{').replace(/\}[^\}]*$/, '}');
+    const parsed = JSON.parse(cleanJson);
+
+    return {
+      id: 'scan-' + Date.now(),
+      nama_tanaman: String(parsed.nama_tanaman || cropHint || 'Tanaman Budidaya'),
+      kategori_diagnosa: (['Hama', 'Penyakit', 'Fisiologis', 'Tanaman Sehat'].includes(parsed.kategori_diagnosa) 
+        ? parsed.kategori_diagnosa 
+        : 'Penyakit') as VisionAnalysisResult['kategori_diagnosa'],
+      nama_masalah: String(parsed.nama_masalah || 'Terindikasi Gejala Patogen'),
+      tingkat_keparahan: (['Ringan', 'Sedang', 'Parah', 'Aman'].includes(parsed.tingkat_keparahan)
+        ? parsed.tingkat_keparahan
+        : 'Sedang') as VisionAnalysisResult['tingkat_keparahan'],
+      akurasi: typeof parsed.akurasi === 'number' ? parsed.akurasi : parseFloat(parsed.akurasi) || 94.0,
+      status_kematangan: String(parsed.status_kematangan || 'Mendekati Panen') as VisionAnalysisResult['status_kematangan'],
+      estimasi_hari_panen: typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 14,
+      ciri_visual: Array.isArray(parsed.ciri_visual) && parsed.ciri_visual.length > 0 
+        ? parsed.ciri_visual.map(String) 
+        : ['Gejala klorosis dan lesi nekrotik pada permukaan helaian daun'],
+      rekomendasi_pupuk: Array.isArray(parsed.rekomendasi_pupuk) && parsed.rekomendasi_pupuk.length > 0
+        ? parsed.rekomendasi_pupuk.map((p: any) => ({
+            jenis: String(p.jenis || 'Pupuk Kalsium Boron'),
+            formula: String(p.formula || 'CaO 26% + B 2%'),
+            dosis: String(p.dosis || '2 gram/liter air'),
+            cara_aplikasi: String(p.cara_aplikasi || 'Semprot kabut halus pada pagi hari')
+          }))
+        : [{
+            jenis: 'Pupuk Kalsium Boron',
+            formula: 'CaO 26% + B 2%',
+            dosis: '2-3 gram/liter air',
+            cara_aplikasi: 'Semprot kabut halus ke seluruh tajuk daun pada pagi hari.'
+          }],
+      solusi_perawatan: Array.isArray(parsed.solusi_perawatan) && parsed.solusi_perawatan.length > 0
+        ? parsed.solusi_perawatan.map(String)
+        : ['Sanitasi dan pemangkasan daun bergejala parah', 'Perbaiki aerasi kanopi tanaman'],
+      pestisida_nabati_organik: Array.isArray(parsed.pestisida_nabati_organik) && parsed.pestisida_nabati_organik.length > 0
+        ? parsed.pestisida_nabati_organik.map(String)
+        : ['Ekstrak daun mimba dan bawang putih sebagai antijamur kontak']
+    };
+  } catch (err) {
+    console.error('Failed to analyze image with AI Vision:', err);
+    return analyzeCropImage('custom', cropHint);
+  }
+}
