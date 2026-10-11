@@ -18,8 +18,6 @@ import {
   ShieldCheck, 
   Calendar, 
   Check,
-  ChevronDown,
-  ChevronUp,
   ArrowRight,
   HelpCircle,
   Clock,
@@ -41,7 +39,6 @@ export default function ScanAiPage() {
   const [result, setResult] = useState<VisionAnalysisResult | null>(null);
   const [scanHistory, setScanHistory] = useState<VisionAnalysisResult[]>([]);
   const [resultTab, setResultTab] = useState<'pupuk' | 'nabati'>('pupuk');
-  const [isSimulasiOpen, setIsSimulasiOpen] = useState(false);
 
   // State Kamera Langsung (WebRTC)
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -479,16 +476,6 @@ export default function ScanAiPage() {
                   </button>
                 </div>
 
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => nativeCameraInputRef.current?.click()}
-                    className="text-[11px] text-slate-500 hover:text-emerald-700 underline underline-offset-2 cursor-pointer transition-colors"
-                  >
-                    Atau gunakan aplikasi kamera bawaan HP
-                  </button>
-                </div>
-
                 {/* Pesan Kesalahan jika ada */}
                 {cameraError && (
                   <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left">
@@ -515,51 +502,6 @@ export default function ScanAiPage() {
               </div>
             )}
 
-          </div>
-
-          {/* Accordion Sampel Simulasi Lapangan */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-2xs transition-all">
-            <button
-              type="button"
-              onClick={() => setIsSimulasiOpen(!isSimulasiOpen)}
-              className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-slate-50/60 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span className="text-xs font-bold text-slate-800">
-                  Belum punya foto? Coba simulasi sampel lapangan
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-400 text-xs">
-                <span>{samplePresets.length} Kasus</span>
-                {isSimulasiOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </div>
-            </button>
-
-            {isSimulasiOpen && (
-              <div className="p-4 pt-1 border-t border-slate-100 space-y-2 bg-slate-50/40">
-                {samplePresets.map((preset) => (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => handleSelectSample(preset.id, preset.crop)}
-                    className="w-full p-3 rounded-xl border border-slate-200/90 bg-white hover:bg-emerald-50/40 hover:border-emerald-500/50 text-left transition-all flex items-center justify-between gap-3 cursor-pointer shadow-2xs"
-                  >
-                    <div className="min-w-0">
-                      <strong className="text-xs font-bold text-slate-900 block truncate">
-                        {preset.label}
-                      </strong>
-                      <span className="text-[11px] text-slate-500 block truncate">
-                        {preset.desc}
-                      </span>
-                    </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border shrink-0 ${preset.badgeColor}`}>
-                      {preset.badge}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
