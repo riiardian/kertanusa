@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { PetaniRecord, VisionAnalysisResult } from './types';
+import { PetaniRecord, VisionAnalysisResult, KuesionerRecord } from './types';
 import { getCropInfo } from './crops';
 import { getRegionProfile } from './agro_regions';
 
@@ -13,9 +13,53 @@ const SEED_FILE = path.join(process.cwd(), 'data', 'agro_data.json');
 interface DatabaseSchema {
   petani: PetaniRecord[];
   scans: VisionAnalysisResult[];
+  kuesioner?: KuesionerRecord[];
   _version: number;
   _updated_at: string;
 }
+
+const DEFAULT_KUESIONER: KuesionerRecord[] = [
+  {
+    id: 'ku-001',
+    nama: 'Ir. Bambang Setyawan, MP',
+    profesi: 'Penyuluh Pertanian',
+    skor_kemudahan: 5,
+    akurasi_fitur: 'Sangat Akurat',
+    fitur_favorit: 'Radar Cuaca & Jadwal Semprot',
+    masukan: 'Fitur evaluasi kecepatan angin dan potensi hujan BMKG sangat membantu petani binaan kami menentukan jam semprot yang tepat sehingga pestisida tidak luntur percuma.',
+    created_at: '2026-10-09T08:30:00.000Z'
+  },
+  {
+    id: 'ku-002',
+    nama: 'H. Mulyono',
+    profesi: 'Petani',
+    skor_kemudahan: 5,
+    akurasi_fitur: 'Sangat Akurat',
+    fitur_favorit: 'Scan AI Penyakit',
+    masukan: 'Foto daun busuk langsung dikenali dan keluar resep pupuk takaran pas serta racikan obat nabati alami. Bahasanya lugas dan mudah dimengerti petani tua di desa.',
+    created_at: '2026-10-09T14:15:00.000Z'
+  },
+  {
+    id: 'ku-003',
+    nama: 'Diah Ayu Larasati, S.P.',
+    profesi: 'Akademisi / Peneliti',
+    skor_kemudahan: 5,
+    akurasi_fitur: 'Sangat Akurat',
+    fitur_favorit: 'Analisis Tren Pasar & Bibit',
+    masukan: 'Algoritma pencocokan varietas benih padi dan hortikultura terhadap agroekologi lokal sangat solid. Sangat relevan sebagai instrumen mitigasi risiko over-supply pasokan pangan.',
+    created_at: '2026-10-10T10:45:00.000Z'
+  },
+  {
+    id: 'ku-004',
+    nama: 'Rendy Kurniawan',
+    profesi: 'Mahasiswa',
+    skor_kemudahan: 4,
+    akurasi_fitur: 'Cukup Akurat',
+    fitur_favorit: 'Peta Geospasial Sawah',
+    masukan: 'Tampilan peta sebaran lahan sangat interaktif dan responsif di smartphone. Kalkulator kebutuhan pupuk otomatis per luas lahan sangat aplikatif di lapangan.',
+    created_at: '2026-10-10T16:20:00.000Z'
+  }
+];
 
 const DEFAULT_DATA_PETANI: PetaniRecord[] = [
   {
@@ -150,6 +194,10 @@ function readPersistentDb(): DatabaseSchema {
     if (!Array.isArray(parsed?.petani)) {
       return loadInitialSeed();
     }
+    if (!Array.isArray(parsed?.kuesioner) || parsed.kuesioner.length === 0) {
+      parsed.kuesioner = DEFAULT_KUESIONER;
+      saveAtomicDb(parsed);
+    }
     return parsed;
   } catch (err) {
     console.error('Error membaca database kertanusa_db.json:', err);
@@ -272,4 +320,38 @@ export function addScanRecord(scan: VisionAnalysisResult): void {
   if (!db.scans) db.scans = [];
   db.scans.unshift(scan);
   saveAtomicDb(db);
+}
+
+export function getAllKuesioner(): KuesionerRecord[] {
+  const db = readPersistentDb();
+  return (db.kuesioner || []).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+export function addKuesioner(data: {
+  nama: string;
+  profesi: KuesionerRecord['profesi'];
+  skor_kemudahan: number;
+  akurasi_fitur: KuesionerRecord['akurasi_fitur'];
+  fitur_favorit: string;
+  masukan: string;
+}): KuesionerRecord {
+  const db = readPersistentDb();
+  if (!db.kuesioner) db.kuesioner = [];
+
+  const newRecord: KuesionerRecord = {
+    id: 'ku-' + Date.now().toString(36),
+    nama: data.nama.trim() || 'Pengguna Terverifikasi',
+    profesi: data.profesi,
+    skor_kemudahan: Math.min(5, Math.max(1, Number(data.skor_kemudahan) || 5)),
+    akurasi_fitur: data.akurasi_fitur,
+    fitur_favorit: data.fitur_favorit,
+    masukan: data.masukan.trim(),
+    created_at: new Date().toISOString()
+  };
+
+  db.kuesioner.unshift(newRecord);
+  saveAtomicDb(db);
+  return newRecord;
 }

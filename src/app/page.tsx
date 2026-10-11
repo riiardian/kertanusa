@@ -6,6 +6,7 @@ import IndonesiaMap3D from '@/components/IndonesiaMap3D';
 import MapFarmlandFAQ from '@/components/MapFarmlandFAQ';
 import LottieAnimation from '@/components/LottieAnimation';
 import AgriculturalMonitoringDashboard from '@/components/AgriculturalMonitoringDashboard';
+import KuesionerSection from '@/components/KuesionerSection';
 import { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { WeatherData } from '@/lib/types';
@@ -271,9 +272,14 @@ export default function HomePage() {
           <IndonesiaMap3D />
         </section>
 
+        {/* 4. SURVEI VALIDASI PENGGUNA NYATA (UAT) & KUESIONER EVALUASI */}
+        <section id="kuesioner" className="space-y-3 scroll-mt-24 sm:scroll-mt-28">
+          <KuesionerSection />
+        </section>
+
       </div>
 
-      {/* 4. PERTANYAAN YANG SERING DIAJUKAN (FAQ) - FULL BACKGROUND PUTIH SAMPAI PALING BAWAH */}
+      {/* 5. PERTANYAAN YANG SERING DIAJUKAN (FAQ) - FULL BACKGROUND PUTIH SAMPAI PALING BAWAH */}
       <section id="faq" className="w-full bg-white border-t border-slate-200/70 pt-12 sm:pt-16 pb-20 sm:pb-28 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <MapFarmlandFAQ />
