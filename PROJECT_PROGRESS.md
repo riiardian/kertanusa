@@ -1,6 +1,24 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+165. **Pembersihan Repositori & Dokumentasi Master README.md Profesional (`README.md`, eliminasi artefak AI & flowchart) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Pengguna meminta membersihkan file-file sampah AI (flowchart PNG, DOCX, CLAUDE.md, dan duplikasi JSON) agar repo murni memuat kode sumber Kertanusa.
+      - Pengguna meminta merombak tampilan `README.md` menjadi komprehensif, informatif, berstandar industri programmer untuk impresi dewan juri lomba.
+    - **Aksi & Solusi**:
+      1. **Eliminasi Artefak Non-Coding**:
+         - Menghapus berkas `CLAUDE.md`, `FLOWCHART_SISTEM_KERTANUSA.docx`, dan `flowchart_kertanusa_dss.png`.
+         - Membersihkan duplikasi file JSON di direktori `public/`.
+      2. **Penyusunan Master README.md Berstandar Industri**:
+         - Header lengkap dengan lencana (Badges): Live Prototype link, Next.js 15+ Turbopack, TypeScript 5.0, Tailwind CSS v4, OWASP Hardened.
+         - Ringkasan Eksekutif & Diagram Arsitektur ASCII 4 Modul Core (Vision AI, Agroklimat Satelit, Tren Pasar, Lahan Spasial).
+         - Dokumentasi detail teknis tiap modul, Decision Support System (DSS), formula agronomi FAO Paper No. 56, serta rincian keamanan OWASP.
+         - Panduan instalasi lokal, perintah build produksi, serta atribusi resmi pengembang (Rio Ardian Pratama `@riiardian`).
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build 100% clean (14/14 halaman, 0 error).
+      - Commit & push ke GitHub `origin main` dengan identitas resmi `riiardian <ardianrio990@gmail.com>`.
+      - PM2 `kertanusa-web` direstart di VPS.
+
 164. **Security Audit & Hardening Sistem Kertanusa: OWASP Headers, Rate Limiting, Input Sanitization, & File Protection (`next.config.ts`, `rate_limiter.ts`, `sanitize.ts`, API routes, Nginx) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Pengguna meminta dilakukan security audit menyeluruh dan peningkatan keamanan sistem Kertanusa.
