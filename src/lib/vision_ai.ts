@@ -191,6 +191,11 @@ export function analyzeCropImage(imageKeyOrDesc: string, cropName?: string): Vis
   };
 }
 
+function cleanText(val: any): string {
+  if (typeof val !== 'string') return '';
+  return val.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}]/gu, '').trim();
+}
+
 export async function analyzeImageWithAI(imageData: string, cropHint?: string): Promise<VisionAnalysisResult> {
   const baseURL = process.env.AI_VISION_BASE_URL || 'http://127.0.0.1:20128/v1';
   const apiKey = process.env.AI_VISION_API_KEY || '';
@@ -202,6 +207,10 @@ export async function analyzeImageWithAI(imageData: string, cropHint?: string): 
 
   const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
 Analisis citra yang diunggah secara cermat.
+
+ATURAN GAYA BAHASA & FORMAT:
+1. DILARANG KERAS menggunakan emoji atau simbol ikon apa pun (seperti checkmark, daun, tanaman, peringatan, dll) di seluruh nilai JSON. Gunakan murni teks alfabetis baku dan angka.
+2. Balas HANYA dengan JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar.
 
 ATURAN VALIDASI CITRA PERTANIAN:
 Periksa apakah gambar yang diunggah benar-benar bagian dari tanaman budidaya pertanian (daun, batang, bunga, buah, pohon, atau bibit tanaman).
@@ -225,7 +234,7 @@ Balas HANYA dengan JSON format persis:
 }
 
 2. JIKA VALID TANAMAN BUDIDAYA PERTANIAN:
-Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap:
+Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap (TANPA EMOJI):
 {
   "is_tanaman": true,
   "nama_tanaman": "Nama Tanaman Lengkap (contoh: Jeruk / Citrus sp.)",
@@ -246,13 +255,11 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap:
   ],
   "solusi_perawatan": ["tindakan 1", "tindakan 2", "tindakan 3"],
   "pestisida_nabati_organik": ["resep alami 1", "resep alami 2"]
-}
-
-Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar.`;
+}`;
 
   const userPrompt = cropHint 
-    ? `Analisis citra ini. (Catatan petani: dicurigai ${cropHint}, namun verifikasi terlebih dahulu apakah benar tanaman pertanian). Balas dalam JSON valid.`
-    : `Analisis citra ini dan verifikasi apakah ini komoditas tanaman pertanian. Balas dalam JSON valid.`;
+    ? `Analisis citra ini. (Catatan petani: dicurigai ${cropHint}, namun verifikasi terlebih dahulu apakah benar tanaman pertanian). Balas dalam JSON valid tanpa emoji.`
+    : `Analisis citra ini dan verifikasi apakah ini komoditas tanaman pertanian. Balas dalam JSON valid tanpa emoji.`;
 
   try {
     const res = await fetch(`${baseURL}/chat/completions`, {
@@ -293,27 +300,27 @@ Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata p
     return {
       id: 'scan-' + Date.now(),
       is_tanaman: isTanaman,
-      pesan_penolakan: parsed.pesan_penolakan || (!isTanaman ? 'Sistem mendeteksi bahwa citra yang diunggah bukan merupakan komoditas tanaman pertanian. Silakan unggah foto daun, buah, atau tanaman budidaya yang jelas.' : undefined),
-      nama_tanaman: String(parsed.nama_tanaman || (isTanaman ? (cropHint || 'Tanaman Budidaya') : 'Non-Pertanian')),
+      pesan_penolakan: cleanText(parsed.pesan_penolakan) || (!isTanaman ? 'Sistem mendeteksi bahwa citra yang diunggah bukan merupakan komoditas tanaman pertanian. Silakan unggah foto daun, buah, atau tanaman budidaya yang jelas.' : undefined),
+      nama_tanaman: cleanText(parsed.nama_tanaman) || (isTanaman ? (cropHint || 'Tanaman Budidaya') : 'Non-Pertanian'),
       kategori_diagnosa: (!isTanaman ? 'Non-Pertanian' : (['Hama', 'Penyakit', 'Fisiologis', 'Tanaman Sehat'].includes(parsed.kategori_diagnosa) 
         ? parsed.kategori_diagnosa 
         : 'Penyakit')) as VisionAnalysisResult['kategori_diagnosa'],
-      nama_masalah: String(parsed.nama_masalah || (isTanaman ? 'Terindikasi Gejala Patogen' : 'Objek Bukan Tanaman Pertanian')),
+      nama_masalah: cleanText(parsed.nama_masalah) || (isTanaman ? 'Terindikasi Gejala Patogen' : 'Objek Bukan Tanaman Pertanian'),
       tingkat_keparahan: (['Ringan', 'Sedang', 'Parah', 'Aman'].includes(parsed.tingkat_keparahan)
         ? parsed.tingkat_keparahan
         : 'Aman') as VisionAnalysisResult['tingkat_keparahan'],
       akurasi: typeof parsed.akurasi === 'number' ? parsed.akurasi : parseFloat(parsed.akurasi) || 95.0,
-      status_kematangan: String(parsed.status_kematangan || 'Belum Cukup Panen') as VisionAnalysisResult['status_kematangan'],
+      status_kematangan: (cleanText(parsed.status_kematangan) || 'Belum Cukup Panen') as VisionAnalysisResult['status_kematangan'],
       estimasi_hari_panen: typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 0,
-      ciri_visual: Array.isArray(parsed.ciri_visual) ? parsed.ciri_visual.map(String) : [],
+      ciri_visual: Array.isArray(parsed.ciri_visual) ? parsed.ciri_visual.map(cleanText).filter(Boolean) : [],
       rekomendasi_pupuk: Array.isArray(parsed.rekomendasi_pupuk) ? parsed.rekomendasi_pupuk.map((p: any) => ({
-        jenis: String(p.jenis || 'Pupuk Kalsium Boron'),
-        formula: String(p.formula || 'CaO 26% + B 2%'),
-        dosis: String(p.dosis || '2 gram/liter air'),
-        cara_aplikasi: String(p.cara_aplikasi || 'Semprot kabut halus pada pagi hari')
+        jenis: cleanText(p.jenis) || 'Pupuk Rekomendasi',
+        formula: cleanText(p.formula) || 'Unsur Hara Presisi',
+        dosis: cleanText(p.dosis) || 'Sesuai petunjuk kemasan',
+        cara_aplikasi: cleanText(p.cara_aplikasi) || 'Aplikasi pada tajuk tanaman'
       })) : [],
-      solusi_perawatan: Array.isArray(parsed.solusi_perawatan) ? parsed.solusi_perawatan.map(String) : [],
-      pestisida_nabati_organik: Array.isArray(parsed.pestisida_nabati_organik) ? parsed.pestisida_nabati_organik.map(String) : []
+      solusi_perawatan: Array.isArray(parsed.solusi_perawatan) ? parsed.solusi_perawatan.map(cleanText).filter(Boolean) : [],
+      pestisida_nabati_organik: Array.isArray(parsed.pestisida_nabati_organik) ? parsed.pestisida_nabati_organik.map(cleanText).filter(Boolean) : []
     };
   } catch (err) {
     console.error('Failed to analyze image with AI Vision:', err);

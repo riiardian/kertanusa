@@ -56,14 +56,14 @@ export default function ScanAiPage() {
 
   // Komoditas Pilihan Cepat di Step 2
   const cropOptions = [
-    { name: 'Deteksi Otomatis AI', icon: '', defaultKey: 'auto' },
-    { name: 'Jeruk', icon: '🍊', defaultKey: 'jeruk' },
-    { name: 'Cabai', icon: '🌶️', defaultKey: 'antraknosa' },
-    { name: 'Padi', icon: '🌾', defaultKey: 'hawar-daun' },
-    { name: 'Bawang Merah', icon: '🧅', defaultKey: 'ulat-grayak' },
-    { name: 'Tomat', icon: '🍅', defaultKey: 'antraknosa' },
-    { name: 'Jagung', icon: '🌽', defaultKey: 'bulai-jagung' },
-    { name: 'Lainnya', icon: '🌿', defaultKey: 'siap-panen-grade-a' }
+    { name: 'Deteksi Otomatis AI', defaultKey: 'auto' },
+    { name: 'Jeruk', defaultKey: 'jeruk' },
+    { name: 'Cabai', defaultKey: 'antraknosa' },
+    { name: 'Padi', defaultKey: 'hawar-daun' },
+    { name: 'Bawang Merah', defaultKey: 'ulat-grayak' },
+    { name: 'Tomat', defaultKey: 'antraknosa' },
+    { name: 'Jagung', defaultKey: 'bulai-jagung' },
+    { name: 'Lainnya', defaultKey: 'siap-panen-grade-a' }
   ];
 
   // Sampel Kasus Nyata Petani
@@ -591,13 +591,12 @@ export default function ScanAiPage() {
                           setSelectedSample(crop.defaultKey);
                         }
                       }}
-                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-1 ring-emerald-600/20 font-bold'
                           : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
                       }`}
                     >
-                      {crop.icon && <span>{crop.icon}</span>}
                       <span className="truncate">{crop.name}</span>
                     </button>
                   );
@@ -682,178 +681,169 @@ export default function ScanAiPage() {
             </div>
           ) : (
             /* KONDISI B: VALID TANAMAN PERTANIAN */
-            <>
-              {/* KARTU 1: STATUS DIAGNOSIS UTAMA */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
+            <div className="space-y-4">
+              
+              {/* LEMBAR LAPORAN DIAGNOSIS TUNGGAL & BERSIH (FLAT DESIGN) */}
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs divide-y divide-slate-100">
                 
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
-                  <div className="space-y-1">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
-                      {result.nama_masalah}
-                    </h2>
-                    <p className="text-xs text-slate-500">
-                      Komoditas: <strong className="text-slate-800">{result.nama_tanaman}</strong>
-                    </p>
-                  </div>
-
-                  {/* Status Panen */}
-                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-left sm:text-right shrink-0 space-y-0.5">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                      Kesiapan Panen
-                    </span>
-                    <strong className={`text-xs block ${
-                      result.status_kematangan.includes('Siap Panen') ? 'text-emerald-700 font-bold' : 'text-slate-800'
-                    }`}>
-                      {result.status_kematangan}
-                    </strong>
-                    <span className="text-[11px] text-slate-500 block">
-                      {result.estimasi_hari_panen === 0 
-                        ? '✅ Siap Petik Hari Ini' 
-                        : `± ${result.estimasi_hari_panen} hari lagi`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 4 Metrik Indikator Terstruktur */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
-                    <span className="text-xs font-bold text-slate-800">
-                      {result.kategori_diagnosa}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
-                    <span className={`text-xs font-bold ${
-                      result.tingkat_keparahan === 'Aman' ? 'text-emerald-700' : result.tingkat_keparahan === 'Parah' ? 'text-rose-700' : 'text-amber-700'
-                    }`}>
-                      {result.tingkat_keparahan}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
-                    <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
-                    <span className="text-xs font-bold text-slate-800">
-                      {result.estimasi_hari_panen === 0 ? 'Siap Panen' : `${result.estimasi_hari_panen} Hari`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Ciri Visual Terdeteksi */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-                    Ciri Visual Terdeteksi:
-                  </span>
-                  <div className="space-y-1.5">
-                    {result.ciri_visual.map((ciri, i) => (
-                      <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 leading-relaxed">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                        <span>{ciri}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-
-              {/* KARTU 2: LANGKAH PENANGANAN LAPANGAN HARI INI */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-3.5">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-emerald-700" />
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                    Langkah Cepat di Lapangan Hari Ini
-                  </h3>
-                </div>
-
-                <div className="space-y-2">
-                  {result.solusi_perawatan.map((sol, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-800 leading-relaxed">
-                      <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                        {idx + 1}
-                      </span>
-                      <span>{sol}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* KARTU 3: RESEP NUTRISI & OBAT ALAMI (TAB BERSIH) */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
-                
-                {/* Tab Selector */}
-                <div className="flex p-1 rounded-xl bg-slate-100 border border-slate-200/70 text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => setResultTab('pupuk')}
-                    className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      resultTab === 'pupuk' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <FlaskConical className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>Rekomendasi Pupuk Presisi</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setResultTab('nabati')}
-                    className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      resultTab === 'nabati' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <Leaf className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>Obat Alami & Nabati</span>
-                  </button>
-                </div>
-
-                {/* Konten Tab 1: Pupuk Presisi */}
-                {resultTab === 'pupuk' && (
-                  <div className="space-y-3">
-                    {result.rekomendasi_pupuk.map((pupuk, idx) => (
-                      <div key={idx} className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-200/70 space-y-2 text-xs">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <strong className="text-emerald-950 font-bold text-xs sm:text-sm">
-                            {pupuk.jenis}
-                          </strong>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
-                            {pupuk.formula}
-                          </span>
-                        </div>
-                        <div className="text-[11px] text-emerald-900 font-medium">
-                          <span className="font-bold text-emerald-950">Takaran Dosis:</span> {pupuk.dosis}
-                        </div>
-                        <p className="text-[11px] text-slate-600 leading-relaxed border-t border-emerald-200/40 pt-2">
-                          {pupuk.cara_aplikasi}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Konten Tab 2: Obat Nabati Alami */}
-                {resultTab === 'nabati' && (
-                  <div className="space-y-2.5">
-                    {result.pestisida_nabati_organik.length > 0 ? (
-                      result.pestisida_nabati_organik.map((pes, idx) => (
-                        <div key={idx} className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 text-xs text-amber-950 flex items-start gap-2.5 leading-relaxed">
-                          <Leaf className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                          <span>{pes}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-xs text-slate-500 text-center py-4">
-                        Tanaman dalam kondisi sehat, tidak memerlukan aplikasi pestisida.
+                {/* 1. Header Identitas Diagnosis */}
+                <div className="p-5 sm:p-6 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                        {result.nama_masalah}
+                      </h2>
+                      <p className="text-xs text-slate-500">
+                        Komoditas: <span className="font-semibold text-slate-800">{result.nama_tanaman}</span>
                       </p>
-                    )}
+                    </div>
+
+                    <div className="text-left sm:text-right shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                        Kesiapan Panen
+                      </span>
+                      <span className="text-xs font-bold text-slate-800 block">
+                        {result.status_kematangan}
+                      </span>
+                      <span className="text-[11px] text-slate-500 block">
+                        {result.estimasi_hari_panen === 0 
+                          ? 'Siap Petik Hari Ini' 
+                          : `± ${result.estimasi_hari_panen} hari lagi`}
+                      </span>
+                    </div>
                   </div>
-                )}
+
+                  {/* 4 Metrik Indikator Flat */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-center">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
+                      <span className="text-xs font-bold text-slate-800">{result.kategori_diagnosa}</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
+                      <span className={`text-xs font-bold ${
+                        result.tingkat_keparahan === 'Aman' ? 'text-emerald-700' : result.tingkat_keparahan === 'Parah' ? 'text-rose-700' : 'text-amber-700'
+                      }`}>
+                        {result.tingkat_keparahan}
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
+                      <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
+                      <span className="text-xs font-bold text-slate-800">
+                        {result.estimasi_hari_panen === 0 ? 'Siap Petik' : `${result.estimasi_hari_panen} Hari`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Ciri Visual Terdeteksi (Flat Clean List) */}
+                <div className="p-5 sm:p-6 space-y-2.5">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    Ciri Visual Terdeteksi
+                  </h3>
+                  <ul className="space-y-1.5 text-xs text-slate-700">
+                    {result.ciri_visual.map((ciri, i) => (
+                      <li key={i} className="flex items-start gap-2 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                        <span>{ciri}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* 3. Langkah Penanganan Lapangan (Flat Clean Numbered List) */}
+                <div className="p-5 sm:p-6 space-y-2.5">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    Langkah Penanganan Lapangan
+                  </h3>
+                  <div className="space-y-2.5">
+                    {result.solusi_perawatan.map((sol, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
+                        <span className="w-5 h-5 rounded-md bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span>{sol}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Rekomendasi Nutrisi & Obat Alami (Flat Clean Tab & Rows) */}
+                <div className="p-5 sm:p-6 space-y-3.5">
+                  {/* Tab Selector Minimalis */}
+                  <div className="flex p-0.5 rounded-lg bg-slate-100 text-xs font-semibold max-w-sm">
+                    <button
+                      type="button"
+                      onClick={() => setResultTab('pupuk')}
+                      className={`flex-1 py-1.5 px-3 rounded-md transition-all cursor-pointer ${
+                        resultTab === 'pupuk' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Rekomendasi Pupuk
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setResultTab('nabati')}
+                      className={`flex-1 py-1.5 px-3 rounded-md transition-all cursor-pointer ${
+                        resultTab === 'nabati' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Obat Alami & Nabati
+                    </button>
+                  </div>
+
+                  {/* Konten Tab 1: Pupuk Presisi (Flat Rows) */}
+                  {resultTab === 'pupuk' && (
+                    <div className="divide-y divide-slate-100 pt-1">
+                      {result.rekomendasi_pupuk.map((pupuk, idx) => (
+                        <div key={idx} className="py-3 first:pt-0 last:pb-0 space-y-1 text-xs">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <strong className="text-slate-900 font-bold text-xs sm:text-sm">
+                              {pupuk.jenis}
+                            </strong>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold shrink-0">
+                              {pupuk.formula}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-600">
+                            <span className="font-semibold text-slate-700">Dosis:</span> {pupuk.dosis}
+                          </div>
+                          <p className="text-[11px] text-slate-500 leading-relaxed">
+                            {pupuk.cara_aplikasi}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Konten Tab 2: Obat Nabati Alami (Flat Rows) */}
+                  {resultTab === 'nabati' && (
+                    <div className="space-y-2 pt-1">
+                      {result.pestisida_nabati_organik.length > 0 ? (
+                        result.pestisida_nabati_organik.map((pes, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 leading-relaxed">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                            <span>{pes}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-slate-500 py-2">
+                          Tanaman dalam kondisi sehat, tidak memerlukan aplikasi pestisida.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
 
               </div>
 
-              {/* TOMBOL AKSI AKHIR */}
-              <div className="space-y-2.5 pt-2">
+              {/* 5. Tombol Aksi Akhir */}
+              <div className="space-y-2 pt-1">
                 <button
                   type="button"
                   onClick={handleReset}
@@ -870,7 +860,8 @@ export default function ScanAiPage() {
                   <span>Buka Dasbor Pemantauan Lahan</span>
                 </Link>
               </div>
-            </>
+
+            </div>
           )}
 
           {/* RIWAYAT SCAN SESI INI */}
