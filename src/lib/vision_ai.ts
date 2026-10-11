@@ -201,9 +201,33 @@ export async function analyzeImageWithAI(imageData: string, cropHint?: string): 
   }
 
   const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
-Analisis foto tanaman/daun/buah secara mendalam. Identifikasi spesies tanaman asli, diagnosa penyakit/hama/fisiologis/tanaman sehat, dan susun resep pupuk serta obat alami.
-Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar. Format JSON yang WAJIB dipatuhi:
+Analisis citra yang diunggah secara cermat.
+
+ATURAN VALIDASI CITRA PERTANIAN:
+Periksa apakah gambar yang diunggah benar-benar bagian dari tanaman budidaya pertanian (daun, batang, bunga, buah, pohon, atau bibit tanaman).
+
+1. JIKA BUKAN TANAMAN PERTANIAN (contoh: laptop, layar komputer, keyboard, manusia, wajah, ruangan, jalan, kendaraan, hewan, makanan olahan, atau benda non-tanaman lainnya):
+Balas HANYA dengan JSON format persis:
 {
+  "is_tanaman": false,
+  "nama_tanaman": "Bukan Tanaman",
+  "kategori_diagnosa": "Non-Pertanian",
+  "nama_masalah": "Objek Bukan Tanaman Pertanian",
+  "tingkat_keparahan": "Aman",
+  "akurasi": 99.0,
+  "status_kematangan": "Belum Cukup Panen",
+  "estimasi_hari_panen": 0,
+  "pesan_penolakan": "Sistem Computer Vision Kertanusa mendeteksi bahwa citra yang diunggah bukan merupakan komoditas tanaman pertanian, melainkan [sebutkan objek secara profesional, contoh: perangkat laptop / layar komputer]. Harap unggah foto daun, buah, atau tanaman budidaya yang jelas untuk mendapatkan analisis agronomis.",
+  "ciri_visual": [],
+  "rekomendasi_pupuk": [],
+  "solusi_perawatan": [],
+  "pestisida_nabati_organik": []
+}
+
+2. JIKA VALID TANAMAN BUDIDAYA PERTANIAN:
+Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap:
+{
+  "is_tanaman": true,
   "nama_tanaman": "Nama Tanaman Lengkap (contoh: Jeruk / Citrus sp.)",
   "kategori_diagnosa": "Penyakit" | "Hama" | "Fisiologis" | "Tanaman Sehat",
   "nama_masalah": "Nama Masalah / Penyakit / Status (contoh: Bercak Cokelat Alternaria)",
@@ -222,11 +246,13 @@ Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata p
   ],
   "solusi_perawatan": ["tindakan 1", "tindakan 2", "tindakan 3"],
   "pestisida_nabati_organik": ["resep alami 1", "resep alami 2"]
-}`;
+}
+
+Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar.`;
 
   const userPrompt = cropHint 
-    ? `Identifikasi spesies dan kondisi kesehatan tanaman pada foto ini. (Catatan petani: dicurigai ${cropHint}, namun utamakan observasi visual nyata pada citra). Balas dalam JSON valid.`
-    : `Identifikasi spesies dan diagnosis kondisi tanaman pada foto ini secara akurat. Balas dalam JSON valid.`;
+    ? `Analisis citra ini. (Catatan petani: dicurigai ${cropHint}, namun verifikasi terlebih dahulu apakah benar tanaman pertanian). Balas dalam JSON valid.`
+    : `Analisis citra ini dan verifikasi apakah ini komoditas tanaman pertanian. Balas dalam JSON valid.`;
 
   try {
     const res = await fetch(`${baseURL}/chat/completions`, {
@@ -262,41 +288,32 @@ Balas HANYA dengan objek JSON valid tanpa markdown, tanpa backtick, tanpa kata p
     const cleanJson = rawContent.replace(/^[\s\S]*?\{/, '{').replace(/\}[^\}]*$/, '}');
     const parsed = JSON.parse(cleanJson);
 
+    const isTanaman = parsed.is_tanaman !== false && parsed.kategori_diagnosa !== 'Non-Pertanian';
+
     return {
       id: 'scan-' + Date.now(),
-      nama_tanaman: String(parsed.nama_tanaman || cropHint || 'Tanaman Budidaya'),
-      kategori_diagnosa: (['Hama', 'Penyakit', 'Fisiologis', 'Tanaman Sehat'].includes(parsed.kategori_diagnosa) 
+      is_tanaman: isTanaman,
+      pesan_penolakan: parsed.pesan_penolakan || (!isTanaman ? 'Sistem mendeteksi bahwa citra yang diunggah bukan merupakan komoditas tanaman pertanian. Silakan unggah foto daun, buah, atau tanaman budidaya yang jelas.' : undefined),
+      nama_tanaman: String(parsed.nama_tanaman || (isTanaman ? (cropHint || 'Tanaman Budidaya') : 'Non-Pertanian')),
+      kategori_diagnosa: (!isTanaman ? 'Non-Pertanian' : (['Hama', 'Penyakit', 'Fisiologis', 'Tanaman Sehat'].includes(parsed.kategori_diagnosa) 
         ? parsed.kategori_diagnosa 
-        : 'Penyakit') as VisionAnalysisResult['kategori_diagnosa'],
-      nama_masalah: String(parsed.nama_masalah || 'Terindikasi Gejala Patogen'),
+        : 'Penyakit')) as VisionAnalysisResult['kategori_diagnosa'],
+      nama_masalah: String(parsed.nama_masalah || (isTanaman ? 'Terindikasi Gejala Patogen' : 'Objek Bukan Tanaman Pertanian')),
       tingkat_keparahan: (['Ringan', 'Sedang', 'Parah', 'Aman'].includes(parsed.tingkat_keparahan)
         ? parsed.tingkat_keparahan
-        : 'Sedang') as VisionAnalysisResult['tingkat_keparahan'],
-      akurasi: typeof parsed.akurasi === 'number' ? parsed.akurasi : parseFloat(parsed.akurasi) || 94.0,
-      status_kematangan: String(parsed.status_kematangan || 'Mendekati Panen') as VisionAnalysisResult['status_kematangan'],
-      estimasi_hari_panen: typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 14,
-      ciri_visual: Array.isArray(parsed.ciri_visual) && parsed.ciri_visual.length > 0 
-        ? parsed.ciri_visual.map(String) 
-        : ['Gejala klorosis dan lesi nekrotik pada permukaan helaian daun'],
-      rekomendasi_pupuk: Array.isArray(parsed.rekomendasi_pupuk) && parsed.rekomendasi_pupuk.length > 0
-        ? parsed.rekomendasi_pupuk.map((p: any) => ({
-            jenis: String(p.jenis || 'Pupuk Kalsium Boron'),
-            formula: String(p.formula || 'CaO 26% + B 2%'),
-            dosis: String(p.dosis || '2 gram/liter air'),
-            cara_aplikasi: String(p.cara_aplikasi || 'Semprot kabut halus pada pagi hari')
-          }))
-        : [{
-            jenis: 'Pupuk Kalsium Boron',
-            formula: 'CaO 26% + B 2%',
-            dosis: '2-3 gram/liter air',
-            cara_aplikasi: 'Semprot kabut halus ke seluruh tajuk daun pada pagi hari.'
-          }],
-      solusi_perawatan: Array.isArray(parsed.solusi_perawatan) && parsed.solusi_perawatan.length > 0
-        ? parsed.solusi_perawatan.map(String)
-        : ['Sanitasi dan pemangkasan daun bergejala parah', 'Perbaiki aerasi kanopi tanaman'],
-      pestisida_nabati_organik: Array.isArray(parsed.pestisida_nabati_organik) && parsed.pestisida_nabati_organik.length > 0
-        ? parsed.pestisida_nabati_organik.map(String)
-        : ['Ekstrak daun mimba dan bawang putih sebagai antijamur kontak']
+        : 'Aman') as VisionAnalysisResult['tingkat_keparahan'],
+      akurasi: typeof parsed.akurasi === 'number' ? parsed.akurasi : parseFloat(parsed.akurasi) || 95.0,
+      status_kematangan: String(parsed.status_kematangan || 'Belum Cukup Panen') as VisionAnalysisResult['status_kematangan'],
+      estimasi_hari_panen: typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 0,
+      ciri_visual: Array.isArray(parsed.ciri_visual) ? parsed.ciri_visual.map(String) : [],
+      rekomendasi_pupuk: Array.isArray(parsed.rekomendasi_pupuk) ? parsed.rekomendasi_pupuk.map((p: any) => ({
+        jenis: String(p.jenis || 'Pupuk Kalsium Boron'),
+        formula: String(p.formula || 'CaO 26% + B 2%'),
+        dosis: String(p.dosis || '2 gram/liter air'),
+        cara_aplikasi: String(p.cara_aplikasi || 'Semprot kabut halus pada pagi hari')
+      })) : [],
+      solusi_perawatan: Array.isArray(parsed.solusi_perawatan) ? parsed.solusi_perawatan.map(String) : [],
+      pestisida_nabati_organik: Array.isArray(parsed.pestisida_nabati_organik) ? parsed.pestisida_nabati_organik.map(String) : []
     };
   } catch (err) {
     console.error('Failed to analyze image with AI Vision:', err);

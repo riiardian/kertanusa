@@ -74,7 +74,7 @@ export interface WeatherData {
 export interface VisionAnalysisResult {
   id: string;
   nama_tanaman: string;
-  kategori_diagnosa: 'Hama' | 'Penyakit' | 'Fisiologis' | 'Tanaman Sehat';
+  kategori_diagnosa: 'Hama' | 'Penyakit' | 'Fisiologis' | 'Tanaman Sehat' | 'Non-Pertanian';
   nama_masalah: string;
   tingkat_keparahan: 'Ringan' | 'Sedang' | 'Parah' | 'Aman';
   akurasi: number;
@@ -89,6 +89,8 @@ export interface VisionAnalysisResult {
   }[];
   solusi_perawatan: string[];
   pestisida_nabati_organik: string[];
+  is_tanaman?: boolean;
+  pesan_penolakan?: string;
 }
 
 export interface MarketCommodityTrend {

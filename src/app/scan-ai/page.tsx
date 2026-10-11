@@ -636,194 +636,241 @@ export default function ScanAiPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       {step === 3 && result && (
         <div className="max-w-2xl mx-auto space-y-4">
-          
-          {/* KARTU 1: STATUS DIAGNOSIS UTAMA */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
-            
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
-              <div className="space-y-1">
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
-                  {result.nama_masalah}
+
+          {/* KONDISI A: BUKAN KOMODITAS TANAMAN PERTANIAN */}
+          {(!result.is_tanaman || result.kategori_diagnosa === 'Non-Pertanian') ? (
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs text-center space-y-5">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
+                <AlertTriangle className="w-8 h-8" />
+              </div>
+
+              <div className="space-y-2 max-w-lg mx-auto">
+                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 uppercase tracking-wider inline-block">
+                  Verifikasi Citra Non-Pertanian
+                </span>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                  {result.nama_masalah || 'Objek Bukan Tanaman Pertanian'}
                 </h2>
-                <p className="text-xs text-slate-500">
-                  Komoditas: <strong className="text-slate-800">{result.nama_tanaman}</strong>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pt-1">
+                  {result.pesan_penolakan || 'Sistem Computer Vision Kertanusa mendeteksi bahwa foto yang diunggah bukan merupakan daun, buah, atau bagian tanaman budidaya pertanian. Pastikan Anda mengambil foto jarak dekat dari komoditas tanaman pangan, hortikultura, atau perkebunan untuk mendapatkan analisis agronomis yang akurat.'}
                 </p>
               </div>
 
-              {/* Status Panen */}
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-left sm:text-right shrink-0 space-y-0.5">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                  Kesiapan Panen
+              {/* Panduan Foto yang Benar */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left space-y-2 max-w-md mx-auto">
+                <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider block">
+                  Panduan Pengambilan Foto yang Tepat:
                 </span>
-                <strong className={`text-xs block ${
-                  result.status_kematangan.includes('Siap Panen') ? 'text-emerald-700 font-bold' : 'text-slate-800'
-                }`}>
-                  {result.status_kematangan}
-                </strong>
-                <span className="text-[11px] text-slate-500 block">
-                  {result.estimasi_hari_panen === 0 
-                    ? '✅ Siap Petik Hari Ini' 
-                    : `± ${result.estimasi_hari_panen} hari lagi`}
-                </span>
+                <ul className="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                  <li>Fokuskan lensa kamera pada daun, buah, atau batang tanaman.</li>
+                  <li>Pastikan pencahayaan terang alami dan tidak blur/buram.</li>
+                  <li>Jarak pengambilan foto ideal antara 15–30 cm.</li>
+                </ul>
+              </div>
+
+              <div className="pt-2 max-w-sm mx-auto">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="w-full py-3.5 px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Ambil Foto Tanaman Ulang</span>
+                </button>
               </div>
             </div>
-
-            {/* 4 Metrik Indikator Terstruktur */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-              <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
-                <span className="text-xs font-bold text-slate-800">
-                  {result.kategori_diagnosa}
-                </span>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
-                <span className={`text-xs font-bold ${
-                  result.tingkat_keparahan === 'Aman' ? 'text-emerald-700' : result.tingkat_keparahan === 'Parah' ? 'text-rose-700' : 'text-amber-700'
-                }`}>
-                  {result.tingkat_keparahan}
-                </span>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
-                <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
-                <span className="text-xs font-bold text-slate-800">
-                  {result.estimasi_hari_panen === 0 ? 'Siap Panen' : `${result.estimasi_hari_panen} Hari`}
-                </span>
-              </div>
-            </div>
-
-            {/* Ciri Visual Terdeteksi */}
-            <div className="space-y-1.5 pt-1">
-              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
-                Ciri Visual Terdeteksi:
-              </span>
-              <div className="space-y-1.5">
-                {result.ciri_visual.map((ciri, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 leading-relaxed">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                    <span>{ciri}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* KARTU 2: LANGKAH PENANGANAN LAPANGAN HARI INI */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-3.5">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-700" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Langkah Cepat di Lapangan Hari Ini
-              </h3>
-            </div>
-
-            <div className="space-y-2">
-              {result.solusi_perawatan.map((sol, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-800 leading-relaxed">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                    {idx + 1}
-                  </span>
-                  <span>{sol}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* KARTU 3: RESEP NUTRISI & OBAT ALAMI (TAB BERSIH) */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
-            
-            {/* Tab Selector */}
-            <div className="flex p-1 rounded-xl bg-slate-100 border border-slate-200/70 text-xs font-semibold">
-              <button
-                type="button"
-                onClick={() => setResultTab('pupuk')}
-                className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  resultTab === 'pupuk' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <FlaskConical className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Rekomendasi Pupuk Presisi</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setResultTab('nabati')}
-                className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  resultTab === 'nabati' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Leaf className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Obat Alami & Nabati</span>
-              </button>
-            </div>
-
-            {/* Konten Tab 1: Pupuk Presisi */}
-            {resultTab === 'pupuk' && (
-              <div className="space-y-3">
-                {result.rekomendasi_pupuk.map((pupuk, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-200/70 space-y-2 text-xs">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <strong className="text-emerald-950 font-bold text-xs sm:text-sm">
-                        {pupuk.jenis}
-                      </strong>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
-                        {pupuk.formula}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-emerald-900 font-medium">
-                      <span className="font-bold text-emerald-950">Takaran Dosis:</span> {pupuk.dosis}
-                    </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed border-t border-emerald-200/40 pt-2">
-                      {pupuk.cara_aplikasi}
+          ) : (
+            /* KONDISI B: VALID TANAMAN PERTANIAN */
+            <>
+              {/* KARTU 1: STATUS DIAGNOSIS UTAMA */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
+                
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
+                  <div className="space-y-1">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+                      {result.nama_masalah}
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Komoditas: <strong className="text-slate-800">{result.nama_tanaman}</strong>
                     </p>
                   </div>
-                ))}
-              </div>
-            )}
 
-            {/* Konten Tab 2: Obat Nabati Alami */}
-            {resultTab === 'nabati' && (
-              <div className="space-y-2.5">
-                {result.pestisida_nabati_organik.length > 0 ? (
-                  result.pestisida_nabati_organik.map((pes, idx) => (
-                    <div key={idx} className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 text-xs text-amber-950 flex items-start gap-2.5 leading-relaxed">
-                      <Leaf className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>{pes}</span>
+                  {/* Status Panen */}
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-left sm:text-right shrink-0 space-y-0.5">
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+                      Kesiapan Panen
+                    </span>
+                    <strong className={`text-xs block ${
+                      result.status_kematangan.includes('Siap Panen') ? 'text-emerald-700 font-bold' : 'text-slate-800'
+                    }`}>
+                      {result.status_kematangan}
+                    </strong>
+                    <span className="text-[11px] text-slate-500 block">
+                      {result.estimasi_hari_panen === 0 
+                        ? '✅ Siap Petik Hari Ini' 
+                        : `± ${result.estimasi_hari_panen} hari lagi`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 4 Metrik Indikator Terstruktur */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
+                    <span className="text-xs font-bold text-slate-800">
+                      {result.kategori_diagnosa}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
+                    <span className={`text-xs font-bold ${
+                      result.tingkat_keparahan === 'Aman' ? 'text-emerald-700' : result.tingkat_keparahan === 'Parah' ? 'text-rose-700' : 'text-amber-700'
+                    }`}>
+                      {result.tingkat_keparahan}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
+                    <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
+                    <span className="text-xs font-bold text-slate-800">
+                      {result.estimasi_hari_panen === 0 ? 'Siap Panen' : `${result.estimasi_hari_panen} Hari`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Ciri Visual Terdeteksi */}
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
+                    Ciri Visual Terdeteksi:
+                  </span>
+                  <div className="space-y-1.5">
+                    {result.ciri_visual.map((ciri, i) => (
+                      <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                        <span>{ciri}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* KARTU 2: LANGKAH PENANGANAN LAPANGAN HARI INI */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-3.5">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-emerald-700" />
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Langkah Cepat di Lapangan Hari Ini
+                  </h3>
+                </div>
+
+                <div className="space-y-2">
+                  {result.solusi_perawatan.map((sol, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-800 leading-relaxed">
+                      <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <span>{sol}</span>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-slate-500 text-center py-4">
-                    Tanaman dalam kondisi sehat, tidak memerlukan aplikasi pestisida.
-                  </p>
-                )}
+                  ))}
+                </div>
               </div>
-            )}
 
-          </div>
+              {/* KARTU 3: RESEP NUTRISI & OBAT ALAMI (TAB BERSIH) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
+                
+                {/* Tab Selector */}
+                <div className="flex p-1 rounded-xl bg-slate-100 border border-slate-200/70 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setResultTab('pupuk')}
+                    className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      resultTab === 'pupuk' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <FlaskConical className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Rekomendasi Pupuk Presisi</span>
+                  </button>
 
-          {/* TOMBOL AKSI AKHIR */}
-          <div className="space-y-2.5 pt-2">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Periksa Tanaman Lain</span>
-            </button>
+                  <button
+                    type="button"
+                    onClick={() => setResultTab('nabati')}
+                    className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      resultTab === 'nabati' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Leaf className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Obat Alami & Nabati</span>
+                  </button>
+                </div>
 
-            <Link
-              href="/monitoring"
-              className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs text-center block"
-            >
-              <span>Buka Dasbor Pemantauan Lahan</span>
-            </Link>
-          </div>
+                {/* Konten Tab 1: Pupuk Presisi */}
+                {resultTab === 'pupuk' && (
+                  <div className="space-y-3">
+                    {result.rekomendasi_pupuk.map((pupuk, idx) => (
+                      <div key={idx} className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-200/70 space-y-2 text-xs">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <strong className="text-emerald-950 font-bold text-xs sm:text-sm">
+                            {pupuk.jenis}
+                          </strong>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold shrink-0">
+                            {pupuk.formula}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-emerald-900 font-medium">
+                          <span className="font-bold text-emerald-950">Takaran Dosis:</span> {pupuk.dosis}
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed border-t border-emerald-200/40 pt-2">
+                          {pupuk.cara_aplikasi}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Konten Tab 2: Obat Nabati Alami */}
+                {resultTab === 'nabati' && (
+                  <div className="space-y-2.5">
+                    {result.pestisida_nabati_organik.length > 0 ? (
+                      result.pestisida_nabati_organik.map((pes, idx) => (
+                        <div key={idx} className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 text-xs text-amber-950 flex items-start gap-2.5 leading-relaxed">
+                          <Leaf className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                          <span>{pes}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-500 text-center py-4">
+                        Tanaman dalam kondisi sehat, tidak memerlukan aplikasi pestisida.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+              </div>
+
+              {/* TOMBOL AKSI AKHIR */}
+              <div className="space-y-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Periksa Tanaman Lain</span>
+                </button>
+
+                <Link
+                  href="/monitoring"
+                  className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs text-center block"
+                >
+                  <span>Buka Dasbor Pemantauan Lahan</span>
+                </Link>
+              </div>
+            </>
+          )}
 
           {/* RIWAYAT SCAN SESI INI */}
           {scanHistory.length > 1 && (

@@ -1,6 +1,26 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+163. **Validasi & Penanganan Citra Non-Pertanian (Edge-Case Protection) (`src/lib/types.ts`, `vision_ai.ts`, `src/app/scan-ai/page.tsx`) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Pengguna mencoba mengunggah foto non-tanaman (perangkat laptop / screenshot layar komputer).
+      - Sistem sebelumnya mendeteksi objek non-tanaman namun tetap menampilkan kartu metrik keparahan, estimasi panen, pupuk, dan obat alami.
+      - User meminta agar jika input bukan tanaman pertanian, jangan memunculkan metrik diagnosa palsu apa pun, melainkan berikan kartu peringatan profesional yang informatif.
+    - **Aksi & Solusi**:
+      1. **Aturan Validasi Citra pada Vision AI**:
+         - Menambahkan evaluasi ketat `is_tanaman: false` dan kategori `'Non-Pertanian'` pada model AI multimodal.
+         - AI secara profesional mengidentifikasi objek non-tanaman dan menyertakan `pesan_penolakan` informatif (misal: terdeteksi perangkat laptop, kendaraan, manusia, dll.).
+      2. **Kartu Penolakan Elegan & Profesional di Step 3**:
+         - Jika `!result.is_tanaman`, seluruh kartu metrik panen, ciri visual teknis, resep pupuk, dan tab obat kimia/alami disembunyikan total.
+         - Menampilkan kartu tunggal bersih berisi badge verifikasi, pesan penjelasan profesional, 3 poin panduan pemotretan tanaman yang benar, dan tombol langsung *"Ambil Foto Tanaman Ulang"*.
+      3. **Penyederhanaan UI Step 1 & Step 2**:
+         - Menghapus badge mengambang yang redundan dan menyatukan indikator ke dalam 4 kartu metrik simetris.
+         - Mempersingkat tombol menjadi "Buka Kamera" dan "Pilih dari Galeri".
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build 100% lulus (14/14 halaman, 0 error).
+      - Pengujian API dengan citra laptop menghasilkan penolakan profesional 100% tanpa metrik pertanian; pengujian daun jeruk menghasilkan diagnosis penuh.
+      - PM2 `kertanusa-web` direstart di VPS.
+
 162. **Integrasi AI Multimodal Computer Vision Nyata: Analisis Citra Patogen & Kematangan Tanaman Real-Time (`src/lib/vision_ai.ts`, `api/analyze/route.ts`, `src/app/scan-ai/page.tsx`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Pengguna menguji coba mengunggah foto daun pohon jeruk yang sakit, namun hasil diagnosis sebelumnya masih memunculkan data statis cabai/tomat antraknosa.
