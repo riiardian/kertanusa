@@ -26,7 +26,7 @@ export default function PixelScanOverlay() {
     window.addEventListener('resize', updateSize);
 
     const render = () => {
-      t += 0.045; // Expansion speed
+      t += 0.02; // Calm, relaxed tempo for deliberate pixel screening
       const rect = canvas.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
@@ -54,25 +54,26 @@ export default function PixelScanOverlay() {
           const dy = y - cy;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          // Concentric ripple wave propagating OUTWARD from center
-          const wave = Math.sin((dist / 38) - (t * 2.8));
+          // Calm concentric ripple wave propagating OUTWARD from center
+          // Wavelength 46px, gentle expansion speed 1.3
+          const wave = Math.sin((dist / 46) - (t * 1.3));
 
-          if (wave > 0.35) {
-            const rawIntensity = (wave - 0.35) / 0.65; // 0 to 1
-            const edgeFade = Math.max(0, 1 - (dist / (maxDist * 1.1)));
+          if (wave > 0.3) {
+            const rawIntensity = (wave - 0.3) / 0.7; // 0 to 1
+            const edgeFade = Math.max(0, 1 - (dist / (maxDist * 1.15)));
             const intensity = rawIntensity * edgeFade;
 
-            const radius = 1.0 + intensity * 2.0;
+            const radius = 1.0 + intensity * 1.8;
 
-            // Outer radiant aura for peak glowing pixels
-            if (intensity > 0.5) {
+            // Outer soft radiant aura for peak glowing pixels
+            if (intensity > 0.55) {
               ctx.beginPath();
-              ctx.arc(x, y, radius * 2.2, 0, Math.PI * 2);
-              ctx.fillStyle = `rgba(16, 185, 129, ${intensity * 0.28})`;
+              ctx.arc(x, y, radius * 2.0, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(16, 185, 129, ${intensity * 0.22})`;
               ctx.fill();
             }
 
-            // Core glowing dot (luminous emerald/cyan pixel)
+            // Core glowing dot (luminous emerald pixel)
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(52, 211, 153, ${0.35 + intensity * 0.65})`;
@@ -80,19 +81,12 @@ export default function PixelScanOverlay() {
           } else {
             // Dormant faint dot matrix
             ctx.beginPath();
-            ctx.arc(x, y, 0.85, 0, Math.PI * 2);
+            ctx.arc(x, y, 0.8, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
             ctx.fill();
           }
         }
       }
-
-      // Subtle center pulsing emitter that continuously spawns the waves
-      const centerPulse = (Math.sin(t * 2.8) + 1) / 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 5 + centerPulse * 4, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(52, 211, 153, ${0.4 + centerPulse * 0.4})`;
-      ctx.fill();
 
       animId = requestAnimationFrame(render);
     };
@@ -107,7 +101,7 @@ export default function PixelScanOverlay() {
 
   return (
     <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden rounded-2xl transition-all duration-300">
-      {/* Translucent dark tint so glowing dots stand out against any photo */}
+      {/* Translucent dark tint so glowing dots stand out clearly against any photo */}
       <div className="absolute inset-0 bg-slate-950/40 backdrop-brightness-90" />
 
       {/* HTML5 Canvas Dot Matrix (Concentric Expanding Ripples from Center) */}

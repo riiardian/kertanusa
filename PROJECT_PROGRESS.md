@@ -5,12 +5,13 @@ Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur A
     - **Diagnosa Masukan User**:
       - Bos mengoreksi tampilan scanning:
         1. Menghapus teks "Mendiagnosis citra" dan pill persentase 1%-100% agar frame foto benar-benar bersih tanpa elemen teks yang menghalangi.
-        2. Mengganti animasi rotasi (yang terkesan seperti spinner bulat) menjadi gelombang titik-titik piksel yang menyebar keluar dari titik tengah (*concentric radiating ripple waves*) secara berulang hingga proses diagnosis selesai.
+        2. Menghapus titik bulat statis yang menempel di tengah. Animasi murni gelombang titik piksel yang mulai dari tengah dan memancar menyebar ke luar.
+        3. Menyesuaikan tempo gelombang menjadi tenang, santai, dan pelan sesuai karakteristik screening piksel AI presisi.
     - **Aksi & Solusi**:
-      1. **Eliminasi Total Komponen Teks & Badge**:
-         - Menghapus badge persentase (14%-98%) dan label "Mendiagnosis citra".
-      2. **Gelombang Konsentris Titik Piksel dari Titik Tengah (`PixelScanOverlay.tsx`)**:
-         - Menerapkan fungsi gelombang radius konsentris: titik-titik mikro berpendar hijau zamrud/cyan mulai dari titik tengah (*center pulse emitter*) memancar keluar (*radiating outward ripples*) secara halus dan berulang-ulang.
+      1. **Eliminasi Total Komponen Teks & Titik Statis Tengah**:
+         - Menghapus badge persentase (14%-98%), label "Mendiagnosis citra", serta menghapus elemen titik bulat statis di tengah kanvas.
+      2. **Gelombang Konsentris Titik Piksel Tenang & Halus (`PixelScanOverlay.tsx`)**:
+         - Menerapkan fungsi gelombang radius konsentris berkecepatan santai (`t += 0.02`): titik-titik mikro berpendar hijau zamrud/cyan mulai dari titik koordinat tengah memancar keluar secara teratur, tenang, dan berulang-ulang hingga proses inferensi selesai.
          - Foto daun/buah asli petani tetap tampil 100% jelas di balik kanvas kisi titik-titik transparan.
     - **Validasi Build & Deploy**:
       - Turbopack Next.js build sukses 100% (14/14 halaman, 0 error).
