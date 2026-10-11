@@ -39,7 +39,6 @@ export default function ScanAiPage() {
   const [imageSource, setImageSource] = useState<'camera' | 'upload' | 'sample'>('camera');
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<VisionAnalysisResult | null>(null);
-  const [scanHistory, setScanHistory] = useState<VisionAnalysisResult[]>([]);
   const [resultTab, setResultTab] = useState<'pupuk' | 'nabati'>('pupuk');
 
   // State Kamera Langsung (WebRTC)
@@ -247,7 +246,6 @@ export default function ScanAiPage() {
       if (data.success) {
         setTimeout(() => {
           setResult(data.data);
-          setScanHistory(prev => [data.data, ...prev.filter(p => p.id !== data.data.id).slice(0, 5)]);
           setScanning(false);
           setStep(3); // Masuk ke Step 3 (Hasil)
         }, 1100);
@@ -262,7 +260,6 @@ export default function ScanAiPage() {
       };
       setTimeout(() => {
         setResult(fallbackResult as VisionAnalysisResult);
-        setScanHistory(prev => [fallbackResult as VisionAnalysisResult, ...prev.slice(0, 5)]);
         setScanning(false);
         setStep(3); // Masuk ke Step 3 (Hasil)
       }, 900);
@@ -861,28 +858,6 @@ export default function ScanAiPage() {
                 </Link>
               </div>
 
-            </div>
-          )}
-
-          {/* RIWAYAT SCAN SESI INI */}
-          {scanHistory.length > 1 && (
-            <div className="pt-4 border-t border-slate-200/70">
-              <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2.5">
-                Riwayat Pemindaian Sebelumnya
-              </span>
-              <div className="space-y-2">
-                {scanHistory.slice(1).map((hist, idx) => (
-                  <div key={idx} className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs">
-                    <div>
-                      <strong className="text-slate-900 block truncate">{hist.nama_masalah}</strong>
-                      <span className="text-[11px] text-slate-500">{hist.nama_tanaman} • Akurasi {hist.akurasi}%</span>
-                    </div>
-                    <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                      {hist.tingkat_keparahan}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 
