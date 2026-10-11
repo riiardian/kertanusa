@@ -57,7 +57,7 @@ export default function ScanAiPage() {
 
   // Komoditas Pilihan Cepat di Step 2
   const cropOptions = [
-    { name: 'Deteksi Otomatis AI', icon: '✨', defaultKey: 'auto' },
+    { name: 'Deteksi Otomatis AI', icon: '', defaultKey: 'auto' },
     { name: 'Jeruk', icon: '🍊', defaultKey: 'jeruk' },
     { name: 'Cabai', icon: '🌶️', defaultKey: 'antraknosa' },
     { name: 'Padi', icon: '🌾', defaultKey: 'hawar-daun' },
@@ -655,7 +655,7 @@ export default function ScanAiPage() {
                           : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
                       }`}
                     >
-                      <span>{crop.icon}</span>
+                      {crop.icon && <span>{crop.icon}</span>}
                       <span className="truncate">{crop.name}</span>
                     </button>
                   );
@@ -681,7 +681,6 @@ export default function ScanAiPage() {
                 disabled={scanning}
                 className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
               >
-                <Sparkles className="w-4 h-4" />
                 <span>Analisis Sekarang</span>
               </button>
             </div>
