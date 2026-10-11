@@ -1,6 +1,22 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+168. **SEO & Domain Migration Optimization: Canonical Metadata, Sitemap & Robots Engine (`layout.tsx`, `sitemap.ts`, `robots.ts`) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Bos menanyakan mengapa saat mencari "kertanusa" di beberapa hasil Google lama masih merujuk ke domain lama `pandu.web.id` alih-alih `kertanusa.web.id`.
+    - **Akar Masalah & Solusi**:
+      1. **Cache Historis Indeks Google**: Domain `pandu.web.id` sebelumnya sudah terindeks selama berminggu-minggu sebelum dialihkan (*301 Redirect*) ke `kertanusa.web.id`. Google memerlukan sinyal SEO eksplisit agar mempercepat proses transisi domain di hasil pencarian.
+      2. **Penerapan MetadataBase & Canonical Tag Mutlak (`layout.tsx`)**:
+         - Menambahkan `metadataBase: new URL('https://kertanusa.web.id')` dan `canonical: 'https://kertanusa.web.id'` agar crawler Google tahu domain utama yang sah dan mengabaikan domain lama.
+         - Melengkapi OpenGraph & Twitter metadata, keywords, dan author (Rio Ardian Pratama).
+      3. **Pembangkitan Otomatis `sitemap.xml` & `robots.txt`**:
+         - Menambahkan `src/app/sitemap.ts` (mendaftarkan URL utama: `/`, `/scan-ai`, `/monitoring`, `/tren-pasar`, `/input-lahan`).
+         - Menambahkan `src/app/robots.ts` mengarahkan crawler Google langsung ke sitemap resmi `kertanusa.web.id/sitemap.xml`.
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build sukses 100% (16/16 halaman termasuk `robots.txt` dan `sitemap.xml`).
+      - Reload instance PM2 `kertanusa-web`.
+      - Commit & push ke GitHub `origin main`.
+
 167. **Sanitasi Folder Publik & Eliminasi 15 Berkas Duplikat & Tidak Terpakai (`public/`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Bos meminta membersihkan seluruh berkas duplikat dan file yang tidak digunakan di folder `public/` agar tidak menumpuk dan repo tetap ramping.

@@ -24,11 +24,50 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://kertanusa.web.id'),
+  alternates: {
+    canonical: 'https://kertanusa.web.id',
+  },
   title: {
-    default: 'Beranda | KERTANUSA',
+    default: 'KERTANUSA — Kreasi Riset Tani Nusantara',
     template: '%s | KERTANUSA',
   },
-  description: 'Kertanusa (Kreasi Riset Tani Nusantara) - Kreativitas dalam mengolah riset dan informasi pertanian menjadi inovasi yang bermanfaat bagi masyarakat.',
+  description: 'Kertanusa (Kreasi Riset Tani Nusantara) - Platform pertanian presisi dan sistem pendukung keputusan (DSS) berbasis AI dan satelit untuk memandu petani Indonesia.',
+  keywords: [
+    'Kertanusa',
+    'Pertanian Presisi',
+    'AI Pertanian',
+    'Computer Vision Tanaman',
+    'Telkom University',
+    'Rio Ardian Pratama',
+    'Agroklimat BMKG',
+    'Penyakit Tanaman AI',
+  ],
+  authors: [{ name: 'Rio Ardian Pratama', url: 'https://github.com/riiardian' }],
+  creator: 'Rio Ardian Pratama',
+  publisher: 'KERTANUSA',
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    url: 'https://kertanusa.web.id',
+    siteName: 'KERTANUSA',
+    title: 'KERTANUSA — Platform Pertanian Presisi & AI Pemandu Petani',
+    description: 'Kreasi Riset Tani Nusantara - Platform pertanian presisi berbasis Artificial Intelligence dan satelit karya mahasiswa Telkom University.',
+    images: [
+      {
+        url: '/hero-pertanian-4k.webp',
+        width: 1200,
+        height: 630,
+        alt: 'KERTANUSA Platform Pertanian Presisi',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'KERTANUSA — Platform Pertanian Presisi & AI Pemandu Petani',
+    description: 'Sistem pendukung keputusan pertanian presisi berbasis AI karya mahasiswa Telkom University.',
+    images: ['/hero-pertanian-4k.webp'],
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
