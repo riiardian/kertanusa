@@ -298,11 +298,9 @@ export default function ScanAiPage() {
           <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-0.5 bg-slate-200 -z-0" />
           
           {/* Step 1 */}
-          <div className="relative z-10 flex flex-col items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => { if (step > 1 && !scanning) setStep(1); }}
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all cursor-pointer ${
+          <div className="relative z-10 flex flex-col items-center gap-1.5 select-none">
+            <div
+              className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                 step === 1
                   ? 'bg-emerald-700 text-white ring-4 ring-emerald-100 shadow-sm'
                   : step > 1
@@ -311,35 +309,32 @@ export default function ScanAiPage() {
               }`}
             >
               {step > 1 ? <Check className="w-4 h-4 stroke-[3]" /> : '1'}
-            </button>
+            </div>
             <span className={`text-[11px] font-semibold ${step === 1 ? 'text-emerald-900 font-bold' : 'text-slate-500'}`}>
               Foto Tanaman
             </span>
           </div>
 
           {/* Step 2 */}
-          <div className="relative z-10 flex flex-col items-center gap-1.5">
-            <button
-              type="button"
-              disabled={step < 2 || scanning}
-              onClick={() => { if (step === 3) setStep(2); }}
+          <div className="relative z-10 flex flex-col items-center gap-1.5 select-none">
+            <div
               className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                 step === 2
-                  ? 'bg-emerald-700 text-white ring-4 ring-emerald-100 shadow-sm cursor-pointer'
+                  ? 'bg-emerald-700 text-white ring-4 ring-emerald-100 shadow-sm'
                   : step > 2
-                  ? 'bg-emerald-600 text-white cursor-pointer'
+                  ? 'bg-emerald-600 text-white'
                   : 'bg-white border-2 border-slate-200 text-slate-400'
               }`}
             >
               {step > 2 ? <Check className="w-4 h-4 stroke-[3]" /> : '2'}
-            </button>
+            </div>
             <span className={`text-[11px] font-semibold ${step === 2 ? 'text-emerald-900 font-bold' : 'text-slate-500'}`}>
               Pratinjau
             </span>
           </div>
 
           {/* Step 3 */}
-          <div className="relative z-10 flex flex-col items-center gap-1.5">
+          <div className="relative z-10 flex flex-col items-center gap-1.5 select-none">
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                 step === 3
