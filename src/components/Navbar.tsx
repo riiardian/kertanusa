@@ -13,8 +13,7 @@ import {
   TrendingUp,
   PlusCircle, 
   ScanSearch, 
-  HelpCircle,
-  ClipboardCheck 
+  HelpCircle 
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -81,19 +80,6 @@ export default function Navbar() {
         const faqElement = document.getElementById('faq');
         if (faqElement) {
           faqElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
-  };
-
-  const handleKuesionerClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    setMobileOpen(false);
-    if (pathname === '/') {
-      e.preventDefault();
-      setTimeout(() => {
-        const el = document.getElementById('kuesioner-uat');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
     }
@@ -306,18 +292,6 @@ export default function Navbar() {
                 >
                   <HelpCircle className="w-5 h-5 stroke-[1.8] text-slate-400" />
                   <span className="text-[15px]">FAQ</span>
-                </Link>
-              </div>
-
-              {/* 6. Kuesioner Validasi & UAT */}
-              <div className="py-3">
-                <Link
-                  href="/#kuesioner-uat"
-                  onClick={handleKuesionerClick}
-                  className="flex items-center gap-3.5 py-1 text-slate-800 font-semibold hover:text-emerald-600 transition-colors cursor-pointer"
-                >
-                  <ClipboardCheck className="w-5 h-5 stroke-[1.8] text-slate-400" />
-                  <span className="text-[15px]">Kuesioner Validasi (UAT)</span>
                 </Link>
               </div>
             </nav>

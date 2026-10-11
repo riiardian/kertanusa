@@ -108,14 +108,3 @@ export interface MarketCommodityTrend {
     indeks_daya_beli: number;
   }>;
 }
-
-export interface KuesionerRecord {
-  id: string;
-  nama: string;
-  profesi: 'Petani' | 'Penyuluh Pertanian' | 'Akademisi / Peneliti' | 'Mahasiswa' | 'Masyarakat Umum';
-  skor_kemudahan: number;
-  akurasi_fitur: 'Sangat Akurat' | 'Cukup Akurat' | 'Perlu Peningkatan';
-  fitur_favorit: string;
-  masukan: string;
-  created_at: string;
-}

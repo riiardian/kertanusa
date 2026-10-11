@@ -1,27 +1,14 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
-169. **Implementasi Kuesioner Evaluasi & User Acceptance Testing (UAT) di Halaman Beranda (`KuesionerSection.tsx`, `api/kuesioner/route.ts`, `db.ts`) [2026-10-11]**:
+169. **Rollback & Pembersihan Modul Kuesioner Beranda (`page.tsx`, `Navbar.tsx`, `db.ts`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
-      - Bos menginstruksikan untuk menambahkan modul kuesioner evaluasi dan umpan balik pengguna langsung pada halaman beranda Kertanusa sebagai bukti validasi riset lapangan untuk kompetisi/lomba.
-    - **Solusi & Implementasi Teknis**:
-      1. **Komponen Interaktif `KuesionerSection.tsx`**:
-         - Desain modern, flat, bernuansa gelap emerald-slate selaras dengan tema aplikasi, 100% bebas dari AI-slop.
-         - Ringkasan KPI statistik UAT real-time: Skor Kemudahan Antarmuka (4.8 / 5.0), Akurasi Rekomendasi Teruji (98%), dan Jumlah Responden Terverifikasi.
-         - Formulir input responsif: Nama/Instansi (opsional), Peran/Profesi (Petani, Penyuluh Pertanian, Akademisi/Peneliti, Mahasiswa, Umum), Star rating kemudahan (1–5), Kejelasan rekomendasi (Sangat Akurat/Cukup/Perlu Peningkatan), Fitur paling bermanfaat, dan catatan evaluasi kualitatif.
-         - Feed ulasan verifikasi langsung dari responden lapangan (Petani Brebes, Penyuluh Pertanian BPP, Dosen/Mahasiswa Agronomi).
-      2. **API Endpoint Mandiri (`/api/kuesioner`)**:
-         - `GET`: Mengembalikan daftar ulasan terurut kronologis dan agregasi skor statistik. Dilindungi rate limiter in-memory.
-         - `POST`: Validasi input, sanitasi XSS (`sanitizeText`), rate limit 10 kiriman/menit per IP, dan penyimpanan atomik ke database JSON Kertanusa.
-      3. **Penyimpanan Permanen & Skema Database (`db.ts` & `types.ts`)**:
-         - Menambahkan interface `KuesionerRecord` dan fungsi `getAllKuesioner()` serta `addKuesioner()`.
-      4. **Navigasi Cepat Navbar**:
-         - Menambahkan tautan langsung `Kuesioner Validasi (UAT)` pada drawer navigasi mobile untuk kemudahan demonstrasi saat presentasi.
-    - **Validasi Build & Deploy**:
-      - Next.js Turbopack build sukses 100% (17 halaman).
-      - Reload instance PM2 `kertanusa-web`.
-      - Live verification HTTP 200 di `https://kertanusa.web.id/` dan pengujian API via curl.
-      - Commit & push ke GitHub `origin main`.
+      - Bos memutuskan untuk tidak menampilkan modul kuesioner pada beranda demi menjaga kesederhanaan, kerapian, dan fokus antarmuka utama Kertanusa.
+    - **Aksi & Solusi**:
+      - Menghapus komponen `KuesionerSection.tsx` dan endpoint API `src/app/api/kuesioner`.
+      - Mengembalikan halaman beranda `src/app/page.tsx` dan navigasi `Navbar.tsx` ke kondisi awal yang bersih.
+      - Membersihkan skema `db.ts` dan `types.ts`.
+      - Build Next.js ulang (16 halaman bersih), restart PM2, push ke GitHub `origin main`.
 
 168. **SEO & Domain Migration Optimization: Canonical Metadata, Sitemap & Robots Engine (`layout.tsx`, `sitemap.ts`, `robots.ts`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
