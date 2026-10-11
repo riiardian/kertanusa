@@ -463,7 +463,7 @@ export default function ScanAiPage() {
                     className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition-all shadow-xs cursor-pointer"
                   >
                     <Camera className="w-4 h-4" />
-                    <span>Buka Kamera Langsung</span>
+                    <span>Buka Kamera</span>
                   </button>
 
                   <button
@@ -472,7 +472,7 @@ export default function ScanAiPage() {
                     className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-slate-700 border border-slate-200 hover:border-slate-300 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs cursor-pointer"
                   >
                     <Upload className="w-4 h-4 text-slate-500" />
-                    <span>Pilih dari Galeri Foto</span>
+                    <span>Pilih dari Galeri</span>
                   </button>
                 </div>
 
