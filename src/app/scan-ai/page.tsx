@@ -557,21 +557,35 @@ export default function ScanAiPage() {
                 </span>
               </div>
 
-              {/* Animasi Scanning Lottie */}
+              {/* Animasi Scanning Lottie Cantik & Fresh */}
               {scanning && (
-                <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center backdrop-blur-xs z-30 p-4 transition-all">
-                  <div className="w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
+                <div className="absolute inset-0 bg-white/94 backdrop-blur-md flex flex-col items-center justify-center z-30 p-4 transition-all animate-in fade-in duration-200">
+                  {/* Efek Garis Laser Pemindai Halus */}
+                  <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_12px_#10b981] animate-bounce pointer-events-none" />
+
+                  {/* Lottie Animation Container dengan Ambient Glow Hijau */}
+                  <div className="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
+                    <div className="absolute inset-4 rounded-full bg-emerald-500/12 blur-xl animate-pulse" />
                     <LottieAnimation 
                       src="/searching-for-word.json" 
-                      className="w-full h-full"
+                      className="w-full h-full relative z-10 drop-shadow-xs"
                       loop={true}
                       autoplay={true}
                     />
                   </div>
-                  <div className="bg-slate-900/90 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-xl border border-white/10 -mt-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+
+                  {/* Badge Status Terang & Elegan */}
+                  <div className="bg-white text-emerald-950 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2.5 shadow-md border border-emerald-200 -mt-1">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                    </span>
                     <span>AI Sedang Mendiagnosis Citra...</span>
                   </div>
+
+                  <p className="text-[11px] text-slate-500 mt-2 font-medium tracking-wide">
+                    Mencocokkan pola patogen & nutrisi tanaman
+                  </p>
                 </div>
               )}
             </div>
