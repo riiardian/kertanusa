@@ -1,17 +1,17 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
-166. **Penyempurnaan Animasi Dot Matrix Swirling Pixel Scanning Identik ChatGPT DALL-E (`PixelScanOverlay.tsx`, `scan-ai/page.tsx`, `globals.css`) [2026-10-11]**:
+166. **Penyempurnaan Animasi Dot Matrix Concentric Ripple Wave Scanning (`PixelScanOverlay.tsx`, `scan-ai/page.tsx`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
-      - Bos mengoreksi bahwa animasi scanning jangan memakai laser garis yang naik turun atau kurung sudut bidik kamera, melainkan efek titik-titik matriks piksel yang berpendar dan berputar (swirling wave of glowing pixels) persis seperti saat ChatGPT membuat/membaca gambar.
+      - Bos mengoreksi tampilan scanning:
+        1. Menghapus teks "Mendiagnosis citra" dan pill persentase 1%-100% agar frame foto benar-benar bersih tanpa elemen teks yang menghalangi.
+        2. Mengganti animasi rotasi (yang terkesan seperti spinner bulat) menjadi gelombang titik-titik piksel yang menyebar keluar dari titik tengah (*concentric radiating ripple waves*) secara berulang hingga proses diagnosis selesai.
     - **Aksi & Solusi**:
-      1. **Eliminasi Laser Garis & Sudut Reticle**:
-         - Menghapus garis laser naik-turun (`vision-scan-beam`) dan kurung sudut di empat sisi.
-      2. **HTML5 Canvas Dot Matrix & Swirling Wave (`src/components/PixelScanOverlay.tsx`)**:
-         - Mengembangkan komponen canvas hardware-accelerated yang merender kisi micro-dot (piksel) merata di atas foto tanaman.
-         - Gelombang spiral ganda (*dual swirling spiral wave*) matematis yang membuat gugusan titik-titik piksel berpendar emerald/cyan secara berputar (*swirling rotating wave*), mensimulasikan AI sedang membaca setiap piksel citra.
-         - Menyertakan badge persentase dinamis (*progress pill* `14% -> 98%`) di sudut kanan bawah dan status pill *"Mendiagnosis citra"* di sudut kiri atas persis antarmuka ChatGPT.
-         - Foto daun/tanaman asli tetap tampak jelas di balik lapisan titik-titik transparan.
+      1. **Eliminasi Total Komponen Teks & Badge**:
+         - Menghapus badge persentase (14%-98%) dan label "Mendiagnosis citra".
+      2. **Gelombang Konsentris Titik Piksel dari Titik Tengah (`PixelScanOverlay.tsx`)**:
+         - Menerapkan fungsi gelombang radius konsentris: titik-titik mikro berpendar hijau zamrud/cyan mulai dari titik tengah (*center pulse emitter*) memancar keluar (*radiating outward ripples*) secara halus dan berulang-ulang.
+         - Foto daun/buah asli petani tetap tampil 100% jelas di balik kanvas kisi titik-titik transparan.
     - **Validasi Build & Deploy**:
       - Turbopack Next.js build sukses 100% (14/14 halaman, 0 error).
       - Reload instance PM2 `kertanusa-web`.
