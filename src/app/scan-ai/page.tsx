@@ -641,24 +641,8 @@ export default function ScanAiPage() {
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
             
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold border ${
-                    result.kategori_diagnosa === 'Tanaman Sehat'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : result.tingkat_keparahan === 'Parah'
-                      ? 'bg-rose-50 text-rose-800 border-rose-200'
-                      : 'bg-amber-50 text-amber-800 border-amber-200'
-                  }`}>
-                    {result.kategori_diagnosa}
-                  </span>
-
-                  <span className="text-xs text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/70">
-                    Akurasi AI {result.akurasi}%
-                  </span>
-                </div>
-
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug pt-0.5">
+              <div className="space-y-1">
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
                   {result.nama_masalah}
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -684,8 +668,14 @@ export default function ScanAiPage() {
               </div>
             </div>
 
-            {/* 3 Metrik Vital */}
-            <div className="grid grid-cols-3 gap-2.5 text-center">
+            {/* 4 Metrik Indikator Terstruktur */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+              <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
+                <span className="text-xs font-bold text-slate-800">
+                  {result.kategori_diagnosa}
+                </span>
+              </div>
               <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
                 <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
                 <span className={`text-xs font-bold ${
@@ -695,11 +685,11 @@ export default function ScanAiPage() {
                 </span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
                 <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
                 <span className="text-xs font-bold text-slate-800">
                   {result.estimasi_hari_panen === 0 ? 'Siap Panen' : `${result.estimasi_hari_panen} Hari`}
                 </span>
