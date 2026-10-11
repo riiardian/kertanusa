@@ -18,9 +18,9 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { imageKeyword, sampleKey } = body;
+    const { imageKeyword, sampleKey, cropName } = body;
 
-    const result = analyzeCropImage(sampleKey || imageKeyword || 'antraknosa');
+    const result = analyzeCropImage(sampleKey || imageKeyword || 'antraknosa', cropName);
     addScanRecord(result);
 
     return NextResponse.json({

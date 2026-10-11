@@ -162,20 +162,25 @@ export const DISEASE_LIBRARY: Record<string, Omit<VisionAnalysisResult, 'id'>> =
   }
 };
 
-export function analyzeCropImage(imageKeyOrDesc: string): VisionAnalysisResult {
+export function analyzeCropImage(imageKeyOrDesc: string, cropName?: string): VisionAnalysisResult {
   const key = (imageKeyOrDesc || '').toLowerCase();
+  const crop = (cropName || '').toLowerCase();
   let selected = DISEASE_LIBRARY['antraknosa'];
 
-  if (key.includes('ulat') || key.includes('grayak') || key.includes('bawang') || key.includes('spodoptera')) {
+  if (DISEASE_LIBRARY[key]) {
+    selected = DISEASE_LIBRARY[key];
+  } else if (key.includes('ulat') || key.includes('grayak') || crop.includes('bawang') || key.includes('spodoptera')) {
     selected = DISEASE_LIBRARY['ulat-grayak'];
-  } else if (key.includes('bulai') || key.includes('jagung') || key.includes('putih-jagung')) {
+  } else if (key.includes('bulai') || crop.includes('jagung') || key.includes('putih-jagung')) {
     selected = DISEASE_LIBRARY['bulai-jagung'];
   } else if (key.includes('kutu') || key.includes('putih') || key.includes('keriting') || key.includes('kebul')) {
     selected = DISEASE_LIBRARY['kutu-kebul'];
-  } else if (key.includes('hawar') || key.includes('kresek') || key.includes('kuning') || key.includes('padi')) {
+  } else if (key.includes('hawar') || key.includes('kresek') || crop.includes('padi')) {
     selected = DISEASE_LIBRARY['hawar-daun'];
-  } else if (key.includes('sehat') || key.includes('panen') || key.includes('matang') || key.includes('merah') || key.includes('grade-a')) {
+  } else if (key.includes('sehat') || key.includes('panen') || key.includes('matang') || key.includes('grade-a')) {
     selected = DISEASE_LIBRARY['siap-panen-grade-a'];
+  } else if (crop.includes('cabai') || crop.includes('tomat')) {
+    selected = DISEASE_LIBRARY['antraknosa'];
   } else if (key.includes('custom') || key.includes('kamera') || key.includes('foto')) {
     selected = DISEASE_LIBRARY['siap-panen-grade-a'];
   }

@@ -1,6 +1,23 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+161. **Rombak Alur & Desain Computer Vision AI: Implementasi Stepper Wizard 3 Langkah Clean & Natural (`src/app/scan-ai/page.tsx`, `vision_ai.ts`, `api/analyze/route.ts`) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Tampilan halaman diagnosis AI (`/scan-ai`) sebelumnya terlalu padat dan membingungkan di layar HP (kamera WebRTC, upload galeri, 5 sampel simulasi, dan hasil analisa bertumpuk dalam satu layar panjang).
+      - User meminta alur yang bersih, terstruktur, natural, dan simpel tanpa scrolling panjang yang membingungkan.
+    - **Aksi & Solusi (Opsi A: Stepper Wizard 3 Langkah)**:
+      1. **Indikator Stepper Bersih (1 ➔ 2 ➔ 3)**:
+         - Langkah 1: **Foto Tanaman** (murni kartu input foto kamera/galeri tanpa distraksi).
+         - Langkah 2: **Pratinjau & Konfirmasi** (pratinjau citra, pemilih komoditas cepat 6 tanaman, tombol foto ulang & analisis).
+         - Langkah 3: **Hasil Diagnosis** (status penyakit/hama/panen, 3 langkah lapangan hari ini, tab pupuk presisi vs obat alami nabati).
+      2. **Penyembunyian Sampel Simulasi**:
+         - 5 sampel lapangan dipindahkan ke dalam collapsible accordion minimalis di bawah Step 1, menjaga layar awal tetap lega.
+      3. **Penyempurnaan Engine Vision AI**:
+         - Memperbarui fungsi `analyzeCropImage` dan API endpoint `/api/analyze` agar menerima filter komoditas tanaman (`cropName`) guna akurasi rekomendasi agronomi yang lebih tepat sasaran.
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build 100% lulus (14/14 static & dynamic pages) tanpa error.
+      - PM2 `kertanusa-web` direstart di VPS.
+
 160. **Validasi Presisi Data Agronomi Riset: Integrasi Nanas (285 HST), Durian (120 HST), & Eliminasi Bug Fabrikasi Komoditas Non-Pertanian [2026-10-07]**:
     - **Diagnosa Masukan User**:
       - Waktu tanam dan estimasi panen nanas sebelumnya tidak akurat (di lapangan rata-rata 270–300 HST atau ~285 HST, bukan estimasi pendek tak realistis).

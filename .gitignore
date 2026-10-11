@@ -52,3 +52,7 @@ data/*.db
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
+.user.ini
+.well-known/
+public/Searching File.json
+public/search file.json
