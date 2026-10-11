@@ -24,7 +24,6 @@ import {
   Layers,
   RefreshCw
 } from 'lucide-react';
-import LottieAnimation from '@/components/LottieAnimation';
 import { VisionAnalysisResult } from '@/lib/types';
 import { DISEASE_LIBRARY } from '@/lib/vision_ai';
 
@@ -547,23 +546,40 @@ export default function ScanAiPage() {
               )}
 
               {/* Tag Sumber */}
-              <div className="absolute top-2.5 left-2.5">
+              <div className="absolute top-2.5 left-2.5 z-20">
                 <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
                   {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : <Upload className="w-3 h-3 text-emerald-400" />}
                   <span>{imageSource === 'camera' ? 'Foto Kamera' : imageSource === 'upload' ? 'Unggahan Galeri' : 'Sampel Lapangan'}</span>
                 </span>
               </div>
 
-              {/* Animasi Scanning Lottie Bersih & Natural */}
+              {/* Animasi Scanning Pixel & Laser AI (Real-time Vision Sweep) */}
               {scanning && (
-                <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-30 p-4 transition-all">
-                  <div className="w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
-                    <LottieAnimation 
-                      src="/searching-for-word.json" 
-                      className="w-full h-full"
-                      loop={true}
-                      autoplay={true}
-                    />
+                <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden transition-all duration-300">
+                  {/* Subtle dark tint overlay */}
+                  <div className="absolute inset-0 bg-slate-950/25 backdrop-brightness-95" />
+
+                  {/* Pixel Matrix Grid Scanning Overlay */}
+                  <div className="vision-scan-grid vision-grid-pulse" />
+
+                  {/* Laser Beam Sweep (ChatGPT style top-to-bottom) */}
+                  <div className="vision-scan-beam" />
+
+                  {/* Viewfinder HUD Corner Reticles */}
+                  <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-emerald-400 rounded-tl-md shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+                  <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-emerald-400 rounded-tr-md shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+                  <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-emerald-400 rounded-bl-md shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+                  <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-emerald-400 rounded-br-md shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+
+                  {/* Sleek Status Badge */}
+                  <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md border border-emerald-500/30 text-white flex items-center gap-2 shadow-lg z-10">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                    <span className="text-[11px] font-semibold tracking-wide text-slate-100 whitespace-nowrap">
+                      Memindai Piksel Citra AI...
+                    </span>
                   </div>
                 </div>
               )}
