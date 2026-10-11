@@ -1,6 +1,21 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+167. **Sanitasi Folder Publik & Eliminasi 15 Berkas Duplikat & Tidak Terpakai (`public/`) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Bos meminta membersihkan seluruh berkas duplikat dan file yang tidak digunakan di folder `public/` agar tidak menumpuk dan repo tetap ramping.
+    - **Aksi & Solusi**:
+      1. **Eliminasi Berkas Duplikat & Sampah (~3.2 MB terpangkas)**:
+         - Menghapus duplikat Lottie: `Drop water.json`, `Growing Plant.json`, `growing-plant.json`, `sun hot.json`, `thermometer celsius.json`, `loading.json`, `searching-for-word.json`.
+         - Menghapus aset gambar lama yang tidak terpakai: `statistik-4k.webp`, `statistik.webp`, `statistik-hd.jpg`.
+         - Menghapus template SVG bawaan Next.js: `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`.
+      2. **Retensi Aset Produksi Bersih**:
+         - Folder `public/` kini hanya memuat aset resmi yang aktif digunakan: logo resmi, hero banner 4K webp, favicon suite, data pulau indonesia (GIS), dan 6 animasi Lottie esensial.
+    - **Validasi Build & Deploy**:
+      - Turbopack Next.js build sukses 100% (14/14 halaman, 0 error).
+      - Reload instance PM2 `kertanusa-web`.
+      - Commit & push ke GitHub `riiardian/kertanusa` branch `main`.
+
 166. **Penyempurnaan Animasi Dot Matrix Concentric Ripple Wave Scanning (`PixelScanOverlay.tsx`, `scan-ai/page.tsx`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Bos mengoreksi tampilan scanning:
