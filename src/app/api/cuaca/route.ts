@@ -1,23 +1,34 @@
 import { NextResponse } from 'next/server';
 import { getLiveWeatherData } from '@/lib/weather';
 import { REGIONS, getRegionProfile, getNearestRegionProfile } from '@/lib/agro_regions';
+import { getClientIp, checkRateLimit } from '@/lib/rate_limiter';
+import { sanitizeText, isValidCoordinate } from '@/lib/sanitize';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(ip, 'cuaca_get', 60, 60);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { success: false, message: 'Batas permintaan cuaca tercapai. Tunggu sejenak.' },
+        { status: 429, headers: { 'Retry-After': String(rate.resetInSeconds) } }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const latParam = searchParams.get('lat');
     const lonParam = searchParams.get('lon');
-    const daerahParam = searchParams.get('daerah');
+    const daerahParam = sanitizeText(searchParams.get('daerah'), 120);
 
     let lat = latParam ? parseFloat(latParam) : null;
     let lon = lonParam ? parseFloat(lonParam) : null;
     let namaLokasi = daerahParam || '';
     let isGpsAccurate = false;
 
-    if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
+    if (lat !== null && lon !== null && isValidCoordinate(lat, lon)) {
       isGpsAccurate = true;
       // Deteksi nama wilayah administratif dari satelit OpenStreetMap Nominatim
       try {

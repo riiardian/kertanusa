@@ -1,6 +1,34 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+164. **Security Audit & Hardening Sistem Kertanusa: OWASP Headers, Rate Limiting, Input Sanitization, & File Protection (`next.config.ts`, `rate_limiter.ts`, `sanitize.ts`, API routes, Nginx) [2026-10-11]**:
+    - **Diagnosa Masukan User**:
+      - Pengguna meminta dilakukan security audit menyeluruh dan peningkatan keamanan sistem Kertanusa.
+    - **Aksi & Solusi Hardening Keamanan**:
+      1. **OWASP HTTP Security Headers (`next.config.ts`)**:
+         - Mengaktifkan `Strict-Transport-Security` (HSTS max-age=31536000) untuk menegakkan enkripsi HTTPS.
+         - Menambahkan `X-Content-Type-Options: nosniff` (mencegah eksploitasi MIME-sniffing).
+         - Menambahkan `X-Frame-Options: SAMEORIGIN` (mencegah serangan Clickjacking).
+         - Menambahkan `X-XSS-Protection: 1; mode=block` & `Referrer-Policy: strict-origin-when-cross-origin`.
+         - Mengonfigurasi `Permissions-Policy` ketat (hanya izinkan kamera & geolocation pada origin sendiri).
+         - Menghilangkan fingerprint framework (`poweredByHeader: false` -> `X-Powered-By: Next.js` dihapus total).
+      2. **In-Memory Rate Limiting (`src/lib/rate_limiter.ts`)**:
+         - Mencegah DoS / kuota exhaustion pada endpoint AI Vision (`/api/analyze`: 12 req/menit per IP).
+         - Mencegah database spamming pada pendaftaran lahan (`/api/petani`: 15 req/menit per IP).
+         - Mencegah API scraping pada cuaca dan tren pasar (60 req/menit per IP).
+      3. **Input Sanitization & Stored XSS Prevention (`src/lib/sanitize.ts`)**:
+         - Membersihkan tag HTML, script, dan karakter berbahaya pada seluruh input teks form petani.
+         - Validasi batasan panjang string dan validasi batas koordinat geografis GPS (-90 s/d 90, -180 s/d 180).
+         - Pembatasan ukuran payload upload gambar (maksimal 10 MB).
+      4. **Nginx Security Rules (`kertanusa.web.id.conf`)**:
+         - Pembatasan ukuran body client (`client_max_body_size 12M`).
+         - Blokir akses langsung ke direktori dan file sensitif (`.env`, `.git`, `.user.ini`, `/storage/`, `/data/`) dengan respon 404.
+    - **Validasi Build & Deploy**:
+      - Next.js Turbopack build 100% clean (14/14 halaman, 0 error).
+      - Nginx syntax test & reload sukses.
+      - Pengujian live via curl membuktikan seluruh header keamanan aktif dan proteksi URL sensitif berfungsi 100%.
+      - PM2 `kertanusa-web` direstart di VPS.
+
 163. **Validasi & Penanganan Citra Non-Pertanian (Edge-Case Protection) (`src/lib/types.ts`, `vision_ai.ts`, `src/app/scan-ai/page.tsx`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Pengguna mencoba mengunggah foto non-tanaman (perangkat laptop / screenshot layar komputer).
