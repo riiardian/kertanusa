@@ -1,21 +1,19 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
-166. **Implementasi Real-time Pixel Matrix & Laser Scanning Sweep Overlay pada AI Vision (`scan-ai/page.tsx`, `globals.css`) [2026-10-11]**:
+166. **Penyempurnaan Animasi Dot Matrix Swirling Pixel Scanning Identik ChatGPT DALL-E (`PixelScanOverlay.tsx`, `scan-ai/page.tsx`, `globals.css`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
-      - Bos menyampaikan masukan bahwa saat proses loading analisis foto di Step 2 (`/scan-ai`), kotak tengah jangan ditutupi background abu-abu/putih (yang sebelumnya menampilkan animasi Lottie buku), melainkan foto tanaman asli petani tetap harus terlihat jelas.
-      - Bos meminta ditambahkan animasi pemindaian futuristik menyerupai ChatGPT image generation / scanning per bagian pixel yang berkesan canggih dan otentik.
+      - Bos mengoreksi bahwa animasi scanning jangan memakai laser garis yang naik turun atau kurung sudut bidik kamera, melainkan efek titik-titik matriks piksel yang berpendar dan berputar (swirling wave of glowing pixels) persis seperti saat ChatGPT membuat/membaca gambar.
     - **Aksi & Solusi**:
-      1. **Pertahankan Visibilitas Foto Asli**:
-         - Menghilangkan overlay putih pekat dan animasi Lottie generik yang menutupi gambar.
-         - Foto daun/tanaman yang difoto atau diunggah petani tetap tampil 100% di latar belakang selama proses inferensi berlangsung.
-      2. **Animasi Scanning Pixel & Laser AI (ChatGPT Style)**:
-         - **Pixel Matrix Grid (`.vision-scan-grid`)**: Lapisan dot matrix transparan dengan efek `visionGridPulse` yang memberikan visual pemindaian per-pixel.
-         - **Laser Beam Sweep (`.vision-scan-beam`)**: Garis laser neon emerald dengan gradient trail bercahaya yang menyapu foto dari atas ke bawah secara berkala dan halus.
-         - **Viewfinder HUD Reticles**: 4 sudut kurung target kamera (`border-emerald-400` dengan glow neon) di setiap sudut foto.
-         - **Status Badge Translusen**: Pill glassmorphism di bagian bawah foto dengan radar beacon berkedip (`Memindai Piksel Citra AI...`).
+      1. **Eliminasi Laser Garis & Sudut Reticle**:
+         - Menghapus garis laser naik-turun (`vision-scan-beam`) dan kurung sudut di empat sisi.
+      2. **HTML5 Canvas Dot Matrix & Swirling Wave (`src/components/PixelScanOverlay.tsx`)**:
+         - Mengembangkan komponen canvas hardware-accelerated yang merender kisi micro-dot (piksel) merata di atas foto tanaman.
+         - Gelombang spiral ganda (*dual swirling spiral wave*) matematis yang membuat gugusan titik-titik piksel berpendar emerald/cyan secara berputar (*swirling rotating wave*), mensimulasikan AI sedang membaca setiap piksel citra.
+         - Menyertakan badge persentase dinamis (*progress pill* `14% -> 98%`) di sudut kanan bawah dan status pill *"Mendiagnosis citra"* di sudut kiri atas persis antarmuka ChatGPT.
+         - Foto daun/tanaman asli tetap tampak jelas di balik lapisan titik-titik transparan.
     - **Validasi Build & Deploy**:
-      - Turbopack Next.js build sukses (14/14 halaman, 0 error).
+      - Turbopack Next.js build sukses 100% (14/14 halaman, 0 error).
       - Reload instance PM2 `kertanusa-web`.
       - Commit & push ke GitHub `riiardian/kertanusa` branch `main`.
 
