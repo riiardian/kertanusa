@@ -640,14 +640,8 @@ export default function ScanAiPage() {
           {/* KONDISI A: BUKAN KOMODITAS TANAMAN PERTANIAN */}
           {(!result.is_tanaman || result.kategori_diagnosa === 'Non-Pertanian') ? (
             <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs text-center space-y-5">
-              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600">
-                <AlertTriangle className="w-8 h-8" />
-              </div>
-
+              
               <div className="space-y-2 max-w-lg mx-auto">
-                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 uppercase tracking-wider inline-block">
-                  Verifikasi Citra Non-Pertanian
-                </span>
                 <h2 className="text-lg sm:text-xl font-bold text-slate-900">
                   {result.nama_masalah || 'Objek Bukan Tanaman Pertanian'}
                 </h2>
