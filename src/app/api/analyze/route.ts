@@ -45,6 +45,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { imageData, imageKeyword, sampleKey, cropName } = body;
 
+    // Pastikan ada parameter citra atau sampel yang dikirim (mencegah spam entri kosong)
+    if (!imageData && !sampleKey && !imageKeyword) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Parameter imageData atau sampleKey diperlukan untuk pemindaian.' 
+        }, 
+        { status: 400 }
+      );
+    }
+
     // Validasi & Sanitasi Ukuran Payload Gambar (Maksimal 12 MB) & Mitigasi SSRF
     let isValidImageFormat = false;
     if (imageData && typeof imageData === 'string') {

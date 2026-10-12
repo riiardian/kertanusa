@@ -131,10 +131,21 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, message: 'ID Petani diperlukan' }, { status: 400 });
     }
 
-    // VERIFIKASI KEAMANAN OTORISASI (Anti-Broken Access Control):
+    // VERIFIKASI KEAMANAN OTORISASI (Anti-Broken Access Control & Anti-ID Enumeration):
     // Memeriksa Kunci Admin (Header / Bearer) atau Delete Token sah pemilik record
     const isAdmin = verifyAdminAuthorization(request);
     const clientDeleteToken = request.headers.get('x-delete-token') || searchParams.get('delete_token');
+
+    // Jika pemanggil tidak memiliki Kunci Admin maupun Delete Token, tolak seketika (mencegah ID enumeration)
+    if (!isAdmin && !clientDeleteToken) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Akses ditolak: Operasi ini membutuhkan otorisasi Kunci Admin atau Delete Token yang sah.' 
+        }, 
+        { status: 401 }
+      );
+    }
 
     const result = deletePetani(id, {
       isAdmin,

@@ -5,8 +5,9 @@ Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur A
     - **Diagnosa Masukan User**:
       - Bos menginstruksikan audit keamanan siber menyeluruh ke seluruh endpoint API, URL, dan struktur kode Kertanusa setelah ditemukannya potensi celah otorisasi pada penghapusan data petani.
     - **Temuan Celah & Implementasi Solusi Defensif**:
-      1. **Resolusi Broken Access Control (CWE-284 / OWASP A01:2021) pada `DELETE /api/petani`**:
+      1. **Resolusi Broken Access Control & Anti-ID Enumeration (CWE-284 / OWASP A01:2021) pada `DELETE /api/petani`**:
          - Menambahkan modul otentikasi `src/lib/auth.ts` (`verifyAdminAuthorization`) yang memverifikasi kunci admin (`x-admin-key`, `Authorization: Bearer`, atau `admin_key`).
+         - Menerapkan perlindungan Anti-ID Enumeration: request DELETE tanpa otorisasi ditolak langsung 401 Unauthorized SEBELUM mengecek eksistensi ID, mencegah penyerang menebak ID valid lewat perbedaan status respon (404 vs 401).
          - Menerapkan arsitektur *Capability-Based Security* pada `src/lib/db.ts`: setiap record yang dibuat secara sah menghasilkan `delete_token` rahasia di backend.
          - Endpoint `DELETE` kini wajib memiliki Kunci Admin ATAU `delete_token` yang cocok dengan record bersangkutan; request tanpa otorisasi ditolak dengan `401 Unauthorized`.
          - Frontend `riset-petani` kini memicu prompt Kunci Admin saat menghapus, dan `input-lahan` menyertakan `x-delete-token` draft miliknya sendiri.
@@ -16,6 +17,7 @@ Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur A
       3. **Mitigasi SSRF & Injeksi Skema pada `POST /api/analyze` (OWASP A10:2021)**:
          - Validasi ketat format `imageData`: hanya menerima skema Base64 Data URI gambar yang sah (`data:image/(jpeg|png|webp|jpg);base64,...`).
          - Menolak mentah-mentah skema URL eksternal/internal (`http://`, `https://`, `file://`, `//`) untuk mencegah eksploitasi Server-Side Request Forgery.
+         - Wajib menyertakan `imageData` atau `sampleKey` valid; payload kosong ditolak 400 Bad Request untuk mencegah sampah entri.
       4. **Anti-DoS Memory & Storage Bloat (`db.ts`)**:
          - Membatasi kuota simpan riwayat pemindaian AI (`db.scans`) maksimal 30 item terbaru.
          - Membatasi total kapasitas record petani (`db.petani`) maksimal 200 item dengan pruning entri non-default tertua untuk mencegah pembengkakan database JSON.
