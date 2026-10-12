@@ -107,7 +107,14 @@ export default function InputLahanPage() {
 
     try {
       if (savedData.id) {
-        await fetch(`/api/petani?id=${savedData.id}`, { method: 'DELETE' });
+        const headers: Record<string, string> = {};
+        if ((savedData as any).delete_token) {
+          headers['x-delete-token'] = (savedData as any).delete_token;
+        }
+        await fetch(`/api/petani?id=${savedData.id}`, { 
+          method: 'DELETE',
+          headers
+        });
       }
     } catch (e) {
       console.error('Gagal menghapus data di server:', e);

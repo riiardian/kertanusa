@@ -3,6 +3,7 @@ import { getAllPetani, addPetani, deletePetani } from '@/lib/db';
 import { isRecognizedCrop } from '@/lib/crops';
 import { getClientIp, checkRateLimit } from '@/lib/rate_limiter';
 import { sanitizeText, sanitizeNumeric, isValidCoordinate } from '@/lib/sanitize';
+import { verifyAdminAuthorization } from '@/lib/auth';
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +16,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const data = getAllPetani();
+    // Hanya tampilkan nomor kontak penuh jika diakses oleh Administrator sah
+    const isAdmin = verifyAdminAuthorization(request);
+    const data = getAllPetani(isAdmin);
     return NextResponse.json({ success: true, data });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Gagal memuat data petani' }, { status: 500 });
@@ -127,11 +130,32 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json({ success: false, message: 'ID Petani diperlukan' }, { status: 400 });
     }
-    const success = deletePetani(id);
-    if (success) {
-      return NextResponse.json({ success: true, message: 'Data petani berhasil dihapus.' });
+
+    // VERIFIKASI KEAMANAN OTORISASI (Anti-Broken Access Control):
+    // Memeriksa Kunci Admin (Header / Bearer) atau Delete Token sah pemilik record
+    const isAdmin = verifyAdminAuthorization(request);
+    const clientDeleteToken = request.headers.get('x-delete-token') || searchParams.get('delete_token');
+
+    const result = deletePetani(id, {
+      isAdmin,
+      deleteToken: clientDeleteToken ? clientDeleteToken.trim() : undefined
+    });
+
+    if (result.status === 'UNAUTHORIZED') {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Akses ditolak: Operasi ini membutuhkan otorisasi Kunci Admin atau Delete Token yang sah.' 
+        }, 
+        { status: 401 }
+      );
     }
-    return NextResponse.json({ success: false, message: 'Data tidak ditemukan.' }, { status: 404 });
+
+    if (result.status === 'NOT_FOUND') {
+      return NextResponse.json({ success: false, message: 'Data tidak ditemukan.' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Data petani berhasil dihapus secara aman.' });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Gagal menghapus data' }, { status: 500 });
   }

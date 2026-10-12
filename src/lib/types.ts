@@ -17,6 +17,7 @@ export interface PetaniRecord {
   ph_tanah?: number;
   status_tanaman?: 'Vegetatif Awal' | 'Vegetatif Aktif' | 'Generatif/Berbunga' | 'Pematangan Buah' | 'Siap Panen';
   catatan?: string;
+  delete_token?: string;
   created_at: string;
 }
 

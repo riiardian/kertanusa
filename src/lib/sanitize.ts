@@ -39,3 +39,15 @@ export function isValidCoordinate(lat?: number, lon?: number): boolean {
   if (isNaN(lat) || isNaN(lon)) return false;
   return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
 }
+
+// Sensor / Masking nomor telepon publik untuk mencegah kebocoran data PII & Web Scraping
+export function maskPhoneNumber(phone?: string): string {
+  if (!phone || typeof phone !== 'string') return '';
+  const trimmed = phone.trim();
+  if (trimmed.length <= 6) return '****';
+  // Pertahankan 4 digit depan dan 2 digit belakang
+  const prefix = trimmed.slice(0, 4);
+  const suffix = trimmed.slice(-2);
+  const maskedCount = Math.min(6, Math.max(3, trimmed.length - 6));
+  return `${prefix}-${'*'.repeat(maskedCount)}-${suffix}`;
+}

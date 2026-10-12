@@ -1,8 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { PetaniRecord, VisionAnalysisResult } from './types';
 import { getCropInfo } from './crops';
 import { getRegionProfile } from './agro_regions';
+import { maskPhoneNumber } from './sanitize';
 
 // Direktori penyimpanan data permanen (diabaikan oleh Git agar tidak terhapus saat deploy/restart)
 const STORAGE_DIR = path.join(process.cwd(), 'storage');
@@ -185,11 +187,20 @@ function saveAtomicDb(data: DatabaseSchema): boolean {
   }
 }
 
-export function getAllPetani(): PetaniRecord[] {
+export function getAllPetani(includeSensitive: boolean = false): PetaniRecord[] {
   const db = readPersistentDb();
-  return (db.petani || []).sort(
+  const list = (db.petani || []).sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
+
+  return list.map(item => {
+    const safeRecord = { ...item };
+    delete safeRecord.delete_token; // Jangan pernah membocorkan delete_token ke publik
+    if (!includeSensitive && safeRecord.kontak) {
+      safeRecord.kontak = maskPhoneNumber(safeRecord.kontak);
+    }
+    return safeRecord;
+  });
 }
 
 export function addPetani(data: {
@@ -224,10 +235,14 @@ export function addPetani(data: {
   else if (umurHari > cropInfo.umur_panen_hari * 0.4) statusTanaman = 'Generatif/Berbunga';
   else if (umurHari > 20) statusTanaman = 'Vegetatif Aktif';
 
+  // Bangkitkan delete_token rahasia berkemampuan khusus (Capability-Based Security)
+  const deleteToken = 'dtk-' + crypto.randomBytes(12).toString('hex');
+
   const newRecord: PetaniRecord = {
     id: 'ptn-' + Date.now().toString(36),
     nama_petani: data.nama_petani,
     kontak: data.kontak || '',
+    delete_token: deleteToken,
     luas_tanah: Number(data.luas_tanah),
     satuan_luas: data.satuan_luas,
     daerah: data.daerah,
@@ -246,20 +261,48 @@ export function addPetani(data: {
     created_at: new Date().toISOString()
   };
 
+  // Batasi total kapasitas database petani (mencegah DoS Storage & Resource Exhaustion)
+  if (db.petani.length >= 200) {
+    const defaultIds = new Set(DEFAULT_DATA_PETANI.map(d => d.id));
+    const oldestIndex = db.petani.findLastIndex(p => !defaultIds.has(p.id));
+    if (oldestIndex !== -1) {
+      db.petani.splice(oldestIndex, 1);
+    }
+  }
+
   db.petani.unshift(newRecord);
   saveAtomicDb(db);
   return newRecord;
 }
 
-export function deletePetani(id: string): boolean {
+export interface DeletePetaniResult {
+  success: boolean;
+  status: 'SUCCESS' | 'UNAUTHORIZED' | 'NOT_FOUND';
+}
+
+export function deletePetani(
+  id: string,
+  auth?: { isAdmin?: boolean; deleteToken?: string }
+): DeletePetaniResult {
   const db = readPersistentDb();
-  const initialLen = db.petani.length;
-  db.petani = db.petani.filter(p => p.id !== id);
-  if (db.petani.length !== initialLen) {
-    saveAtomicDb(db);
-    return true;
+  const target = db.petani.find(p => p.id === id);
+  if (!target) {
+    return { success: false, status: 'NOT_FOUND' };
   }
-  return false;
+
+  // Cek otorisasi: Wajib merupakan Admin ATAU pemegang delete_token sah dari record ini
+  const isAuthorized = Boolean(
+    auth?.isAdmin ||
+    (auth?.deleteToken && target.delete_token && auth.deleteToken === target.delete_token)
+  );
+
+  if (!isAuthorized) {
+    return { success: false, status: 'UNAUTHORIZED' };
+  }
+
+  db.petani = db.petani.filter(p => p.id !== id);
+  saveAtomicDb(db);
+  return { success: true, status: 'SUCCESS' };
 }
 
 export function getAllScans(): VisionAnalysisResult[] {
@@ -271,5 +314,9 @@ export function addScanRecord(scan: VisionAnalysisResult): void {
   const db = readPersistentDb();
   if (!db.scans) db.scans = [];
   db.scans.unshift(scan);
+  // Pangkas ke maksimal 30 scan terakhir untuk mencegah memory leak & storage bloat
+  if (db.scans.length > 30) {
+    db.scans = db.scans.slice(0, 30);
+  }
   saveAtomicDb(db);
 }

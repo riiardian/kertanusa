@@ -45,12 +45,23 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { imageData, imageKeyword, sampleKey, cropName } = body;
 
-    // Validasi & Sanitasi Ukuran Payload Gambar (Maksimal 12 MB)
+    // Validasi & Sanitasi Ukuran Payload Gambar (Maksimal 12 MB) & Mitigasi SSRF
+    let isValidImageFormat = false;
     if (imageData && typeof imageData === 'string') {
       if (imageData.length > 16_000_000) {
         return NextResponse.json(
           { success: false, message: 'Ukuran file citra terlalu besar. Maksimal 10 MB.' },
           { status: 413 }
+        );
+      }
+
+      // Mitigasi SSRF: Hanya izinkan data URI base64 gambar, tolak skema URL eksternal / internal
+      if (imageData.startsWith('data:image/')) {
+        isValidImageFormat = true;
+      } else if (imageData.startsWith('http://') || imageData.startsWith('https://') || imageData.startsWith('//') || imageData.startsWith('file://')) {
+        return NextResponse.json(
+          { success: false, message: 'Format gambar tidak diizinkan. Harap unggah berkas citra secara langsung (Base64 Data URI).' },
+          { status: 400 }
         );
       }
     }
@@ -59,7 +70,7 @@ export async function POST(request: Request) {
     const cleanSampleKey = sanitizeText(sampleKey || imageKeyword, 50);
 
     let result;
-    if (imageData && typeof imageData === 'string' && (imageData.startsWith('data:image/') || imageData.length > 100)) {
+    if (isValidImageFormat && imageData) {
       // Panggil AI Multimodal Vision asli di server
       result = await analyzeImageWithAI(imageData, cleanCropName);
     } else {

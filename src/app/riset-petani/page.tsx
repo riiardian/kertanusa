@@ -36,9 +36,15 @@ export default function RisetPetaniPage() {
   }, []);
 
   async function handleDelete(id: string, nama: string) {
-    if (!confirm(`Yakin ingin menghapus data riset petani "${nama}"?`)) return;
+    const adminKey = prompt(`Masukkan Kunci Otorisasi Admin untuk menghapus data riset "${nama}":`);
+    if (!adminKey) return;
     try {
-      const res = await fetch(`/api/petani?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/petani?id=${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'x-admin-key': adminKey.trim()
+        }
+      });
       const data = await res.json();
       if (data.success) {
         setPetaniList(prev => prev.filter(p => p.id !== id));
@@ -64,9 +70,12 @@ export default function RisetPetaniPage() {
 
         setToast(`Data petani ${nama} berhasil dihapus.`);
         setTimeout(() => setToast(null), 3000);
+      } else {
+        alert(data.message || 'Gagal menghapus data. Kunci admin tidak valid.');
       }
     } catch (e) {
       console.error(e);
+      alert('Terjadi kesalahan jaringan.');
     }
   }
 

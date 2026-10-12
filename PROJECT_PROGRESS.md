@@ -1,6 +1,32 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+170. **Audit Keamanan Menyeluruh & Hardening Endpoints OWASP: Anti-Broken Access Control, PII Masking, SSRF Defense, & Anti-DoS (`auth.ts`, `db.ts`, `api/petani`, `api/analyze`, `sanitize.ts`, `rate_limiter.ts`) [2026-10-12]**:
+    - **Diagnosa Masukan User**:
+      - Bos menginstruksikan audit keamanan siber menyeluruh ke seluruh endpoint API, URL, dan struktur kode Kertanusa setelah ditemukannya potensi celah otorisasi pada penghapusan data petani.
+    - **Temuan Celah & Implementasi Solusi Defensif**:
+      1. **Resolusi Broken Access Control (CWE-284 / OWASP A01:2021) pada `DELETE /api/petani`**:
+         - Menambahkan modul otentikasi `src/lib/auth.ts` (`verifyAdminAuthorization`) yang memverifikasi kunci admin (`x-admin-key`, `Authorization: Bearer`, atau `admin_key`).
+         - Menerapkan arsitektur *Capability-Based Security* pada `src/lib/db.ts`: setiap record yang dibuat secara sah menghasilkan `delete_token` rahasia di backend.
+         - Endpoint `DELETE` kini wajib memiliki Kunci Admin ATAU `delete_token` yang cocok dengan record bersangkutan; request tanpa otorisasi ditolak dengan `401 Unauthorized`.
+         - Frontend `riset-petani` kini memicu prompt Kunci Admin saat menghapus, dan `input-lahan` menyertakan `x-delete-token` draft miliknya sendiri.
+      2. **Pencegahan PII Leakage / Data Scraping pada `GET /api/petani`**:
+         - Menambahkan fungsi `maskPhoneNumber` di `src/lib/sanitize.ts` yang menyensor nomor kontak publik (contoh: `0812-******-22`).
+         - Nomor kontak penuh hanya dikembalikan jika request berasal dari Administrator terverifikasi. Nilai `delete_token` dihilangkan total dari respon publik.
+      3. **Mitigasi SSRF & Injeksi Skema pada `POST /api/analyze` (OWASP A10:2021)**:
+         - Validasi ketat format `imageData`: hanya menerima skema Base64 Data URI gambar yang sah (`data:image/(jpeg|png|webp|jpg);base64,...`).
+         - Menolak mentah-mentah skema URL eksternal/internal (`http://`, `https://`, `file://`, `//`) untuk mencegah eksploitasi Server-Side Request Forgery.
+      4. **Anti-DoS Memory & Storage Bloat (`db.ts`)**:
+         - Membatasi kuota simpan riwayat pemindaian AI (`db.scans`) maksimal 30 item terbaru.
+         - Membatasi total kapasitas record petani (`db.petani`) maksimal 200 item dengan pruning entri non-default tertua untuk mencegah pembengkakan database JSON.
+      5. **Anti-IP Spoofing pada Rate Limiter (`rate_limiter.ts`)**:
+         - Memprioritaskan `cf-connecting-ip` (Cloudflare True Client IP) dan `x-real-ip` Nginx dibandingkan `X-Forwarded-For` yang rentan dimanipulasi klien.
+    - **Validasi Build & Pengujian Keamanan**:
+      - Next.js Turbopack build sukses 100% (16/16 halaman, 0 error).
+      - Pengujian HTTP probe: Unauthenticated DELETE ditolak 401 Unauthorized, SSRF URL ditolak 400 Bad Request, Public GET kontak tersensor rapi, Authorized DELETE sukses 200 OK.
+      - PM2 `kertanusa-web` direstart online di VPS.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 169. **Rollback & Pembersihan Modul Kuesioner Beranda (`page.tsx`, `Navbar.tsx`, `db.ts`) [2026-10-11]**:
     - **Diagnosa Masukan User**:
       - Bos memutuskan untuk tidak menampilkan modul kuesioner pada beranda demi menjaga kesederhanaan, kerapian, dan fokus antarmuka utama Kertanusa.

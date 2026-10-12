@@ -21,14 +21,27 @@ if (typeof setInterval !== 'undefined') {
 }
 
 export function getClientIp(request: Request): string {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
+  // 1. Prioritaskan header Cloudflare True Client IP (Anti-Spoofing di balik CDN Cloudflare)
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp && cfIp.trim()) {
+    return cfIp.trim();
   }
+
+  // 2. Prioritaskan header Nginx X-Real-IP (Ditetapkan langsung dari remote_addr server Nginx terpercaya)
   const realIp = request.headers.get('x-real-ip');
-  if (realIp) {
+  if (realIp && realIp.trim()) {
     return realIp.trim();
   }
+
+  // 3. Fallback X-Forwarded-For: Ambil IP paling kanan (yang di-append oleh proxy internal terpercaya)
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const parts = forwardedFor.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      return parts[parts.length - 1];
+    }
+  }
+
   return '127.0.0.1';
 }
 
