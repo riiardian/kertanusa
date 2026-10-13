@@ -1,6 +1,28 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+175. **Penyempurnaan Visual Pratinjau, Penyelarasan Ikon Centang, Mode Dot-Only Scanner Halus & Kartu Tips Hijau (`scan-ai/page.tsx`, `PixelScanOverlay.tsx`) [2026-10-13]**:
+    - **Diagnosa Masukan User**:
+      1. Posisi ikon centang tidak sejajar/melayang canggung terhadap teks *"Foto siap dianalisis..."*.
+      2. Terdapat bidang hitam kosong (letterboxing) di sekitar foto unggahan, seharusnya foto memenuhi pixel card secara penuh (*full fit*).
+      3. Menghapus garis laser pemindai naik-turun pada animasi canvas, menyisakan hanya titik-titik (dot matrix) dengan tempo yang lebih santai dan lambat (*slow*).
+      4. Mengubah 3 kartu panduan pemotretan (*Jarak, Cahaya, Fokus*) menjadi kartu hijau (*bg-emerald-700*) dengan teks warna putih (*text-white*).
+    - **Solusi & Implementasi Teknis**:
+      - **Penyelarasan Ikon Centang & Teks (`scan-ai/page.tsx`)**:
+        - Mengganti kontainer teks menjadi `flex items-start gap-2` dengan `mt-0.5` pada ikon centang, sehingga ikon sejajar tepat di baris pertama teks baik pada desktop maupun layar ponsel kecil.
+      - **Foto Memenuhi Card Penuh Tanpa Bidang Hitam (`scan-ai/page.tsx`)**:
+        - Mengubah styling gambar pratinjau menjadi `object-cover w-full h-full` di seluruh ukuran layar (mengeliminasi `object-contain` yang menyisakan celah hitam letterboxing). Foto kini mengisi frame kartu secara presisi dan imersif.
+      - **Mode Dot-Only Scanner Tempo Tenang (`PixelScanOverlay.tsx`)**:
+        - Menghapus seluruh render garis laser naik-turun (`scanY`, `auraGrad`, `lineGrad`).
+        - Menyesuaikan tempo animasi menjadi lembut dan tenang (`t += 0.022` dengan perambatan riak gelombang `t * 1.25`).
+        - Hanya merender partikel matriks titik piksel emerald yang memancar halus dan elegan dari pusat saat pemindaian berlangsung.
+      - **Kartu Tips Hijau & Teks Putih (`scan-ai/page.tsx`)**:
+        - Mengubah kartu indikator *Jarak, Cahaya, Fokus* di Langkah 1 menjadi `bg-emerald-700` dengan label hijau muda cerah (`text-emerald-100`) dan nilai putih tebal (`text-white`).
+    - **Validasi Build & Status**:
+      - Next.js Turbopack build sukses 100% (16 halaman, 0 error).
+      - Reload PM2 `kertanusa-web`.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 174. **Redesain 2-Kolom Desktop Layar Lebar & Eliminasi Truncation Tombol pada Pratinjau Tanaman (`scan-ai/page.tsx`) [2026-10-13]**:
     - **Diagnosa Masukan User**:
       - Bos mengirimkan tangkapan layar tampilan desktop Langkah 2: card tampak sempit/nanggung di tengah layar, teks komoditas terpotong menjadi "Deteksi Otoma...", terdapat tombol duplikat "Foto Ulang" di header dan footer, serta frame foto belum proporsional.

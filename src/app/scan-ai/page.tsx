@@ -519,18 +519,18 @@ export default function ScanAiPage() {
                 )}
 
                 {/* Tips Pemotretan Ringkas */}
-                <div className="pt-4 border-t border-slate-100 grid grid-cols-3 gap-2 text-center text-slate-600">
-                  <div className="p-2 rounded-xl bg-slate-50">
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Jarak</span>
-                    <span className="text-[11px] font-semibold text-slate-700">15–30 cm</span>
+                <div className="pt-4 border-t border-slate-100 grid grid-cols-3 gap-2.5 sm:gap-3 text-center">
+                  <div className="p-2.5 sm:p-3 rounded-2xl bg-emerald-700 shadow-2xs">
+                    <span className="text-[10px] font-bold text-emerald-100 block uppercase tracking-wider">Jarak</span>
+                    <span className="text-xs sm:text-sm font-bold text-white mt-0.5 block">15–30 cm</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-slate-50">
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Cahaya</span>
-                    <span className="text-[11px] font-semibold text-slate-700">Terang Alami</span>
+                  <div className="p-2.5 sm:p-3 rounded-2xl bg-emerald-700 shadow-2xs">
+                    <span className="text-[10px] font-bold text-emerald-100 block uppercase tracking-wider">Cahaya</span>
+                    <span className="text-xs sm:text-sm font-bold text-white mt-0.5 block">Terang Alami</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-slate-50">
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Fokus</span>
-                    <span className="text-[11px] font-semibold text-slate-700">Tajam Jelas</span>
+                  <div className="p-2.5 sm:p-3 rounded-2xl bg-emerald-700 shadow-2xs">
+                    <span className="text-[10px] font-bold text-emerald-100 block uppercase tracking-wider">Fokus</span>
+                    <span className="text-xs sm:text-sm font-bold text-white mt-0.5 block">Tajam Jelas</span>
                   </div>
                 </div>
 
@@ -551,13 +551,13 @@ export default function ScanAiPage() {
               
               {/* Kolom Kiri (Lg 7/12): Frame Foto Pratinjau Besar & Lega */}
               <div className="lg:col-span-7 space-y-3">
-                <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 w-full h-[300px] sm:h-[400px] lg:h-[460px] flex items-center justify-center">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 w-full h-[300px] sm:h-[400px] lg:h-[460px] flex items-center justify-center">
                   {imagePreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
                       src={imagePreview} 
                       alt="Pratinjau Tanaman" 
-                      className="w-full h-full object-contain sm:object-cover"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="text-center p-6 text-white space-y-2">
@@ -577,14 +577,14 @@ export default function ScanAiPage() {
                     </span>
                   </div>
 
-                  {/* Animasi Dot Matrix & Laser Scanner AI */}
+                  {/* Animasi Dot Matrix Scanner AI */}
                   {scanning && <PixelScanOverlay />}
                 </div>
 
-                <p className="text-[11px] text-slate-500 text-center sm:text-left flex items-center justify-center sm:justify-start gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <div className="flex items-start gap-2 pt-1 text-slate-600 text-xs leading-snug">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span>Foto siap dianalisis. Pilih komoditas spesifik atau gunakan deteksi otomatis AI.</span>
-                </p>
+                </div>
               </div>
 
               {/* Kolom Kanan (Lg 5/12): Panel Konfirmasi & Aksi */}
