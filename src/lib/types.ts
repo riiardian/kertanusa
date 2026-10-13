@@ -79,7 +79,7 @@ export interface VisionAnalysisResult {
   nama_masalah: string;
   tingkat_keparahan: 'Ringan' | 'Sedang' | 'Parah' | 'Aman';
   akurasi: number;
-  status_kematangan: 'Belum Cukup Panen' | 'Mendekati Panen' | 'Siap Panen (Super Grade A)';
+  status_kematangan: 'Belum Cukup Panen' | 'Mendekati Panen' | 'Siap Panen (Super Grade A)' | 'Rusak / Gagal Panen' | 'Afkir (Tidak Layak Konsumsi)';
   estimasi_hari_panen: number;
   ciri_visual: string[];
   rekomendasi_pupuk: {

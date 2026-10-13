@@ -205,8 +205,10 @@ export async function analyzeImageWithAI(imageData: string, cropHint?: string): 
     return analyzeCropImage('custom', cropHint);
   }
 
-  const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
+  const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA (fokus komoditas tropis Indonesia).
 Analisis citra yang diunggah secara cermat, mendalam, dan akurat.
+Prioritaskan identifikasi komoditas hortikultura, pangan, dan perkebunan Indonesia (seperti Mangga, Cabai, Padi, Jagung, Bawang Merah, Jeruk, Tomat, Pisang, Pepaya, Kelapa Sawit, dll).
+Perhatikan morfologi tanaman tropis secara teliti (contoh: buah mangga tropis berkulit kuning/hijau dengan bentuk khas lonjong/ginjal, jangan tertukar dengan buah subtropis seperti persik/peach).
 
 ATURAN GAYA BAHASA & FORMAT:
 1. DILARANG KERAS menggunakan emoji atau simbol ikon apa pun di seluruh nilai JSON. Gunakan murni teks alfabetis baku dan angka.
@@ -237,13 +239,13 @@ Balas HANYA dengan JSON format persis:
 Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TANPA EMOJI):
 {
   "is_tanaman": true,
-  "nama_tanaman": "Nama Tanaman Lengkap (contoh: Jeruk / Citrus sp.)",
+  "nama_tanaman": "Nama Tanaman Lengkap (contoh: Mangga / Mangifera indica)",
   "kategori_diagnosa": "Penyakit" | "Hama" | "Fisiologis" | "Tanaman Sehat",
-  "nama_masalah": "Nama Masalah / Penyakit / Status (contoh: Bercak Cokelat Alternaria)",
+  "nama_masalah": "Nama Masalah / Penyakit (contoh: Antraknosa Buah / Colletotrichum gloeosporioides)",
   "tingkat_keparahan": "Ringan" | "Sedang" | "Parah" | "Aman",
-  "akurasi": 94.5,
-  "status_kematangan": "Belum Cukup Panen" | "Mendekati Panen" | "Siap Panen (Super Grade A)",
-  "estimasi_hari_panen": 30,
+  "akurasi": 95.5,
+  "status_kematangan": "Belum Cukup Panen" | "Mendekati Panen" | "Siap Panen (Super Grade A)" | "Rusak / Gagal Panen",
+  "estimasi_hari_panen": 14,
   "ciri_visual": ["ciri 1", "ciri 2", "ciri 3"],
   "rekomendasi_pupuk": [
     {
@@ -255,11 +257,14 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TAN
   ],
   "solusi_perawatan": ["tindakan 1", "tindakan 2", "tindakan 3"],
   "pestisida_nabati_organik": ["resep alami 1", "resep alami 2"]
-}`;
+}
+
+ATURAN LOGIKA KEMATANGAN & ESTIMASI PANEN:
+- Jika buah atau tanaman mengalami infeksi busuk parah, luka nekrotik besar, atau jatuh rontok ke tanah, status_kematangan HARUS 'Rusak / Gagal Panen' dan estimasi_hari_panen bernilai 0 (tidak layak panen). Jangan berikan status Siap Panen pada buah yang membusuk.`;
 
   const userPrompt = cropHint 
-    ? `Analisis citra ini. (Catatan petani: dicurigai ${cropHint}, namun verifikasi terlebih dahulu apakah benar tanaman pertanian). Balas dalam JSON valid tanpa emoji.`
-    : `Analisis citra ini dan verifikasi apakah ini komoditas tanaman pertanian. Balas dalam JSON valid tanpa emoji.`;
+    ? `Analisis citra ini. (Catatan petani: komoditas ${cropHint}). Berikan diagnosis presisi dan rekomendasi agronomis tropis Indonesia. Balas dalam JSON valid tanpa emoji.`
+    : `Analisis citra ini dan verifikasi komoditasnya (prioritaskan tanaman/buah tropis Indonesia). Berikan diagnosis agronomis yang akurat. Balas dalam JSON valid tanpa emoji.`;
 
   try {
     const res = await fetch(`${baseURL}/chat/completions`, {
@@ -298,6 +303,25 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TAN
 
     const isTanaman = parsed.is_tanaman !== false && parsed.kategori_diagnosa !== 'Non-Pertanian';
 
+    const rawMasalah = cleanText(parsed.nama_masalah) || (isTanaman ? 'Terindikasi Gejala Patogen' : 'Objek Bukan Tanaman Pertanian');
+    const rawKeparahan = (['Ringan', 'Sedang', 'Parah', 'Aman'].includes(parsed.tingkat_keparahan)
+      ? parsed.tingkat_keparahan
+      : 'Aman') as VisionAnalysisResult['tingkat_keparahan'];
+    let rawKematangan = cleanText(parsed.status_kematangan) || 'Belum Cukup Panen';
+    let rawHariPanen = typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 0;
+
+    // Logika Protektif: Cegah paradoks buah busuk/rusak parah tapi dilabeli 'Siap Panen (Super Grade A)'
+    const isSevereDamage = rawKeparahan === 'Parah' && (
+      rawMasalah.toLowerCase().includes('busuk') || 
+      rawMasalah.toLowerCase().includes('antraknosa') || 
+      rawMasalah.toLowerCase().includes('rusak') || 
+      rawMasalah.toLowerCase().includes('patek')
+    );
+    if (isSevereDamage && (rawKematangan.includes('Grade A') || rawKematangan.includes('Siap Panen'))) {
+      rawKematangan = 'Rusak / Gagal Panen';
+      rawHariPanen = 0;
+    }
+
     return {
       id: 'scan-' + Date.now(),
       is_tanaman: isTanaman,
@@ -306,13 +330,11 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TAN
       kategori_diagnosa: (!isTanaman ? 'Non-Pertanian' : (['Hama', 'Penyakit', 'Fisiologis', 'Tanaman Sehat'].includes(parsed.kategori_diagnosa) 
         ? parsed.kategori_diagnosa 
         : 'Penyakit')) as VisionAnalysisResult['kategori_diagnosa'],
-      nama_masalah: cleanText(parsed.nama_masalah) || (isTanaman ? 'Terindikasi Gejala Patogen' : 'Objek Bukan Tanaman Pertanian'),
-      tingkat_keparahan: (['Ringan', 'Sedang', 'Parah', 'Aman'].includes(parsed.tingkat_keparahan)
-        ? parsed.tingkat_keparahan
-        : 'Aman') as VisionAnalysisResult['tingkat_keparahan'],
+      nama_masalah: rawMasalah,
+      tingkat_keparahan: rawKeparahan,
       akurasi: typeof parsed.akurasi === 'number' ? parsed.akurasi : parseFloat(parsed.akurasi) || 95.0,
-      status_kematangan: (cleanText(parsed.status_kematangan) || 'Belum Cukup Panen') as VisionAnalysisResult['status_kematangan'],
-      estimasi_hari_panen: typeof parsed.estimasi_hari_panen === 'number' ? parsed.estimasi_hari_panen : parseInt(parsed.estimasi_hari_panen) || 0,
+      status_kematangan: rawKematangan as VisionAnalysisResult['status_kematangan'],
+      estimasi_hari_panen: rawHariPanen,
       ciri_visual: Array.isArray(parsed.ciri_visual) ? parsed.ciri_visual.map(cleanText).filter(Boolean) : [],
       rekomendasi_pupuk: Array.isArray(parsed.rekomendasi_pupuk) ? parsed.rekomendasi_pupuk.map((p: any) => ({
         jenis: cleanText(p.jenis) || 'Pupuk Rekomendasi',

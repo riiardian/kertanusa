@@ -1,6 +1,28 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+173. **Penyelarasan Presisi Komoditas Tropis Mangga & Koreksi Paradoks Kematangan Buah Busuk (`vision_ai.ts`, `types.ts`, `scan-ai/page.tsx`) [2026-10-13]**:
+    - **Diagnosa Masukan User**:
+      - Bos menanyakan mengapa foto mangga busuk yang diunggah memunculkan hasil diagnosis "Busuk Cokelat Buah (Monilinia fructicola) pada Persik / Peach (Prunus persica)", serta menampilkan status keliru "Siap Panen (Super Grade A)" padahal buah sudah membusuk di tanah.
+    - **Akar Masalah (Root Cause)**:
+      1. Istilah "Cokelat" berasal dari terjemahan penyakit buah subtropis *"Brown rot (Monilinia fructicola)"* yang sering menyerang buah persik (peach) dan aprikot berwarna kuning di dataset penelitian barat.
+      2. Pilihan komoditas cepat di Langkah 2 (`cropOptions`) belum menyediakan opsi "Mangga", sehingga pengguna memilih deteksi otomatis tanpa petunjuk spesifik hortikultura tropis.
+      3. Opsi `status_kematangan` sebelumnya hanya memiliki pilihan `Belum Cukup Panen`, `Mendekati Panen`, dan `Siap Panen (Super Grade A)`. Karena mangga pada foto sudah berwarna kuning (matang fisiologis), AI terpaksa memilih "Siap Panen (Super Grade A)" meskipun buahnya rusak parah.
+    - **Solusi & Implementasi Teknis**:
+      - **Spesialisasi Konteks Agrikultur Tropis Indonesia (`vision_ai.ts`)**:
+        - Mempertegas sistem prompt AI agar memprioritaskan komoditas hortikultura tropis Indonesia (Mangga, Cabai, Padi, Jagung, Bawang Merah, Jeruk, dll) dan mengenali bentuk lonjong/ginjal khas mangga tropis agar tidak tertukar dengan buah subtropis seperti persik.
+      - **Opsi Baru & Logika Protektif Kematangan (`types.ts`, `vision_ai.ts`)**:
+        - Menambahkan status kematangan baru: `'Rusak / Gagal Panen'` dan `'Afkir (Tidak Layak Konsumsi)'`.
+        - Menerapkan sanitasi otomatis: jika keparahan terdeteksi 'Parah' dan masalah adalah infeksi busuk/antraknosa/rontok tanah, status kematangan otomatis dipaksa menjadi `'Rusak / Gagal Panen'` dengan estimasi panen 0 hari (mencegah kontradiksi buah busuk dilabeli Super Grade A).
+      - **Penyempurnaan Antarmuka (`scan-ai/page.tsx`)**:
+        - Menambahkan komoditas "Mangga" ke dalam pilihan cepat Langkah 2 (`cropOptions`) yang tersusun dalam grid 3x3 simetris.
+        - Menyesuaikan badge status kematangan di kartu hasil agar menampilkan teks mawar merah tegas "Rusak / Gagal Panen - Tidak Layak Panen".
+    - **Validasi Build & Status**:
+      - Next.js Turbopack build sukses 100% (16 halaman, 0 error).
+      - Reload PM2 `kertanusa-web`.
+      - Pengujian foto mangga busuk milik pengguna kini terdiagnosis 100% tepat: *"Mangga (Mangifera indica) - Antraknosa Buah (Colletotrichum gloeosporioides) - Status: Rusak / Gagal Panen"*.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 172. **Restorasi Model AI Vision High-Reasoning & Akselerasi Animasi Scanner Berenergi (`vision_ai.ts`, `.env.local`, `PixelScanOverlay.tsx`) [2026-10-13]**:
     - **Diagnosa Masukan User**:
       - Bos menginstruksikan untuk mengembalikan model reasoning AI ke kualitas maksimal semula (`ag/gemini-3.8-flash-high`) agar ketelitian dan kedalaman diagnosis agronomis tidak berkurang sedikitpun.

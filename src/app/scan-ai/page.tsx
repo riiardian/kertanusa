@@ -56,12 +56,13 @@ export default function ScanAiPage() {
   // Komoditas Pilihan Cepat di Step 2
   const cropOptions = [
     { name: 'Deteksi Otomatis AI', defaultKey: 'auto' },
-    { name: 'Jeruk', defaultKey: 'jeruk' },
+    { name: 'Mangga', defaultKey: 'antraknosa' },
     { name: 'Cabai', defaultKey: 'antraknosa' },
     { name: 'Padi', defaultKey: 'hawar-daun' },
     { name: 'Bawang Merah', defaultKey: 'ulat-grayak' },
-    { name: 'Tomat', defaultKey: 'antraknosa' },
     { name: 'Jagung', defaultKey: 'bulai-jagung' },
+    { name: 'Jeruk', defaultKey: 'jeruk' },
+    { name: 'Tomat', defaultKey: 'antraknosa' },
     { name: 'Lainnya', defaultKey: 'siap-panen-grade-a' }
   ];
 
@@ -598,12 +599,12 @@ export default function ScanAiPage() {
               {scanning && <PixelScanOverlay />}
             </div>
 
-            {/* Pilihan Jenis Tanaman (Chips) */}
+            {/* Pilihan Jenis Tanaman (Chips 3x3 Rapi) */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
                 Pilih Komoditas (Opsional):
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {cropOptions.map((crop) => {
                   const isSelected = selectedCrop === crop.name;
                   return (
@@ -728,11 +729,19 @@ export default function ScanAiPage() {
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
                         Kesiapan Panen
                       </span>
-                      <span className="text-xs sm:text-sm font-bold text-slate-800 block">
+                      <span className={`text-xs sm:text-sm font-bold block ${
+                        result.status_kematangan.includes('Rusak') || result.status_kematangan.includes('Gagal') || result.status_kematangan.includes('Afkir')
+                          ? 'text-rose-600'
+                          : result.status_kematangan.includes('Super')
+                          ? 'text-emerald-700'
+                          : 'text-slate-800'
+                      }`}>
                         {result.status_kematangan}
                       </span>
                       <span className="text-[11px] text-slate-500 block">
-                        {result.estimasi_hari_panen === 0 
+                        {result.status_kematangan.includes('Rusak') || result.status_kematangan.includes('Gagal') || result.status_kematangan.includes('Afkir')
+                          ? 'Tidak Layak Panen'
+                          : result.estimasi_hari_panen === 0 
                           ? 'Siap Petik Hari Ini' 
                           : `± ${result.estimasi_hari_panen} hari lagi`}
                       </span>
@@ -760,7 +769,9 @@ export default function ScanAiPage() {
                     <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                       <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
                       <span className="text-xs sm:text-sm font-bold text-slate-800">
-                        {result.estimasi_hari_panen === 0 ? 'Siap Petik' : `${result.estimasi_hari_panen} Hari`}
+                        {result.status_kematangan.includes('Rusak') || result.status_kematangan.includes('Gagal') || result.status_kematangan.includes('Afkir')
+                          ? 'Afkir / Rusak'
+                          : result.estimasi_hari_panen === 0 ? 'Siap Petik' : `${result.estimasi_hari_panen} Hari`}
                       </span>
                     </div>
                   </div>
