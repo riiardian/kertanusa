@@ -1,6 +1,23 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+172. **Restorasi Model AI Vision High-Reasoning & Akselerasi Animasi Scanner Berenergi (`vision_ai.ts`, `.env.local`, `PixelScanOverlay.tsx`) [2026-10-13]**:
+    - **Diagnosa Masukan User**:
+      - Bos menginstruksikan untuk mengembalikan model reasoning AI ke kualitas maksimal semula (`ag/gemini-3.8-flash-high`) agar ketelitian dan kedalaman diagnosis agronomis tidak berkurang sedikitpun.
+      - Bos meminta animasi pemindai (scanner animation) dibuat lebih cepat, lincah, dan dinamis (tidak terlalu lambat/slow).
+    - **Solusi & Implementasi Teknis**:
+      1. **Restorasi Kualitas Penalaran AI Semula**:
+         - Mengembalikan model di `vision_ai.ts` dan `.env.local` ke `ag/gemini-3.8-flash-high` dengan batas token luas `max_tokens: 2048`.
+         - Mempertahankan optimasi kompresi citra sisi klien (maksimal 1280px / 150-250 KB) sehingga pengunggahan jaringan tetap super ringan dan efisien tanpa mengorbankan kualitas analitik Google Vision.
+      2. **Akselerasi & Modernisasi Animasi Scanner (`PixelScanOverlay.tsx`)**:
+         - Menaikkan tempo animasi canvas 3x lipat (`t += 0.065`) dengan gelombang ripple memancar cepat dari pusat (`dist / 38 - t * 2.6`).
+         - Menambahkan berkas laser scanning horizontal berkecepatan tinggi yang menyapu foto dari atas ke bawah secara kontinu (`scanY = (sin(t * 1.8) + 1)/2 * h`) dengan gradien cahaya emerald dan aura radiant.
+         - Titik piksel matriks yang terkena sapuan laser otomatis menyala terang benderang dengan intensitas tinggi, menciptakan efek visual pemindaian canggih, futuristik, dan responsif.
+    - **Validasi Build & Status**:
+      - Next.js Turbopack build sukses 100% (16 halaman, 0 error).
+      - Reload PM2 `kertanusa-web`.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 171. **Optimasi Responsivitas Desktop UI & Akselerasi Penalaran AI Vision (`scan-ai/page.tsx`, `vision_ai.ts`, `.env.local`) [2026-10-13]**:
     - **Diagnosa Masukan User**:
       - Bos mengoreksi tampilan desktop: kartu "Obat Alami & Nabati" dan frame pratinjau unggahan tanaman terlihat sempit/nanggung ("setengah doang") dan tidak center proporsional di layar lebar.

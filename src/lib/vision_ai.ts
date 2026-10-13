@@ -199,18 +199,18 @@ function cleanText(val: any): string {
 export async function analyzeImageWithAI(imageData: string, cropHint?: string): Promise<VisionAnalysisResult> {
   const baseURL = process.env.AI_VISION_BASE_URL || 'http://127.0.0.1:20128/v1';
   const apiKey = process.env.AI_VISION_API_KEY || '';
-  const model = process.env.AI_VISION_MODEL || 'ag/gemini-3.8-flash-low';
+  const model = process.env.AI_VISION_MODEL || 'ag/gemini-3.8-flash-high';
 
   if (!apiKey && !process.env.AI_VISION_BASE_URL) {
     return analyzeCropImage('custom', cropHint);
   }
 
   const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
-Analisis citra yang diunggah secara cermat, cepat, dan terarah.
+Analisis citra yang diunggah secara cermat, mendalam, dan akurat.
 
 ATURAN GAYA BAHASA & FORMAT:
 1. DILARANG KERAS menggunakan emoji atau simbol ikon apa pun di seluruh nilai JSON. Gunakan murni teks alfabetis baku dan angka.
-2. Balas HANYA dengan JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar, dan tanpa penalaran bertele-tele.
+2. Balas HANYA dengan JSON valid tanpa markdown, tanpa backtick, dan tanpa kata pengantar.
 
 ATURAN VALIDASI CITRA PERTANIAN:
 Periksa apakah gambar yang diunggah benar-benar bagian dari tanaman budidaya pertanian (daun, batang, bunga, buah, pohon, atau bibit tanaman).
@@ -282,7 +282,7 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TAN
           }
         ],
         temperature: 0.1,
-        max_tokens: 1024
+        max_tokens: 2048
       })
     });
 
