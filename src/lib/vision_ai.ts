@@ -199,18 +199,18 @@ function cleanText(val: any): string {
 export async function analyzeImageWithAI(imageData: string, cropHint?: string): Promise<VisionAnalysisResult> {
   const baseURL = process.env.AI_VISION_BASE_URL || 'http://127.0.0.1:20128/v1';
   const apiKey = process.env.AI_VISION_API_KEY || '';
-  const model = process.env.AI_VISION_MODEL || 'ag/gemini-3.8-flash-high';
+  const model = process.env.AI_VISION_MODEL || 'ag/gemini-3.8-flash-low';
 
   if (!apiKey && !process.env.AI_VISION_BASE_URL) {
     return analyzeCropImage('custom', cropHint);
   }
 
   const systemPrompt = `Anda adalah pakar agronomis dan computer vision pertanian presisi KERTANUSA.
-Analisis citra yang diunggah secara cermat.
+Analisis citra yang diunggah secara cermat, cepat, dan terarah.
 
 ATURAN GAYA BAHASA & FORMAT:
-1. DILARANG KERAS menggunakan emoji atau simbol ikon apa pun (seperti checkmark, daun, tanaman, peringatan, dll) di seluruh nilai JSON. Gunakan murni teks alfabetis baku dan angka.
-2. Balas HANYA dengan JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar.
+1. DILARANG KERAS menggunakan emoji atau simbol ikon apa pun di seluruh nilai JSON. Gunakan murni teks alfabetis baku dan angka.
+2. Balas HANYA dengan JSON valid tanpa markdown, tanpa backtick, tanpa kata pengantar, dan tanpa penalaran bertele-tele.
 
 ATURAN VALIDASI CITRA PERTANIAN:
 Periksa apakah gambar yang diunggah benar-benar bagian dari tanaman budidaya pertanian (daun, batang, bunga, buah, pohon, atau bibit tanaman).
@@ -234,7 +234,7 @@ Balas HANYA dengan JSON format persis:
 }
 
 2. JIKA VALID TANAMAN BUDIDAYA PERTANIAN:
-Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap (TANPA EMOJI):
+Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap terarah (TANPA EMOJI):
 {
   "is_tanaman": true,
   "nama_tanaman": "Nama Tanaman Lengkap (contoh: Jeruk / Citrus sp.)",
@@ -281,7 +281,8 @@ Kembalikan JSON dengan is_tanaman: true dan susun diagnosis lengkap (TANPA EMOJI
             ]
           }
         ],
-        temperature: 0.1
+        temperature: 0.1,
+        max_tokens: 1024
       })
     });
 

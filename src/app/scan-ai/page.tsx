@@ -177,6 +177,42 @@ export default function ScanAiPage() {
     startCamera(nextMode);
   }
 
+  // Kompresi Citra Client-Side Otomatis (Percepat Kirim & Proses AI)
+  function compressImage(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    });
+  }
+
   // Ambil Foto dari Viewfinder Kamera
   function capturePhoto() {
     if (!videoRef.current) return;
@@ -186,13 +222,25 @@ export default function ScanAiPage() {
     setTimeout(() => setIsShutterFlashing(false), 180);
 
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    let width = video.videoWidth || 640;
+    let height = video.videoHeight || 480;
+    const maxDim = 1280;
+    if (width > maxDim || height > maxDim) {
+      if (width > height) {
+        height = Math.round((height * maxDim) / width);
+        width = maxDim;
+      } else {
+        width = Math.round((width * maxDim) / height);
+        height = maxDim;
+      }
+    }
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
 
     if (ctx) {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      ctx.drawImage(video, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
       setImagePreview(dataUrl);
       setImageSource('camera');
       stopCameraStream();
@@ -200,19 +248,15 @@ export default function ScanAiPage() {
     }
   }
 
-  // Unggah File dari Galeri atau Kamera Bawaan
-  function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>, source: 'camera' | 'upload') {
+  // Unggah File dari Galeri atau Kamera Bawaan (Kompresi Ringan & Cepat)
+  async function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>, source: 'camera' | 'upload') {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result as string;
-        setImagePreview(dataUrl);
-        setImageSource(source);
-        stopCameraStream();
-        setStep(2); // Otomatis maju ke Step 2 (Pratinjau)
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await compressImage(file, 1280, 0.82);
+      setImagePreview(dataUrl);
+      setImageSource(source);
+      stopCameraStream();
+      setStep(2); // Otomatis maju ke Step 2 (Pratinjau)
     }
     e.target.value = '';
   }
@@ -227,7 +271,7 @@ export default function ScanAiPage() {
     setStep(2); // Maju ke Step 2 (Pratinjau)
   }
 
-  // Jalankan Proses Analisis AI
+  // Jalankan Proses Analisis AI (Respons Cepat Tanpa Delay Buatan)
   async function handleRunScan() {
     setScanning(true);
 
@@ -243,12 +287,10 @@ export default function ScanAiPage() {
       });
 
       const data = await res.json();
-      if (data.success) {
-        setTimeout(() => {
-          setResult(data.data);
-          setScanning(false);
-          setStep(3); // Masuk ke Step 3 (Hasil)
-        }, 1100);
+      if (data.success && data.data) {
+        setResult(data.data);
+        setScanning(false);
+        setStep(3); // Langsung masuk ke Step 3 (Hasil)
       } else {
         setScanning(false);
       }
@@ -258,11 +300,9 @@ export default function ScanAiPage() {
         id: 'scan-' + Date.now(),
         ...(DISEASE_LIBRARY[selectedSample] || DISEASE_LIBRARY['antraknosa'])
       };
-      setTimeout(() => {
-        setResult(fallbackResult as VisionAnalysisResult);
-        setScanning(false);
-        setStep(3); // Masuk ke Step 3 (Hasil)
-      }, 900);
+      setResult(fallbackResult as VisionAnalysisResult);
+      setScanning(false);
+      setStep(3); // Masuk ke Step 3 (Hasil)
     }
   }
 
@@ -371,8 +411,8 @@ export default function ScanAiPage() {
           LANGKAH 1: AMBIL FOTO / INPUT CITRA (CLEAN & MINIMALIS)
       ══════════════════════════════════════════════════════════════════════ */}
       {step === 1 && (
-        <div className="max-w-xl mx-auto space-y-4">
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto space-y-4">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xs space-y-6">
             
             {/* Viewfinder Kamera WebRTC jika aktif */}
             {isCameraActive ? (
@@ -504,8 +544,8 @@ export default function ScanAiPage() {
           LANGKAH 2: PRATINJAU & PILIHAN TANAMAN (CLEAN & FOKUS)
       ══════════════════════════════════════════════════════════════════════ */}
       {step === 2 && (
-        <div className="max-w-xl mx-auto space-y-4">
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto space-y-5">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xs space-y-6">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
@@ -527,18 +567,18 @@ export default function ScanAiPage() {
               </button>
             </div>
 
-            {/* Frame Foto Pratinjau */}
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 aspect-4/3 max-h-[300px] flex items-center justify-center">
+            {/* Frame Foto Pratinjau Full & Center Desktop */}
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 w-full h-[280px] sm:h-[380px] lg:h-[440px] flex items-center justify-center">
               {imagePreview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img 
                   src={imagePreview} 
                   alt="Pratinjau Tanaman" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain sm:object-cover"
                 />
               ) : (
                 <div className="text-center p-6 text-white space-y-2">
-                  <Sparkles className="w-8 h-8 text-emerald-400 mx-auto" />
+                  <ScanSearch className="w-8 h-8 text-emerald-400 mx-auto" />
                   <p className="text-xs font-bold">Mode Simulasi Sampel Lapangan</p>
                   <span className="text-[11px] text-white/70 block">
                     {samplePresets.find(p => p.id === selectedSample)?.label}
@@ -563,7 +603,7 @@ export default function ScanAiPage() {
               <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
                 Pilih Komoditas (Opsional):
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {cropOptions.map((crop) => {
                   const isSelected = selectedCrop === crop.name;
                   return (
@@ -577,7 +617,7 @@ export default function ScanAiPage() {
                           setSelectedSample(crop.defaultKey);
                         }
                       }}
-                      className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all cursor-pointer ${
+                      className={`p-2.5 sm:p-3 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-1 ring-emerald-600/20 font-bold'
                           : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
@@ -591,12 +631,12 @@ export default function ScanAiPage() {
             </div>
 
             {/* Tombol Aksi Utama Step 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
                 type="button"
                 onClick={handleReset}
                 disabled={scanning}
-                className="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+                className="w-full py-3.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
               >
                 <RotateCcw className="w-4 h-4 text-slate-500" />
                 <span>Foto Ulang</span>
@@ -606,7 +646,7 @@ export default function ScanAiPage() {
                 type="button"
                 onClick={handleRunScan}
                 disabled={scanning}
-                className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
                 {scanning ? (
                   <>
@@ -627,7 +667,7 @@ export default function ScanAiPage() {
           LANGKAH 3: HASIL DIAGNOSIS LENGKAP & TINDAKAN LAPANGAN
       ══════════════════════════════════════════════════════════════════════ */}
       {step === 3 && result && (
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto space-y-5">
 
           {/* KONDISI A: BUKAN KOMODITAS TANAMAN PERTANIAN */}
           {(!result.is_tanaman || result.kategori_diagnosa === 'Non-Pertanian') ? (
@@ -667,19 +707,19 @@ export default function ScanAiPage() {
             </div>
           ) : (
             /* KONDISI B: VALID TANAMAN PERTANIAN */
-            <div className="space-y-4">
+            <div className="space-y-5">
               
-              {/* LEMBAR LAPORAN DIAGNOSIS TUNGGAL & BERSIH (FLAT DESIGN) */}
-              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs divide-y divide-slate-100">
+              {/* LEMBAR LAPORAN DIAGNOSIS TUNGGAL & BERSIH (FLAT DESIGN & WIDE DESKTOP) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-xs divide-y divide-slate-100">
                 
                 {/* 1. Header Identitas Diagnosis */}
-                <div className="p-5 sm:p-6 space-y-4">
+                <div className="p-6 sm:p-8 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                      <h2 className="text-base sm:text-xl font-bold text-slate-900 leading-snug">
                         {result.nama_masalah}
                       </h2>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs sm:text-sm text-slate-500">
                         Komoditas: <span className="font-semibold text-slate-800">{result.nama_tanaman}</span>
                       </p>
                     </div>
@@ -688,7 +728,7 @@ export default function ScanAiPage() {
                       <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
                         Kesiapan Panen
                       </span>
-                      <span className="text-xs font-bold text-slate-800 block">
+                      <span className="text-xs sm:text-sm font-bold text-slate-800 block">
                         {result.status_kematangan}
                       </span>
                       <span className="text-[11px] text-slate-500 block">
@@ -700,72 +740,72 @@ export default function ScanAiPage() {
                   </div>
 
                   {/* 4 Metrik Indikator Flat */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-center">
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 text-center">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                       <span className="text-[10px] font-bold text-slate-400 uppercase block">Kategori</span>
-                      <span className="text-xs font-bold text-slate-800">{result.kategori_diagnosa}</span>
+                      <span className="text-xs sm:text-sm font-bold text-slate-800">{result.kategori_diagnosa}</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                       <span className="text-[10px] font-bold text-slate-400 uppercase block">Keparahan</span>
-                      <span className={`text-xs font-bold ${
+                      <span className={`text-xs sm:text-sm font-bold ${
                         result.tingkat_keparahan === 'Aman' ? 'text-emerald-700' : result.tingkat_keparahan === 'Parah' ? 'text-rose-700' : 'text-amber-700'
                       }`}>
                         {result.tingkat_keparahan}
                       </span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                       <span className="text-[10px] font-bold text-slate-400 uppercase block">Akurasi AI</span>
-                      <span className="text-xs font-bold text-emerald-700">{result.akurasi}%</span>
+                      <span className="text-xs sm:text-sm font-bold text-emerald-700">{result.akurasi}%</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                       <span className="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Panen</span>
-                      <span className="text-xs font-bold text-slate-800">
+                      <span className="text-xs sm:text-sm font-bold text-slate-800">
                         {result.estimasi_hari_panen === 0 ? 'Siap Petik' : `${result.estimasi_hari_panen} Hari`}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* 2. Ciri Visual Terdeteksi (Flat Clean List) */}
-                <div className="p-5 sm:p-6 space-y-2.5">
+                {/* 2. Ciri Visual Terdeteksi (Flat Clean 2-Column Grid) */}
+                <div className="p-6 sm:p-8 space-y-3">
                   <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     Ciri Visual Terdeteksi
                   </h3>
-                  <ul className="space-y-1.5 text-xs text-slate-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-700">
                     {result.ciri_visual.map((ciri, i) => (
-                      <li key={i} className="flex items-start gap-2 leading-relaxed">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
+                      <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50/70 border border-slate-100 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
                         <span>{ciri}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* 3. Langkah Penanganan Lapangan (Flat Clean Numbered List) */}
-                <div className="p-5 sm:p-6 space-y-2.5">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Langkah Penanganan Lapangan
-                  </h3>
-                  <div className="space-y-2.5">
-                    {result.solusi_perawatan.map((sol, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
-                        <span className="w-5 h-5 rounded-md bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <span>{sol}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* 4. Rekomendasi Nutrisi & Obat Alami (Flat Clean Tab & Rows) */}
-                <div className="p-5 sm:p-6 space-y-3.5">
-                  {/* Tab Selector Minimalis */}
-                  <div className="flex p-0.5 rounded-lg bg-slate-100 text-xs font-semibold max-w-sm">
+                {/* 3. Langkah Penanganan Lapangan (Numbered List) */}
+                <div className="p-6 sm:p-8 space-y-3">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    Langkah Penanganan Lapangan
+                  </h3>
+                  <div className="space-y-2.5">
+                    {result.solusi_perawatan.map((sol, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50/70 border border-slate-100 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        <span className="w-6 h-6 rounded-lg bg-emerald-700 text-white font-bold flex items-center justify-center shrink-0 text-xs mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span className="pt-0.5">{sol}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Rekomendasi Nutrisi & Obat Alami (Center & Full Width 2-Kolom Desktop) */}
+                <div className="p-6 sm:p-8 space-y-4">
+                  {/* Tab Selector Minimalis Center */}
+                  <div className="flex p-1 rounded-xl bg-slate-100 text-xs font-semibold w-full sm:max-w-md mx-auto">
                     <button
                       type="button"
                       onClick={() => setResultTab('pupuk')}
-                      className={`flex-1 py-1.5 px-3 rounded-md transition-all cursor-pointer ${
+                      className={`flex-1 py-2 px-4 rounded-lg transition-all cursor-pointer ${
                         resultTab === 'pupuk' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
@@ -775,7 +815,7 @@ export default function ScanAiPage() {
                     <button
                       type="button"
                       onClick={() => setResultTab('nabati')}
-                      className={`flex-1 py-1.5 px-3 rounded-md transition-all cursor-pointer ${
+                      className={`flex-1 py-2 px-4 rounded-lg transition-all cursor-pointer ${
                         resultTab === 'nabati' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
@@ -783,16 +823,16 @@ export default function ScanAiPage() {
                     </button>
                   </div>
 
-                  {/* Konten Tab 1: Pupuk Presisi (Flat Rows) */}
+                  {/* Konten Tab 1: Pupuk Presisi (2 Kolom Grid Desktop Full) */}
                   {resultTab === 'pupuk' && (
-                    <div className="divide-y divide-slate-100 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
                       {result.rekomendasi_pupuk.map((pupuk, idx) => (
-                        <div key={idx} className="py-3 first:pt-0 last:pb-0 space-y-1 text-xs">
+                        <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
                           <div className="flex items-baseline justify-between gap-2">
                             <strong className="text-slate-900 font-bold text-xs sm:text-sm">
                               {pupuk.jenis}
                             </strong>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold shrink-0">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold shrink-0">
                               {pupuk.formula}
                             </span>
                           </div>
@@ -807,18 +847,27 @@ export default function ScanAiPage() {
                     </div>
                   )}
 
-                  {/* Konten Tab 2: Obat Nabati Alami (Flat Rows) */}
+                  {/* Konten Tab 2: Obat Nabati Alami (2 Kolom Grid Desktop Full & Center) */}
                   {resultTab === 'nabati' && (
-                    <div className="space-y-2 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
                       {result.pestisida_nabati_organik.length > 0 ? (
                         result.pestisida_nabati_organik.map((pes, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 leading-relaxed">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
-                            <span>{pes}</span>
+                          <div key={idx} className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100/90 space-y-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-md bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center shrink-0">
+                                {idx + 1}
+                              </span>
+                              <span className="font-bold text-slate-900 text-xs sm:text-sm">
+                                Resep Alami {idx + 1}
+                              </span>
+                            </div>
+                            <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed pl-7">
+                              {pes}
+                            </p>
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs text-slate-500 py-2">
+                        <p className="text-xs text-slate-500 py-3 text-center sm:col-span-2">
                           Tanaman dalam kondisi sehat, tidak memerlukan aplikasi pestisida.
                         </p>
                       )}
@@ -828,8 +877,8 @@ export default function ScanAiPage() {
 
               </div>
 
-              {/* 5. Tombol Aksi Akhir */}
-              <div className="space-y-2 pt-1">
+              {/* 5. Tombol Aksi Akhir (2 Kolom Desktop Center) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <button
                   type="button"
                   onClick={handleReset}
@@ -841,7 +890,7 @@ export default function ScanAiPage() {
 
                 <Link
                   href="/monitoring"
-                  className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs text-center block"
+                  className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs text-center"
                 >
                   <span>Buka Dasbor Pemantauan Lahan</span>
                 </Link>

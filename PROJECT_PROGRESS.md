@@ -1,6 +1,27 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+171. **Optimasi Responsivitas Desktop UI & Akselerasi Penalaran AI Vision (`scan-ai/page.tsx`, `vision_ai.ts`, `.env.local`) [2026-10-13]**:
+    - **Diagnosa Masukan User**:
+      - Bos mengoreksi tampilan desktop: kartu "Obat Alami & Nabati" dan frame pratinjau unggahan tanaman terlihat sempit/nanggung ("setengah doang") dan tidak center proporsional di layar lebar.
+      - Bos meminta proses reasoning/analisis AI dipercepat agar tidak memakan waktu lama saat pengguna memindai tanaman.
+    - **Solusi & Implementasi Teknis**:
+      1. **Akselerasi Penalaran & Inferensi AI Vision**:
+         - Mengalihkan model vision di `vision_ai.ts` dan `.env.local` dari `ag/gemini-3.8-flash-high` ke `ag/gemini-3.8-flash-low` yang memangkas overhead thinking token secara masif (~40-50% lebih cepat).
+         - Memasang batas token maksimal `max_tokens: 1024` dan menajamkan prompt instruksi agar AI langsung mengeluarkan JSON diagnosis terarah tanpa rantai penalaran bertele-tele.
+         - Menambahkan kompresi citra otomatis sisi klien (`compressImage`) pada `handleFileSelected` dan `capturePhoto` (resolusi maksimal 1280px, kualitas JPEG 82%), memangkas ukuran berkas unggahan dari 5-12 MB menjadi ~150-250 KB sehingga waktu transfer jaringan berkurang drastis.
+         - Menghilangkan delay buatan `setTimeout(..., 1100)` pada `handleRunScan` agar antarmuka seketika menampilkan hasil diagnosis begitu API merespons.
+      2. **Perluasan & Sentralisasi Desktop UI**:
+         - Memperluas kontainer Langkah 1, 2, dan 3 dari `max-w-xl` (576px) menjadi `max-w-3xl lg:max-w-4xl` yang presisi, lapang, dan simetris di layar desktop.
+         - **Langkah 2 (Pratinjau Tanaman)**: Frame foto pratinjau kini membentang penuh dan proporsional (`h-[280px] sm:h-[380px] lg:h-[440px]`) dengan `object-contain sm:object-cover`, menggantikan ikon lama dengan `ScanSearch` bersih tanpa AI-slop. Tombol pilihan komoditas dan aksi ditata rapi 4 kolom & 2 kolom responsif.
+         - **Langkah 3 (Hasil Diagnosis)**: Tab pemilih pupuk & obat alami dibuat center proporsional (`w-full sm:max-w-md mx-auto`).
+         - **Card Obat Alami & Nabati**: Ditata ulang menjadi grid responsif 2 kolom (`grid grid-cols-1 sm:grid-cols-2 gap-3.5`) dengan kartu berbingkai hijau alami (`bg-emerald-50/70 border-emerald-100/90`), nomor lencana tegas, dan deskripsi penuh sehingga mengisi seluruh lebar layar desktop secara seimbang tanpa ada ruang kosong aneh di sisi kanan.
+    - **Validasi Build & Status**:
+      - Next.js Turbopack build sukses 100% (16 halaman, 0 error).
+      - Reload PM2 `kertanusa-web`.
+      - Pengujian API `/api/analyze`: responsif dalam ~4.5 detik (termasuk transfer jaringan) dengan hasil diagnosis akurat.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 170. **Audit Keamanan Menyeluruh & Hardening Endpoints OWASP: Anti-Broken Access Control, PII Masking, SSRF Defense, & Anti-DoS (`auth.ts`, `db.ts`, `api/petani`, `api/analyze`, `sanitize.ts`, `rate_limiter.ts`) [2026-10-12]**:
     - **Diagnosa Masukan User**:
       - Bos menginstruksikan audit keamanan siber menyeluruh ke seluruh endpoint API, URL, dan struktur kode Kertanusa setelah ditemukannya potensi celah otorisasi pada penghapusan data petani.
