@@ -1,6 +1,25 @@
 # 🌾 Kertanusa (Agroproject) - Project Progress & Changelog
 Dokumentasi riwayat pengerjaan, arsitektur data pertanian, dan pembaruan fitur AgroNusantara AI.
 
+174. **Redesain 2-Kolom Desktop Layar Lebar & Eliminasi Truncation Tombol pada Pratinjau Tanaman (`scan-ai/page.tsx`) [2026-10-13]**:
+    - **Diagnosa Masukan User**:
+      - Bos mengirimkan tangkapan layar tampilan desktop Langkah 2: card tampak sempit/nanggung di tengah layar, teks komoditas terpotong menjadi "Deteksi Otoma...", terdapat tombol duplikat "Foto Ulang" di header dan footer, serta frame foto belum proporsional.
+    - **Solusi & Implementasi Teknis**:
+      - **Arsitektur Layout 2-Kolom Desktop (`grid grid-cols-1 lg:grid-cols-12 gap-8`)**:
+        - Memperluas kontainer menjadi `max-w-5xl mx-auto` yang mengisi layar lebar desktop secara proporsional dan elegan.
+        - **Kolom Kiri (Lg 7/12)**: Frame foto pratinjau besar, tajam, dan lega (`h-[300px] sm:h-[400px] lg:h-[460px]`) dengan `object-contain sm:object-cover` sehingga seluruh objek tanaman terlihat utuh tanpa crop paksa.
+        - **Kolom Kanan (Lg 5/12)**: Panel konfirmasi komoditas dan tombol aksi yang tertata rapi.
+      - **Resolusi Masalah Teks Terpotong & Penataan Komoditas**:
+        - Tombol "Deteksi Otomatis AI" dijadikan kartu utama penuh di bagian atas dengan lencana "(Rekomendasi)" — 100% teks tampil utuh tanpa pemotongan (`truncate`).
+        - 8 pilihan komoditas manual (Mangga, Cabai, Padi, Bawang Merah, Jagung, Jeruk, Tomat, Lainnya) ditata dalam grid 2 kolom di bawahnya.
+        - Tombol yang terpilih aktif menggunakan warna hijau zamrud solid (`bg-emerald-700 text-white font-bold`) yang sangat kontras dan tegas.
+      - **Pembersihan Tombol Duplikat**:
+        - Menghapus tombol "Foto Ulang" di header card, menyisakan satu tombol aksi sekunder di bawah tombol "Analisis Sekarang" untuk hierarki UX yang bersih dan teratur.
+    - **Validasi Build & Status**:
+      - Next.js Turbopack build sukses 100% (16 halaman, 0 error).
+      - Reload PM2 `kertanusa-web`.
+      - Commit dan push ke branch `main` GitHub `riiardian/kertanusa`.
+
 173. **Penyelarasan Presisi Komoditas Tropis Mangga & Koreksi Paradoks Kematangan Buah Busuk (`vision_ai.ts`, `types.ts`, `scan-ai/page.tsx`) [2026-10-13]**:
     - **Diagnosa Masukan User**:
       - Bos menanyakan mengapa foto mangga busuk yang diunggah memunculkan hasil diagnosis "Busuk Cokelat Buah (Monilinia fructicola) pada Persik / Peach (Prunus persica)", serta menampilkan status keliru "Siap Panen (Super Grade A)" padahal buah sudah membusuk di tanah.

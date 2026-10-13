@@ -316,7 +316,7 @@ export default function ScanAiPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-6 sm:space-y-8 text-slate-800">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 space-y-6 sm:space-y-8 text-slate-800">
       
       {/* ── HEADER HALAMAN (RINGKAS & BERSIH) ── */}
       <div className="text-center space-y-2 pb-2">
@@ -333,7 +333,7 @@ export default function ScanAiPage() {
       </div>
 
       {/* ── STEPPER WIZARD INDICATOR (CLEAN & MINIMALIS) ── */}
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md sm:max-w-xl mx-auto">
         <div className="flex items-center justify-between relative">
           <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-0.5 bg-slate-200 -z-0" />
           
@@ -542,124 +542,153 @@ export default function ScanAiPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════
-          LANGKAH 2: PRATINJAU & PILIHAN TANAMAN (CLEAN & FOKUS)
+          LANGKAH 2: PRATINJAU & PILIHAN TANAMAN (2-KOLOM DESKTOP PROPORSI PENUH)
       ══════════════════════════════════════════════════════════════════════ */}
       {step === 2 && (
-        <div className="max-w-3xl lg:max-w-4xl mx-auto space-y-5">
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xs space-y-6">
-            
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div>
-                <h2 className="text-sm sm:text-base font-bold text-slate-900">
-                  Pratinjau & Konfirmasi Tanaman
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Pastikan foto tajam dan pilih tanaman yang sesuai.
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xs">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+              
+              {/* Kolom Kiri (Lg 7/12): Frame Foto Pratinjau Besar & Lega */}
+              <div className="lg:col-span-7 space-y-3">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 w-full h-[300px] sm:h-[400px] lg:h-[460px] flex items-center justify-center">
+                  {imagePreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img 
+                      src={imagePreview} 
+                      alt="Pratinjau Tanaman" 
+                      className="w-full h-full object-contain sm:object-cover"
+                    />
+                  ) : (
+                    <div className="text-center p-6 text-white space-y-2">
+                      <ScanSearch className="w-8 h-8 text-emerald-400 mx-auto" />
+                      <p className="text-xs font-bold">Mode Simulasi Sampel Lapangan</p>
+                      <span className="text-[11px] text-white/70 block">
+                        {samplePresets.find(p => p.id === selectedSample)?.label}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Tag Sumber */}
+                  <div className="absolute top-3 left-3 z-20">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
+                      {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : <Upload className="w-3 h-3 text-emerald-400" />}
+                      <span>{imageSource === 'camera' ? 'Foto Kamera' : imageSource === 'upload' ? 'Unggahan Galeri' : 'Sampel Lapangan'}</span>
+                    </span>
+                  </div>
+
+                  {/* Animasi Dot Matrix & Laser Scanner AI */}
+                  {scanning && <PixelScanOverlay />}
+                </div>
+
+                <p className="text-[11px] text-slate-500 text-center sm:text-left flex items-center justify-center sm:justify-start gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Foto siap dianalisis. Pilih komoditas spesifik atau gunakan deteksi otomatis AI.</span>
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleReset}
-                disabled={scanning}
-                className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Foto Ulang</span>
-              </button>
-            </div>
 
-            {/* Frame Foto Pratinjau Full & Center Desktop */}
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 w-full h-[280px] sm:h-[380px] lg:h-[440px] flex items-center justify-center">
-              {imagePreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img 
-                  src={imagePreview} 
-                  alt="Pratinjau Tanaman" 
-                  className="w-full h-full object-contain sm:object-cover"
-                />
-              ) : (
-                <div className="text-center p-6 text-white space-y-2">
-                  <ScanSearch className="w-8 h-8 text-emerald-400 mx-auto" />
-                  <p className="text-xs font-bold">Mode Simulasi Sampel Lapangan</p>
-                  <span className="text-[11px] text-white/70 block">
-                    {samplePresets.find(p => p.id === selectedSample)?.label}
-                  </span>
-                </div>
-              )}
+              {/* Kolom Kanan (Lg 5/12): Panel Konfirmasi & Aksi */}
+              <div className="lg:col-span-5 flex flex-col justify-between space-y-5">
+                <div className="space-y-4">
+                  <div className="pb-3 border-b border-slate-100">
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900">
+                      Konfirmasi Komoditas
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Bantu AI menentukan diagnosa agronomis yang lebih spesifik.
+                    </p>
+                  </div>
 
-              {/* Tag Sumber */}
-              <div className="absolute top-2.5 left-2.5 z-20">
-                <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-xs">
-                  {imageSource === 'camera' ? <Camera className="w-3 h-3 text-emerald-400" /> : <Upload className="w-3 h-3 text-emerald-400" />}
-                  <span>{imageSource === 'camera' ? 'Foto Kamera' : imageSource === 'upload' ? 'Unggahan Galeri' : 'Sampel Lapangan'}</span>
-                </span>
-              </div>
-
-              {/* Animasi Dot Matrix Swirling Pixel AI (Identik ChatGPT DALL-E) */}
-              {scanning && <PixelScanOverlay />}
-            </div>
-
-            {/* Pilihan Jenis Tanaman (Chips 3x3 Rapi) */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                Pilih Komoditas (Opsional):
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                {cropOptions.map((crop) => {
-                  const isSelected = selectedCrop === crop.name;
-                  return (
+                  {/* Pilihan Komoditas */}
+                  <div className="space-y-2.5">
+                    {/* Default: Deteksi Otomatis AI (Full Width) */}
                     <button
-                      key={crop.name}
                       type="button"
                       disabled={scanning}
                       onClick={() => {
-                        setSelectedCrop(crop.name);
-                        if (imageSource === 'sample') {
-                          setSelectedSample(crop.defaultKey);
-                        }
+                        setSelectedCrop('Deteksi Otomatis AI');
+                        if (imageSource === 'sample') setSelectedSample('auto');
                       }}
-                      className={`p-2.5 sm:p-3 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-emerald-50 border-emerald-600 text-emerald-900 ring-1 ring-emerald-600/20 font-bold'
+                      className={`w-full p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
+                        selectedCrop === 'Deteksi Otomatis AI'
+                          ? 'bg-emerald-700 text-white border-emerald-700 font-bold shadow-xs'
                           : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
                       }`}
                     >
-                      <span className="truncate">{crop.name}</span>
+                      <div className="flex items-center gap-2">
+                        <ScanSearch className={`w-4 h-4 ${selectedCrop === 'Deteksi Otomatis AI' ? 'text-white' : 'text-emerald-600'}`} />
+                        <span>Deteksi Otomatis AI</span>
+                      </div>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${selectedCrop === 'Deteksi Otomatis AI' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                        Rekomendasi
+                      </span>
                     </button>
-                  );
-                })}
+
+                    <div className="pt-1">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+                        Atau Pilih Komoditas Tertentu:
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        {cropOptions.filter(c => c.name !== 'Deteksi Otomatis AI').map((crop) => {
+                          const isSelected = selectedCrop === crop.name;
+                          return (
+                            <button
+                              key={crop.name}
+                              type="button"
+                              disabled={scanning}
+                              onClick={() => {
+                                setSelectedCrop(crop.name);
+                                if (imageSource === 'sample') {
+                                  setSelectedSample(crop.defaultKey);
+                                }
+                              }}
+                              className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-emerald-700 text-white border-emerald-700 font-bold shadow-xs'
+                                  : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                              }`}
+                            >
+                              <span className="truncate">{crop.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tombol Aksi Bawah */}
+                <div className="space-y-2.5 pt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={handleRunScan}
+                    disabled={scanning}
+                    className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                  >
+                    {scanning ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Menganalisis...</span>
+                      </>
+                    ) : (
+                      <span>Analisis Sekarang</span>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    disabled={scanning}
+                    className="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <RotateCcw className="w-4 h-4 text-slate-500" />
+                    <span>Foto Ulang</span>
+                  </button>
+                </div>
+
               </div>
+
             </div>
-
-            {/* Tombol Aksi Utama Step 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <button
-                type="button"
-                onClick={handleReset}
-                disabled={scanning}
-                className="w-full py-3.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
-              >
-                <RotateCcw className="w-4 h-4 text-slate-500" />
-                <span>Foto Ulang</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleRunScan}
-                disabled={scanning}
-                className="w-full py-3.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
-              >
-                {scanning ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Menganalisis...</span>
-                  </>
-                ) : (
-                  <span>Analisis Sekarang</span>
-                )}
-              </button>
-            </div>
-
           </div>
         </div>
       )}
